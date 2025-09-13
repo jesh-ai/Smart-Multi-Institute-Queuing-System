@@ -14,3 +14,10 @@ It powers the server-side logic, database operations, and APIs that support the 
 - Handles all data processing, authentication, and queue management logic.
 - Exposes REST APIs (CRUD operations) for the frontend and mobile clients.
 - Manages communication with the database and ensures secure data handling.
+
+### Backend Lead
+Daniel Hardy C. Camacho
+#### Members
+1.
+2. 
+3.
