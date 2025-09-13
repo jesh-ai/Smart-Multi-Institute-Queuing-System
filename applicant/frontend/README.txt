@@ -4,7 +4,7 @@ Description:
 This repository contains the front-end implementation of the project Smart-Multi-Institute-Queuing-System.
 
 Contributors:
-Front End Lead:
+Front End Lead: Jeshaiah Mae A. Mulleno
 1. Mariel Kim R. Vaflor
 2. Marc Cedric S. Gerona
 3. Floyd M. Robante
