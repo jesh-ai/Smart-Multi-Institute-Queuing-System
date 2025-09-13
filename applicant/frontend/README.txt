@@ -11,7 +11,7 @@ Front End Lead: Jeshaiah Mae A. Mulleno
 4. Marc Jerome S. Balboa
 5. Ramyll C. Rivera
 6. Jim Rafael D. Valencia
-7. //Name
+7. Juana Mari A. Del Rosario
 8. //Name
 9. //Name
-10. //Name
+10. 
