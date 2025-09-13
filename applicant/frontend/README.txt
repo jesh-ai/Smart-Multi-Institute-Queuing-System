@@ -13,5 +13,5 @@ Front End Lead: Jeshaiah Mae A. Mulleno
 6. Jim Rafael D. Valencia
 7. Juana Mari A. Del Rosario
 8. Hezron P. Tan
-9. //Name
+9. Sydney Angeleve M. Peña
 10. 
