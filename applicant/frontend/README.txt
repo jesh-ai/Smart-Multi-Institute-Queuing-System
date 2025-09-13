@@ -6,7 +6,7 @@ This repository contains the front-end implementation of the project Smart-Multi
 Contributors:
 Front End Lead: Jeshaiah Mae A. Mulleno
 1. Mariel Kim R. Vaflor
-2. Marc Cedric S. Gerona
+2. Marc Cedric S. Geron
 3. Floyd M. Robante
 4. Marc Jerome S. Balboa
 5. //Name
