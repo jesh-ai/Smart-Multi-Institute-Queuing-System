@@ -19,5 +19,5 @@ It powers the server-side logic, database operations, and APIs that support the 
 Daniel Hardy C. Camacho
 #### Members
 1. Karylle Vinces J. Aliswag
-2. 
+2. Joseph Prince A. Rapiz
 3.
