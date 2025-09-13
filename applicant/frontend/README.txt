@@ -9,8 +9,8 @@ Front End Lead:
 2. Marc Cedric S. Gerona
 3. Marc Jerome S. Balboa
 4. Floyd M. Robante
-5. Jim Rafael D. Valencia
-6. //Name
+5. Ramyll C. Rivera
+6. Jim Rafael D. Valencia
 7. //Name
 8. //Name
 9. //Name
