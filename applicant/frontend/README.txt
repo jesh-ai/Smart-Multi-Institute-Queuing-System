@@ -9,12 +9,9 @@ Front End Lead: Jeshaiah Mae A. Mulleno
 2. Marc Cedric S. Geron
 3. Floyd M. Robante
 4. Marc Jerome S. Balboa
-5. //Name
-6. //Name
+5. Ramyll C. Rivera
+6. Jim Rafael D. Valencia
 7. //Name
 8. //Name
 9. //Name
 10. //Name
-
-PM
-1. Iwag
