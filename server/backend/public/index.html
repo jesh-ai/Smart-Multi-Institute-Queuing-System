@@ -5,54 +5,180 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Smart Queue</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 2rem;
-      text-align: center;
+    body { 
+      font-family: Arial, sans-serif; 
+      padding: 1.5rem; 
+      text-align: center; 
+    }
+    #scannerWrap { 
+      margin-top: 1rem; 
     }
     #qrcode {
-      margin-top: 1rem;
+      margin: 1rem auto; 
+      max-width: 240px; 
     }
-    #gotoTest {
-      display: none; /* hidden until QR is generated */
-      margin-top: 1rem;
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      cursor: pointer;
+    #videoPreview { 
+      width: 320px; 
+      max-width: 90%; 
+      display: none; 
+      margin-top: 1rem; 
+    }
+    .btn { 
+      margin: 0.4rem; 
+      padding: 0.5rem 0.9rem; 
+      cursor: pointer; 
+    }
+    #gotoTest { 
+      margin-top: 1rem; 
+      padding: 0.5rem 1rem; 
+      font-size: 1rem; 
+      cursor: pointer; 
+    }
+    .small { 
+      font-size: 0.85rem; 
+      color: #666; 
+      margin-top: 0.5rem; 
     }
   </style>
 </head>
-<body>
-  <h1>Smart Queue</h1>
-  <button id="generateQR">Generate QR Code</button>
-  <div id="qrcode"></div>
+ <h1>Smart Queue</h1>
+  <p id="scanHint">Scan to Begin</p>
+
+  <div id="scannerWrap">
+    <!-- QR container (backend returns data-url image) -->
+    <div id="qrcode" aria-live="polite">Loading QR…</div>
+
+    <!-- Camera preview for scanning -->
+    <video id="videoPreview" autoplay muted playsinline></video>
+
+    <!-- Camera control buttons -->
+    <div style="margin-top:0.6rem;">
+      <button id="openCamera" class="btn">Open Camera</button>
+      <button id="flipCamera" class="btn">Flip Camera</button>
+      <button id="toggleFlash" class="btn">Flashlight</button>
+      <!-- <button id="proceed" class="btn">Proceed (skip scan)</button> -->
+    </div>
+
 
   <!-- button that appears after QR code is generated -->
   <button id="gotoTest">Go to Test Page</button>
 
   <script>
-    const generateBtn = document.getElementById('generateQR');
+    //removed generateBtn
     const qrDiv = document.getElementById('qrcode');
     const gotoTestBtn = document.getElementById('gotoTest');
+    const openCameraBtn = document.getElementById('openCamera');
+    const flipCameraBtn = document.getElementById('flipCamera');
+    const toggleFlashBtn = document.getElementById('toggleFlash');
+    //const proceedBtn = document.getElementById('proceed');
+    const video = document.getElementById('videoPreview');
 
-    generateBtn.addEventListener('click', async () => {
-      // get QR code from your API
-      const res = await fetch('/api/qr');
-      if (!res.ok) {
-        qrDiv.innerHTML = 'Failed to load QR code';
+    // --- QR fetch on load
+    async function loadQR() {
+      try {
+        const res = await fetch('/api/qr');
+        if (!res.ok) throw new Error('QR fetch failed: ' + res.status);
+
+        const data = await res.json();
+        // backend may send { qr: dataUrl } or { qrImage: dataUrl } - accept either
+        const qrData = data.qr || data.qrImage || data.qrDataUrl || data.qrData;
+        if (!qrData) throw new Error('No QR data in response');
+
+        qrDiv.innerHTML = `<img src="${qrData}" alt="QR Code" style="max-width:240px;">`;
+        gotoTestBtn.style.display = 'inline-block'; // show test button
+      } catch (err) {
+        console.error('Error fetching QR:', err);
+        qrDiv.innerText = 'Failed to load QR (check /api/qr).';
+        gotoTestBtn.style.display = 'inline-block'; // still allow test page
+    }
+  }
+
+    // --- Camera control state
+    let currentStream = null;
+    let preferredFacingMode = 'environment'; // 'user' or 'environment'
+    let trackCapabilities = null; // for flashlight
+    let currentVideoTrack = null;
+
+    async function startCamera() {
+      try {
+        const constraints = { video: { facingMode: { ideal: preferredFacingMode } } };
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        stopCamera();
+        currentStream = stream;
+        video.srcObject = stream;
+        video.style.display = 'block';
+        openCameraBtn.textContent = 'Close Camera';
+        currentVideoTrack = stream.getVideoTracks()[0];
+        if (currentVideoTrack && typeof currentVideoTrack.getCapabilities === 'function') {
+          trackCapabilities = currentVideoTrack.getCapabilities();
+        } else {
+          trackCapabilities = null;
+        }
+      } catch (e) {
+        console.error('startCamera error', e);
+        alert('Unable to open camera: ' + (e.message || e));
+      }
+    }
+
+    function stopCamera() {
+      if (currentStream) {
+        currentStream.getTracks().forEach(t => t.stop());
+        currentStream = null;
+      }
+      video.style.display = 'none';
+      openCameraBtn.textContent = 'Open Camera';
+      currentVideoTrack = null;
+      trackCapabilities = null;
+    }
+
+    // toggle open/close camera
+    openCameraBtn.addEventListener('click', () => {
+      if (currentStream) stopCamera(); else startCamera();
+    });
+
+    // flip camera (toggle facing mode)
+    flipCameraBtn.addEventListener('click', async () => {
+      preferredFacingMode = preferredFacingMode === 'environment' ? 'user' : 'environment';
+      if (currentStream) {
+        // restart stream with new facing mode
+        await startCamera();
+      } else {
+        // no stream: just set preferred mode, next open will use it
+        alert('Camera facing set to: ' + preferredFacingMode);
+      }
+    });
+
+    // toggle flash (if supported)
+    toggleFlashBtn.addEventListener('click', async () => {
+      if (!currentVideoTrack) {
+        alert('Open camera first');
         return;
       }
-      const data = await res.json();
-      // display QR image
-      qrDiv.innerHTML = `<img src="${data.qr}" alt="QR Code" style="max-width:200px;">`;
-      // show the "Go to Test Page" button
-      gotoTestBtn.style.display = 'inline-block';
+      try {
+        const track = currentVideoTrack;
+        const capabilities = track.getCapabilities ? track.getCapabilities() : {};
+        if (!capabilities.torch) {
+          alert('Flash (torch) not supported on this device/browser');
+          return;
+        }
+        // toggle flash on/off
+        const settings = track.getSettings();
+        const isTorchOn = settings && settings.torch === true;
+        await track.applyConstraints({ advanced: [{ torch: !isTorchOn }] });
+      } catch (err) {
+        console.error('Flash toggle error', err);
+        alert('Error toggling flash: ' + (err.message || err));
+      }
     });
 
+    // Keep "Go to Test Page" (do not remove)
     gotoTestBtn.addEventListener('click', () => {
-      // redirect to test.html
       window.location.href = '/test.html';
     });
+
+    // load QR immediately on page load
+    document.addEventListener('DOMContentLoaded', loadQR);
+       
   </script>
 </body>
 </html>
