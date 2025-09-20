@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Queue</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      text-align: center;
+    }
+    #qrcode {
+      margin-top: 1rem;
+    }
+    #gotoTest {
+      display: none; /* hidden until QR is generated */
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Smart Queue</h1>
+  <button id="generateQR">Generate QR Code</button>
+  <div id="qrcode"></div>
+
+  <!-- button that appears after QR code is generated -->
+  <button id="gotoTest">Go to Test Page</button>
+
+  <script>
+    const generateBtn = document.getElementById('generateQR');
+    const qrDiv = document.getElementById('qrcode');
+    const gotoTestBtn = document.getElementById('gotoTest');
+
+    generateBtn.addEventListener('click', async () => {
+      // get QR code from your API
+      const res = await fetch('/api/qr');
+      if (!res.ok) {
+        qrDiv.innerHTML = 'Failed to load QR code';
+        return;
+      }
+      const data = await res.json();
+      // display QR image
+      qrDiv.innerHTML = `<img src="${data.qr}" alt="QR Code" style="max-width:200px;">`;
+      // show the "Go to Test Page" button
+      gotoTestBtn.style.display = 'inline-block';
+    });
+
+    gotoTestBtn.addEventListener('click', () => {
+      // redirect to test.html
+      window.location.href = '/test.html';
+    });
+  </script>
+</body>
+</html>
