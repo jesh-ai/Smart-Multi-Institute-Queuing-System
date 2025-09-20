@@ -18,6 +18,10 @@ It powers the server-side logic, database operations, and APIs that support the 
 ### Backend Lead
 Daniel Hardy C. Camacho
 #### Members
-1.
-2. 
-3.
+1. Karylle Vinces J. Aliswag
+2. Joseph Prince A. Rapiz
+3. Jonalene Ryza B. Abundo
+4. Carla R. Mabutas
+5. Raphael James C. Catacutan
+6. Jansen Jerhyn M. Santos
+7. Mark Jerome P. Geronimo
