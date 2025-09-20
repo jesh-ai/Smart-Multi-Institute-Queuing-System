@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Feedback Page</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: #fafafa;
+      color: #333;
+      flex-direction: column;
+      padding: 2rem;
+    }
+
+    h1 {
+      margin-bottom: 1rem;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: 500px;
+      gap: 1rem;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 120px;
+      padding: 0.8rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      align-self: flex-end;
+      background: #0A4174;
+      color: #fff;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #thankyou {
+      margin-top: 2rem;
+      color: green;
+      font-weight: bold;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Feedback Survey</h1>
+  <p>Please tell us why you chose to reject the privacy notice:</p>
+
+  <form id="feedbackForm">
+    <textarea name="feedback" placeholder="Enter your feedback here..."></textarea>
+    <button type="submit">Submit</button>
+  </form>
+
+  <p id="thankyou">Thank you for your feedback!</p>
+
+  <script>
+    const form = document.getElementById('feedbackForm');
+    const thankyou = document.getElementById('thankyou');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const feedback = form.feedback.value.trim();
+      if (!feedback) {
+        alert("Please enter your feedback before submitting.");
+        return;
+      }
+
+      form.style.display = 'none';
+      thankyou.style.display = 'block';
+    });
+  </script>
+</body>
+</html>
