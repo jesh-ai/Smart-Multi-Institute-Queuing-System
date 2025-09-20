@@ -10,6 +10,8 @@ function ChatInterface() {
     { sender: "bot", text: "What would you like to inquire about?" },
   ]);
   const [input, setInput] = useState("");
+  const [showConsent, setShowConsent] = useState(true); // show consent first
+  const [isChecked, setIsChecked] = useState(false);
   const quickReplies = ["Clearance", "Other"];
 
   const handleSend = (text: string) => {
@@ -32,7 +34,7 @@ function ChatInterface() {
   };
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 bg-white">
+    <div className="relative flex flex-col flex-1 min-h-0 bg-white">
       {/* Message Area - Scrollable */}
       <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2">
         {messages.map((msg, idx) => (
@@ -62,7 +64,7 @@ function ChatInterface() {
         </div>
       </div>
 
-      {/* Footer - Input Area (matches existing footer styles) */}
+      {/* Footer - Input Area */}
       <div className="sticky bottom-0 z-10 border-t bg-[#34495E] p-4">
         <div className="flex items-center gap-2">
           <input
@@ -71,11 +73,13 @@ function ChatInterface() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="flex-1 rounded-2xl bg-gray-300 px-4 py-2 text-sm text-black placeholder:text-[#34495E] focus:outline-none"
+            disabled={showConsent} // disable input until consent given
+            className="flex-1 rounded-2xl bg-gray-300 px-4 py-2 text-sm text-black placeholder:text-[#34495E] focus:outline-none disabled:opacity-50"
           />
           <button
             onClick={() => handleSend(input)}
-            className="rounded-full p-3"
+            disabled={showConsent}
+            className="rounded-full p-3 disabled:opacity-50"
           >
             <Image src="/send.png" alt="Send" width={23} height={23} />
           </button>
@@ -87,20 +91,94 @@ function ChatInterface() {
             <button
               key={idx}
               onClick={() => handleSend(reply)}
-              className="px-4 py-1.5 rounded-full text-sm bg-gray-300 text-black hover:bg-gray-200"
+              disabled={showConsent}
+              className="px-4 py-1.5 rounded-full text-sm bg-gray-300 text-black hover:bg-gray-200 disabled:opacity-50"
             >
               {reply}
             </button>
           ))}
         </div>
       </div>
+
+      {/* Consent Modal */}
+      {showConsent && (
+        <div
+          className="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="bg-white rounded-xl shadow-lg flex flex-col
+                          w-[90%] max-w-sm h-[60%] 
+                          sm:w-[80%] sm:max-w-md sm:h-[65%]
+                          md:w-96 md:h-[500px]">
+            {/* Header */}
+            <div className="p-4 border-b">
+              <h3 className="text-lg font-semibold text-center">Data Privacy Consent</h3>
+            </div>
+
+            {/* Scrollable Body */}
+            <div className="p-4 overflow-y-auto text-xs sm:text-sm md:text-base text-gray-700 flex-1">
+              <p className="mb-2">
+                We value your privacy. This consent explains how we collect,
+                process, and protect your personal data.
+              </p>
+              <p className="mb-2">
+                By proceeding, you acknowledge that you have read and understood
+                our privacy practices, and you consent to the collection and
+                processing of your data in accordance with applicable laws.
+              </p>
+              <p className="mb-2">
+                Your data will only be used for the purpose of this system and
+                will not be shared with third parties without your permission.
+              </p>
+              <p className="mb-2">
+                If you do not agree, you may choose to cancel and discontinue
+                using this service.
+              </p>
+            </div>
+
+            {/* Footer */}
+            <div className="p-4 border-t flex flex-col gap-3">
+              <label className="flex items-center gap-2 text-sm text-gray-800">
+                <input
+                  type="checkbox"
+                  checked={isChecked}
+                  onChange={(e) => setIsChecked(e.target.checked)}
+                  className="w-4 h-4"
+                />
+                I agree to the Data Privacy Policy.
+              </label>
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={() => setShowConsent(false)} // decline just closes modal
+                  className="px-4 py-2 rounded-lg border border-[#132437] text-[#132437] bg-transparent hover:bg-[#132437]/5"
+                >
+                  I Decline
+                </button>
+                <button
+                  onClick={() => {
+                    if (isChecked) setShowConsent(false);
+                  }}
+                  disabled={!isChecked}
+                  className={`px-4 py-2 rounded-lg text-white ${
+                    isChecked
+                      ? "bg-[#132437]"
+                      : "bg-gray-400 cursor-not-allowed"
+                  }`}
+                >
+                  Proceed
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 export default function Home() {
   const [scanned, setScanned] = useState(false);
-  const [showChat, setShowChat] = useState(false);
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
@@ -125,50 +203,8 @@ export default function Home() {
             Start
           </button>
         </main>
-      ) : showChat ? (
-        <ChatInterface />
       ) : (
-        <main className="flex flex-col items-center justify-center flex-1 px-6">
-          <div className="h-20 w-20 rounded-full bg-gray-300 mb-4" />
-          <h2 className="text-xl font-bold text-black">Welcome!</h2>
-          <p className="italic text-black mb-8">Let’s get started</p>
-
-          <div className="w-full max-w-sm space-y-4">
-            <div className="h-20 w-full rounded-lg bg-gray-200" />
-            <div className="h-20 w-full rounded-lg bg-gray-200" />
-          </div>
-        </main>
-      )}
-
-      {/* Footer (only after pressing Start) */}
-      {scanned && !showChat && (
-        <footer className="sticky bottom-0 z-10 flex flex-col gap-2 border-t bg-[#34495E] p-4">
-          <div className="flex items-center gap-2">
-            <input
-              type="text"
-              placeholder="Where..."
-              className="flex-1 rounded-2xl bg-gray-300 px-4 py-2 text-sm text-black placeholder:text-[#34495E] focus:outline-none"
-            />
-            <button className="rounded-full p-3">
-              <Image src="/send.png" alt="Send" width={23} height={23} />
-            </button>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              className="flex-1 rounded-full bg-gray-300 px-4 py-1.5 text-sm text-black hover:bg-gray-200"
-              onClick={() => setShowChat(true)}
-            >
-              I would like to inquire.
-            </button>
-            <button
-              type="button"
-              className="flex-1 rounded-full bg-gray-300 px-4 py-1.5 text-sm text-black hover:bg-gray-200"
-            >
-              Button
-            </button>
-          </div>
-        </footer>
+        <ChatInterface />
       )}
     </div>
   );
