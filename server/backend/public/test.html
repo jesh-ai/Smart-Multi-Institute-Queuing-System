@@ -1,19 +1,124 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>QR Test</title>
-  </head>
-  <body>
-    <h1>This is where the ChatBot will be</h1>
-    
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chatbot Landing Page</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
 
-    <script>
-      fetch('/api/qr')
-        .then((res) => res.json())
-        .then((data) => {
-          document.getElementById('qr').src = data.qrImage;
-        });
-    </script>
-  </body>
+    /* chatbot landing page --placeholder only! */
+    #chatbot-landing {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f9f9f9;
+      color: #333;
+      flex-direction: column;
+    }
+
+    /* PDN overlay */
+    #privacyNotice {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    /* PDN content */
+    #privacyContent {
+      background: #fff;
+      padding: 2rem;
+      max-width: 640px;
+      width: 90%;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+      text-align: left;
+      line-height: 1.5;
+    }
+
+    #privacyContent h2 {
+      margin-top: 0;
+    }
+
+    .actions {
+      margin-top: 1.5rem;
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
+
+    .actions button {
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #acceptBtn {
+      background: #0A4174;
+      color: #fff;
+      border: none;
+    }
+
+    #rejectBtn {
+      background: #f3f4f6;
+      color: #111;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <!-- LANDING PAGE  -->
+  <div id="chatbot-landing">
+    <h1>Chatbot Landing Page :D</h1>
+    <p><i>(will display if the user agrees to the notice)</i></p>
+  </div>
+
+  <!-- PDN -->
+  <div id="privacyNotice">
+    <div id="privacyContent">
+      <h2>Data Privacy Notice</h2>
+      <p>
+        This service requires the collection of basic personal details needed by the institution 
+        to confirm that you have prepared the necessary requirements. These details will be used 
+        to verify completeness and generate your queue number, allowing you to proceed to the line.
+      </p>
+      <div class="actions">
+        <button id="rejectBtn">Reject</button>
+        <button id="acceptBtn">I Agree</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const modal = document.getElementById('privacyNotice');
+    const acceptBtn = document.getElementById('acceptBtn');
+    const rejectBtn = document.getElementById('rejectBtn');
+
+    function handleAccept() {
+      modal.style.display = 'none'; // close PDN, landing page is visible
+      try { localStorage.setItem('privacyAccepted', 'true'); } catch (e) {}
+    }
+
+    function handleReject() {
+      try { localStorage.setItem('privacyAccepted', 'false'); } catch (e) {}
+      window.location.href = '/index.html'; // redirect back to main page
+    }
+
+    acceptBtn.addEventListener('click', handleAccept);
+    rejectBtn.addEventListener('click', handleReject);
+
+    // Always show DPN once QR button is clicked, before the chatbot
+    window.addEventListener('DOMContentLoaded', () => {
+      modal.style.display = 'flex';
+    });
+  </script>
+</body>
 </html>
