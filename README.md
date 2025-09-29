@@ -3,8 +3,7 @@
 [counter README](counter/README.md)
 [server README](server/README.md)
 
-### UI/UX Lead
-Frieda Marie V. Magaan
+### UI/UX Lead - Frieda Marie V. Magaan
 #### Designers
 1. Dannah Yzzabella Q. Tecson
 2. Faith Aleczes S. Cayacap
@@ -14,8 +13,7 @@ Frieda Marie V. Magaan
 6. Brenan Dwayne A. Oliverio
 7. Zyryll Alexandra A. Oquendo
 
-### Frontend Lead
-Jeshaiah Mae A. Mulleno
+### Frontend Lead - Jeshaiah Mae A. Mulleno
 #### Developers
 1. Mariel Kim R. Vaflor
 2. Marc Cedric S. Gerona
@@ -28,8 +26,7 @@ Jeshaiah Mae A. Mulleno
 9. Michael Angelo M. Libang
 10. Sydney Angeleve M. Peña
 
-### Backend Lead
-Daniel Hardy C. Camacho
+### Backend Lead - Daniel Hardy C. Camacho
 #### Developers
 1. Karylle Vinces J. Aliswag
 2. Joseph Prince A. Rapiz

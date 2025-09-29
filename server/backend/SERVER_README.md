@@ -7,5 +7,5 @@ Include:
 
 
 ## POST
-Start
-Shutdown
+- Start
+- Shutdown

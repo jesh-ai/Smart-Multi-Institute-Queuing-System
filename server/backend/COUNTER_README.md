@@ -7,8 +7,8 @@ Include:
 
 
 ## POST
-Start
-Update
-Process
-Missing
-Shutdown
+- Start
+- Update
+- Process
+- Missing
+- Shutdown

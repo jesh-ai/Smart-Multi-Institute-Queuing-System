@@ -4,7 +4,7 @@ Running this on a device turns it into an applicant in the network
 [Backend README](../server/backend/APPLICANT_README.md)
 - API Contract
 
-To do:
+### To do:
 1. Create testing Institution JSON from Data Gathered
 2. Flowchart the requested APIs in the API Contract
 3. Create API and API Contract entry for responding to chat messages:
@@ -15,7 +15,7 @@ To do:
 [Frontend README](frontend/README.md)
 - Data Requirements
 
-To do: 
+### To do: 
 1. Create Data Requirements (Name, Format), List it here
 2. Add actual Privacy Notice, only allow to check the box when done scrolling
 Chatbot Interface
