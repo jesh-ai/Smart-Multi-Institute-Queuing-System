@@ -1,175 +1,255 @@
 "use client";
-import { useState } from "react";
+
 import Image from "next/image";
+import { useState } from "react";
 
-function ChatInterface() {
-  const [messages, setMessages] = useState<
-    Array<{ sender: "user" | "bot"; text: string }>
-  >([
-    { sender: "user", text: "I would like to inquire" },
-    { sender: "bot", text: "What would you like to inquire about?" },
-  ]);
-  const [input, setInput] = useState("");
-  const quickReplies = ["Clearance", "Other"];
+type FormData = {
+  fullName: string;
+  email: string;
+  contact: string;
+  text: string;
+};
 
-  const handleSend = (text: string) => {
-    if (!text.trim()) return;
-    setMessages((prev) => [...prev, { sender: "user", text }]);
-    setInput("");
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        { sender: "bot", text: "Thank you for your inquiry. Please choose:" },
-      ]);
-    }, 500);
+export default function Page() {
+  const [formData, setFormData] = useState<FormData>({
+    fullName: "",
+    email: "",
+    contact: "",
+    text: "",
+  });
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
-  const handleKeyDown = (e: { key: string; preventDefault: () => void }) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleSend(input);
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const newErrors: Record<string, string> = {};
+    const emailRegex = /\S+@\S+\.\S+/;
+    const phoneRegex = /^\+63\s\d{3}\s\d{3}\s\d{4}$/; // +63 123 456 7899
+
+    if (!formData.fullName.trim())
+      newErrors.fullName = "Please enter your full name.";
+    if (!emailRegex.test(formData.email))
+      newErrors.email = "Enter a valid email address.";
+    if (!phoneRegex.test(formData.contact))
+      newErrors.contact = "Use the format +63 XXX XXX XXXX";
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      alert("Form submitted successfully!");
     }
   };
 
-  return (
-    <div className="flex flex-col flex-1 min-h-0 bg-white">
-      {/* Message Area - Scrollable */}
-      <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2">
-        {messages.map((msg, idx) => (
-          <div
-            key={idx}
-            className={`px-4 py-2 rounded-2xl max-w-[65%] text-sm leading-snug ${
-              msg.sender === "user"
-                ? "bg-[#34495E] text-white self-end ml-auto"
-                : "bg-gray-200 text-black self-start"
-            }`}
-          >
-            {msg.text}
-          </div>
-        ))}
+  const handleShowExample = () => {
+    setFormData((prev) => ({ ...prev, email: "example@email.com" }));
+    setErrors((prev) => ({ ...prev, email: "" }));
+  };
 
-        {/* Quick Replies under bot message */}
-        <div className="flex gap-2 flex-wrap mt-2">
-          {quickReplies.map((reply, idx) => (
-            <button
-              key={idx}
-              onClick={() => handleSend(reply)}
-              className="px-4 py-1.5 rounded-full text-sm bg-white text-black border-2 border-[#34495E] hover:bg-gray-100"
-            >
-              {reply}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Footer - Input Area (matches existing footer styles) */}
-      <div className="sticky bottom-0 z-10 border-t bg-[#34495E] p-4">
-        <div className="flex items-center gap-2">
-          <input
-            type="text"
-            placeholder="Type here"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="flex-1 rounded-2xl bg-gray-300 px-4 py-2 text-sm text-black placeholder:text-[#34495E] focus:outline-none"
-          />
-          <button
-            onClick={() => handleSend(input)}
-            className="rounded-full p-3"
-          >
-            <Image src="/send.png" alt="Send" width={23} height={23} />
-          </button>
-        </div>
-
-        {/* Quick Replies under input */}
-        <div className="flex gap-2 flex-wrap mt-2">
-          {quickReplies.map((reply, idx) => (
-            <button
-              key={idx}
-              onClick={() => handleSend(reply)}
-              className="px-4 py-1.5 rounded-full text-sm bg-gray-300 text-black hover:bg-gray-200"
-            >
-              {reply}
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
+  const ChevronDown = () => (
+    <svg
+      className="w-4 h-4 text-gray-500"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden
+    >
+      <path
+        d="M6 9l6 6 6-6"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
-}
-
-export default function Home() {
-  const [scanned, setScanned] = useState(false);
-  const [showChat, setShowChat] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
-      {/* Header */}
-      <header className="w-full flex items-center gap-2 border-b-2 border-[#34495E] p-4">
-        <Image src="/institute.png" alt="Logo" width={25} height={25} />
-        <h1 className="text-lg font-semibold text-[#34495E]">Institute Name</h1>
+    <div className="min-h-screen flex flex-col bg-gray-100">
+      {/* ✅ Header is now responsive & outside of form container */}
+      <header className="w-full flex items-center gap-2 border-b-8 border-[#34495E] px-4 py-3 bg-white shadow-sm">
+        <Image
+          src="/institute.png"
+          alt="Logo"
+          width={30}
+          height={30}
+          className="object-contain"
+        />
+        <h1 className="text-xl font-bold text-[#34495E]">Institute Name</h1>
       </header>
 
-      {/* Main Content */}
-      {!scanned ? (
-        <main className="flex flex-col items-center justify-center flex-1 px-6">
-          <h2 className="text-lg font-semibold mb-4">Scan to Begin</h2>
-          <div className="border-8 border-gray-400 rounded-lg p-20 mb-2" />
-          <p className="text-sm text-gray-800 mb-6">
-            Scan the QR Code to connect to host server
-          </p>
-          <button
-            className="p-4 rounded-full bg-gray-100 hover:bg-gray-200 shadow-md"
-            onClick={() => setScanned(true)}
+      {/* ✅ Form area centered and independent of header */}
+      <main className="flex justify-center items-start flex-1 py-10 px-4">
+        <div className="w-full max-w-md bg-white rounded-lg shadow-lg overflow-hidden">
+          <form
+            onSubmit={handleSubmit}
+            className="bg-gray-200 p-6 flex flex-col gap-4"
           >
-            Start
-          </button>
-        </main>
-      ) : showChat ? (
-        <ChatInterface />
-      ) : (
-        <main className="flex flex-col items-center justify-center flex-1 px-6">
-          <div className="h-20 w-20 rounded-full bg-gray-300 mb-4" />
-          <h2 className="text-xl font-bold text-black">Welcome!</h2>
-          <p className="italic text-black mb-8">Let’s get started</p>
+            {/* Full Name */}
+            <div>
+              <label className="block font-semibold text-gray-800">
+                Full Name
+              </label>
+              <input
+                type="text"
+                name="fullName"
+                value={formData.fullName}
+                onChange={handleChange}
+                className={`w-full p-2 border rounded-md mt-1 bg-white text-gray-900 placeholder-gray-400 
+                ${
+                  errors.fullName
+                    ? "border-red-500"
+                    : formData.fullName
+                    ? "border-green-500"
+                    : "border-gray-300"
+                }`}
+                placeholder="Jana Del Rosario"
+              />
+              <p className="text-xs text-gray-600 mt-1">
+                *Enter your legal name as shown on your Valid ID.
+              </p>
+              {errors.fullName && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.fullName}
+                </p>
+              )}
+            </div>
 
-          <div className="w-full max-w-sm space-y-4">
-            <div className="h-20 w-full rounded-lg bg-gray-200" />
-            <div className="h-20 w-full rounded-lg bg-gray-200" />
-          </div>
-        </main>
-      )}
+            {/* Email */}
+            <div>
+              <label className="block font-semibold text-gray-800">
+                Email Address
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className={`w-full p-2 border rounded-md mt-1 bg-white text-gray-900 placeholder-gray-400 
+                ${
+                  errors.email
+                    ? "border-red-500"
+                    : formData.email
+                    ? "border-green-500"
+                    : "border-gray-300"
+                }`}
+                placeholder="example@email.com"
+              />
+              <p className="text-xs text-gray-600 mt-1">
+                *Enter an active email address.
+              </p>
 
-      {/* Footer (only after pressing Start) */}
-      {scanned && !showChat && (
-        <footer className="sticky bottom-0 z-10 flex flex-col gap-2 border-t bg-[#34495E] p-4">
-          <div className="flex items-center gap-2">
+              {errors.email && (
+                <div className="mt-2 bg-white border border-gray-300 p-2 rounded-md shadow-sm">
+                  <p className="text-sm text-gray-800">
+                    Looks like you missed the email field. Need help?
+                  </p>
+                  <div className="flex justify-end gap-2 mt-2">
+                    <button
+                      type="button"
+                      onClick={handleShowExample}
+                      className="px-2 py-1 text-xs bg-[#1c2b39] text-white rounded"
+                    >
+                      Show Example
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setErrors((prev) => ({ ...prev, email: "" }))
+                      }
+                      className="px-2 py-1 text-xs border border-gray-400 rounded"
+                    >
+                      Skip
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Contact */}
+            <div>
+            <label className="block font-semibold text-gray-800">Contact Number</label>
             <input
-              type="text"
-              placeholder="Where..."
-              className="flex-1 rounded-2xl bg-gray-300 px-4 py-2 text-sm text-black placeholder:text-[#34495E] focus:outline-none"
-            />
-            <button className="rounded-full p-3">
-              <Image src="/send.png" alt="Send" width={23} height={23} />
-            </button>
+            type="tel"
+            name="contact"
+            value={formData.contact}
+            onChange={(e) => {
+      let input = e.target.value.replace(/\D/g, ""); // remove all non-digit characters
+
+      // ensure it always starts with '+63 '
+      if (!input.startsWith("63")) {
+        input = "63" + input;
+      }
+
+      // remove leading 63 so we can format
+      let formatted = "+63 ";
+
+      // Add spaces as the user types: +63 912 345 6789
+      if (input.length > 2) formatted += input.substring(2, 5);
+      if (input.length > 5) formatted += " " + input.substring(5, 8);
+      if (input.length > 8) formatted += " " + input.substring(8, 12);
+
+      setFormData((prev) => ({ ...prev, contact: formatted }));
+      setErrors((prev) => ({ ...prev, contact: "" }));
+             }}
+             maxLength={17}
+             className={`w-full p-2 border rounded-md mt-1 bg-white text-gray-900 placeholder-gray-400
+               ${
+              errors.contact
+               ? "border-red-500"
+              : formData.contact
+              ? "border-green-500"
+               : "border-gray-300"
+               }
+             `}
+             placeholder="+63 912 345 6789"
+           />
+             <p className="text-xs text-gray-600 mt-1">*Format: +63 XXX XXX XXXX</p>
+             {errors.contact && (
+             <p className="text-red-500 text-sm mt-1">{errors.contact}</p>
+            )}
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              className="flex-1 rounded-full bg-gray-300 px-4 py-1.5 text-sm text-black hover:bg-gray-200"
-              onClick={() => setShowChat(true)}
-            >
-              I would like to inquire.
-            </button>
-            <button
-              type="button"
-              className="flex-1 rounded-full bg-gray-300 px-4 py-1.5 text-sm text-black hover:bg-gray-200"
-            >
-              Button
-            </button>
-          </div>
-        </footer>
-      )}
+
+            {/* Dropdown */}
+            <div>
+              <label className="block font-semibold text-gray-800">Text</label>
+              <div className="relative">
+                <select
+                  name="text"
+                  value={formData.text}
+                  onChange={handleChange}
+                  className="w-full p-2 border border-gray-300 rounded-md text-black bg-white appearance-none"
+                >
+                  <option value="">Select an option</option>
+                  <option value="Option 1">Option 1</option>
+                  <option value="Option 2">Option 2</option>
+                </select>
+                {/* Custom dropdown icon */}
+                <div className="pointer-events-none absolute right-3 top-3">
+                  <ChevronDown />
+                </div>
+              </div>
+            </div>
+
+            {/* Submit */}
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                className="bg-[#1c2b39] text-white font-semibold py-2 px-6 rounded-full hover:bg-[#243647] transition-all"
+              >
+                Submit
+              </button>
+            </div>
+          </form>
+        </div>
+      </main>
     </div>
   );
 }
