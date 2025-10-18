@@ -36,6 +36,27 @@ router.post("/counters", express.json(), postCounter);
 router.put("/counters/:id", express.json(), putCounter);
 router.delete("/counters/:id", deleteCounterRoute);
 router.get("/counters/:id", getCounterId);
+
+/**
+ * Chat, is this good enough?
+ * Yes — comparing req.socket.localAddress (server IP) and req.socket.remoteAddress (client IP) is a valid, clean, and sufficient method to detect if the request came from the same machine as the server.
+
+✅ Works well when
+
+You’re running inside a local LAN or development environment.
+
+Both addresses are IPv4 (the .replace("::ffff:", "") line normalizes them).
+
+You just want to distinguish “server device vs other clients”.
+
+⚠️ Limitations
+
+Behind a proxy or load balancer, both may resolve to 127.0.0.1 or the proxy’s IP — all clients might appear identical unless you use X-Forwarded-For.
+
+If the system uses IPv6, the IPs may not match string-for-string (e.g., ::1 vs 127.0.0.1).
+
+If NAT or VPN is involved, multiple devices could share one IP.
+ */
 router.get("/server/check", async (req, res) => {
   const serverIp =
   req.socket.localAddress?.replace("::ffff:", "") || "unknown";
