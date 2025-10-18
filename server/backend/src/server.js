@@ -1,12 +1,11 @@
 // src/server.js
 import express from 'express';
-import helmet from 'helmet';
 import compression from 'compression';
 import cors from 'cors';
-import morgan from 'morgan';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import routes from './routes/index.js';
+import { startScan } from './controllers/session.controller.js';
 
 const app = express();
 
@@ -38,4 +37,5 @@ app.use((req, res) => {
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
+  startScan()
 });

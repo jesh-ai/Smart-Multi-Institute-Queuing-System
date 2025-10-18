@@ -1,8 +1,8 @@
 // src/routes/index.js
 import { Router } from 'express';
 import QRCode from 'qrcode';
-import { results } from './devices.js';
-import { getCurrentSession } from './session.js';
+import { results } from './devices.routes.js';
+import { getCurrentSession } from './session.routes.js';
 
 const router = Router();
 
