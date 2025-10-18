@@ -18,19 +18,19 @@ export function getLocalMac() {
       }
     }
   }
-  return "unknown";
+  return "";
 }
 export async function getDeviceMac(req) {
   const ip =
     req.headers["x-forwarded-for"]?.split(",")[0] ||
     req.socket.remoteAddress?.replace("::ffff:", "") ||
-    "unknown";
+    "";
 
-  if (ip === "unknown") return "unknown";
+  if (ip === "") return "";
 
   return new Promise(resolve => {
     arp.getMAC(ip, (err, macAddr) => {
-      resolve(macAddr || "unknown");
+      resolve(macAddr || "");
     });
   });
 }
@@ -41,7 +41,7 @@ export async function scanNetwork() {
     if (res.alive) {
       await new Promise(resolve => {
         arp.getMAC(ip, (err, macAddr) => {
-          const mac = macAddr || "unknown";
+          const mac = macAddr || "";
           const results = fetchSessions()
           let session = results.get(mac)
           const expired = Date.now() - new Date(session?.dateCreated).getTime() >= duration * 1000

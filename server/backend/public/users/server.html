@@ -76,12 +76,21 @@
     const addBtn = document.getElementById("addCounterBtn");
     let counterCount = 0;
 
-    // Render a single counter box
+    async function checkAdminAccess() {
+      try {
+        const res = await fetch("/api/server/check", { cache: "no-store" });
+        if (!res.ok) window.location.href = "/users/404.html";
+        const data = await res.json();
+        if (!data.isServer) window.location.href = "/users/404.html";
+      } catch {
+        window.location.href = "/users/404.html";
+      }
+    }
+
     function renderCounter(sessionId, createdAt, status, mac) {
       const box = document.createElement("div");
       box.className = "counterBox";
       box.dataset.sessionId = sessionId;
-
       box.innerHTML = `
         <div class="counterId">${sessionId}</div>
         <div>Created: ${new Date(createdAt).toLocaleTimeString()}</div>
@@ -89,19 +98,15 @@
         <div class="mac">MAC: ${mac}</div>
         <button class="deleteBtn">×</button>
       `;
-
       box.querySelector(".deleteBtn").onclick = () => deleteCounterSession(sessionId);
       container.appendChild(box);
     }
 
-    // Create a new counter locally + sync to backend
     async function createCounterSession() {
       counterCount++;
       const sessionId = `session-${Date.now()}-${counterCount}`;
       const createdAt = new Date().toISOString();
       const status = "Inactive";
-
-      // Retrieve MAC address from backend helper route (optional)
       let mac = "unknown";
       try {
         const res = await fetch("/api/mac");
@@ -110,25 +115,21 @@
       } catch {
         mac = "unknown";
       }
-
       const counter = { sessionId, createdAt, status, mac };
       renderCounter(sessionId, createdAt, status, mac);
       onSessionCreated(sessionId, counter);
     }
 
-    // Delete a counter locally + sync to backend
     function deleteCounterSession(sessionId) {
       const el = container.querySelector(`[data-session-id='${sessionId}']`);
       if (el) el.remove();
       onSessionDeleted(sessionId);
     }
 
-    // Load all counters from backend
     async function loadCounters() {
       try {
         const res = await fetch("/api/counters", { cache: "no-store" });
         const data = await res.json();
-
         container.innerHTML = "";
         Object.entries(data).forEach(([id, counter]) => {
           renderCounter(
@@ -143,15 +144,13 @@
       }
     }
 
-    // Backend sync hooks
     async function onSessionCreated(sessionId, counter) {
       try {
         await fetch("/api/counters", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({sessionId, counter}),
+          body: JSON.stringify({ sessionId, counter }),
         });
-        console.log("Created:", counter.sessionId);
       } catch (err) {
         console.error("Error creating session:", err);
       }
@@ -160,16 +159,15 @@
     async function onSessionDeleted(sessionId) {
       try {
         await fetch(`/api/counters/${sessionId}`, { method: "DELETE" });
-        console.log("Deleted:", sessionId);
       } catch (err) {
         console.error("Error deleting session:", err);
       }
     }
 
-    // Initialize and refresh every few seconds
-    window.onload = () => {
+    window.onload = async () => {
+      await checkAdminAccess();
       loadCounters();
-      setInterval(loadCounters, 5000); // reload every 5 seconds
+      setInterval(loadCounters, 5000);
     };
 
     addBtn.onclick = createCounterSession;

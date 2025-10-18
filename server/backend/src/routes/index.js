@@ -5,6 +5,8 @@ import { getCurrentSession } from './session.routes.js';
 import { fetchSessions } from '../db/sessions.js';
 import { deleteCounterRoute, getCounterId, getCounters, postCounter, putCounter } from './counterSession.routes.js';
 import express from "express";
+import { getDeviceMac, getLocalMac } from './devices.routes.js';
+import { getMAC } from 'node-arp';
 
 const router = Router();
 
@@ -34,5 +36,17 @@ router.post("/counters", express.json(), postCounter);
 router.put("/counters/:id", express.json(), putCounter);
 router.delete("/counters/:id", deleteCounterRoute);
 router.get("/counters/:id", getCounterId);
+router.get("/server/check", async (req, res) => {
+  const serverIp =
+  req.socket.localAddress?.replace("::ffff:", "") || "unknown";
+const clientIp =
+  req.headers["x-forwarded-for"]?.split(",")[0] ||
+  req.socket.remoteAddress?.replace("::ffff:", "") ||
+  "unknown";
+
+console.warn("Server IP:", serverIp, "Client IP:", clientIp);
+res.json({ isServer: serverIp === clientIp });
+
+});
 
 export default router;
