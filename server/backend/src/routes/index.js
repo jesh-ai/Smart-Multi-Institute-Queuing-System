@@ -3,6 +3,8 @@ import { Router } from 'express';
 import QRCode from 'qrcode';
 import { getCurrentSession } from './session.routes.js';
 import { fetchSessions } from '../db/sessions.js';
+import { deleteCounterRoute, getCounters, postCounter, putCounter } from './counterSession.routes.js';
+import express from "express";
 
 const router = Router();
 
@@ -26,5 +28,11 @@ router.get("/devices", (req, res) => {
   res.json(Array.from(fetchSessions().values()));
 });
 router.get("/session", getCurrentSession);
+
+
+router.get("/counters", getCounters);
+router.post("/counters", express.json(), postCounter);
+router.put("/counters/:id", express.json(), putCounter);
+router.delete("/counters/:id", deleteCounterRoute);
 
 export default router;

@@ -1,13 +1,134 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <title>Server View</title>
-    <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #e0f7fa; }
-        h1 { color: #00796b; }
-    </style>
+  <meta charset="utf-8">
+  <title>Server Page</title>
+  <style>
+    body {
+      background: #111;
+      color: #fff;
+      font-family: monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px;
+    }
+    #controls {
+      margin-bottom: 20px;
+    }
+    button {
+      font-size: 1rem;
+      padding: 8px 14px;
+      cursor: pointer;
+      background: #0f0;
+      border: none;
+      border-radius: 6px;
+      color: #000;
+    }
+    #counterContainer {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+    }
+    .counterBox {
+      background: #222;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 15px;
+      min-width: 180px;
+      text-align: center;
+      position: relative;
+    }
+    .counterId {
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+    .deleteBtn {
+      position: absolute;
+      top: 5px;
+      right: 8px;
+      background: red;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+  </style>
 </head>
 <body>
-    <h1>Welcome, Server!</h1>
+  <h2>Server Counter Sessions</h2>
+  <div id="controls">
+    <button id="addCounterBtn">+ Add Counter</button>
+  </div>
+  <div id="counterContainer"></div>
+
+  <script>
+  const container = document.getElementById("counterContainer");
+  const addBtn = document.getElementById("addCounterBtn");
+  let counterCount = 0;
+
+  function createCounterSession() {
+    counterCount++;
+    const id = `session-${Date.now()}-${counterCount}`;
+
+    const box = document.createElement("div");
+    box.className = "counterBox";
+    box.dataset.sessionId = id;
+
+    box.innerHTML = `
+      <button class="deleteBtn">×</button>
+      <div class="counterId">${id}</div>
+      <div>Created: ${new Date().toLocaleTimeString()}</div>
+    `;
+
+    box.querySelector(".deleteBtn").onclick = () => deleteCounterSession(id);
+    container.appendChild(box);
+
+    onSessionCreated(id);
+  }
+
+  function deleteCounterSession(id) {
+    const el = container.querySelector(`[data-session-id='${id}']`);
+    if (el) el.remove();
+    onSessionDeleted(id);
+  }
+
+  // Hooks to run backend syncs or logs
+  async function onSessionCreated(id) {
+    console.log("Created:", id);
+    try {
+      const res = await fetch("/api/counters", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sessionId: id,
+          counter: { createdAt: new Date().toISOString() },
+        }),
+      });
+      const data = await res.json();
+      console.log("Server response:", data);
+    } catch (err) {
+      console.error("Error creating session:", err);
+    }
+  }
+
+  async function onSessionDeleted(id) {
+    console.log("Deleted:", id);
+    try {
+      const res = await fetch(`/api/counters/${id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      console.log("Server response:", data);
+    } catch (err) {
+      console.error("Error deleting session:", err);
+    }
+  }
+
+  addBtn.onclick = createCounterSession;
+</script>
+
 </body>
 </html>
