@@ -36,13 +36,18 @@
       border: 1px solid #333;
       border-radius: 8px;
       padding: 15px;
-      min-width: 180px;
+      min-width: 200px;
       text-align: center;
       position: relative;
     }
     .counterId {
       font-weight: bold;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
+      margin-bottom: 6px;
+    }
+    .status {
+      color: #0af;
+      margin-bottom: 8px;
     }
     .deleteBtn {
       background: red;
@@ -67,45 +72,50 @@
     const addBtn = document.getElementById("addCounterBtn");
     let counterCount = 0;
 
-    function renderCounter(id, createdAt) {
+    // Render a single counter box
+    function renderCounter(sessionId, createdAt, status) {
       const box = document.createElement("div");
       box.className = "counterBox";
-      box.dataset.sessionId = id;
+      box.dataset.sessionId = sessionId;
 
       box.innerHTML = `
-        <div class="counterId">${id}</div>
+        <div class="counterId">${sessionId}</div>
         <div>Created: ${new Date(createdAt).toLocaleTimeString()}</div>
+        <div class="status">Status: <strong>${status}</strong></div>
         <button class="deleteBtn">×</button>
       `;
 
-      box.querySelector(".deleteBtn").onclick = () => deleteCounterSession(id);
+      box.querySelector(".deleteBtn").onclick = () => deleteCounterSession(sessionId);
       container.appendChild(box);
     }
 
+    // Create a new counter locally + sync to backend
     function createCounterSession() {
       counterCount++;
-      const id = `session-${Date.now()}-${counterCount}`;
+      const sessionId = `session-${Date.now()}-${counterCount}`;
       const createdAt = new Date().toISOString();
+      const status = "Inactive";
 
-      renderCounter(id, createdAt);
-      onSessionCreated(id, createdAt);
+      renderCounter(sessionId, createdAt, status);
+      onSessionCreated({ sessionId, createdAt, status });
     }
 
-    function deleteCounterSession(id) {
-      const el = container.querySelector(`[data-session-id='${id}']`);
+    // Delete a counter locally + sync to backend
+    function deleteCounterSession(sessionId) {
+      const el = container.querySelector(`[data-session-id='${sessionId}']`);
       if (el) el.remove();
-      onSessionDeleted(id);
+      onSessionDeleted(sessionId);
     }
 
+    // Load all counters from backend
     async function loadCounters() {
       try {
-        const res = await fetch("/api/counters");
+        const res = await fetch("/api/counters", { cache: "no-store" });
         const data = await res.json();
 
-        container.innerHTML = ""; // clear current
+        container.innerHTML = ""; // clear existing boxes
         Object.entries(data).forEach(([id, counter]) => {
-          const createdAt = counter?.createdAt || new Date().toISOString();
-          renderCounter(id, createdAt);
+          renderCounter(id, counter.createdAt, counter.status);
         });
 
         console.log("Loaded counters:", data);
@@ -114,37 +124,36 @@
       }
     }
 
-    async function onSessionCreated(id, createdAt) {
-      console.log("Created:", id);
+    // Backend sync hooks
+    async function onSessionCreated(counter) {
+        const sessionId = counter.sessionId
       try {
-        const res = await fetch("/api/counters", {
+        await fetch("/api/counters", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            sessionId: id,
-            counter: { createdAt },
-          }),
+          body: JSON.stringify({sessionId, counter}),
         });
-        const data = await res.json();
-        console.log("Server response:", data);
+        console.log("Created:", counter.sessionId);
       } catch (err) {
         console.error("Error creating session:", err);
       }
     }
 
-    async function onSessionDeleted(id) {
-      console.log("Deleted:", id);
+    async function onSessionDeleted(sessionId) {
       try {
-        const res = await fetch(`/api/counters/${id}`, { method: "DELETE" });
-        const data = await res.json();
-        console.log("Server response:", data);
+        await fetch(`/api/counters/${sessionId}`, { method: "DELETE" });
+        console.log("Deleted:", sessionId);
       } catch (err) {
         console.error("Error deleting session:", err);
       }
     }
 
-    // Initialize
-    window.onload = loadCounters;
+    // Initialize and refresh every few seconds
+    window.onload = () => {
+      loadCounters();
+      setInterval(loadCounters, 5000); // reload every 5 seconds
+    };
+
     addBtn.onclick = createCounterSession;
   </script>
 </body>
