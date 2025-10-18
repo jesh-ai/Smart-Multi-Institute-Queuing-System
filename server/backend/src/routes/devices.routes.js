@@ -37,7 +37,7 @@ export async function getDeviceMac(req) {
 export async function scanNetwork() {
   for (let i = 1; i <= 25; i++) {
     const ip = `${subnet}.${i}`;
-    const res = await ping.promise.probe(ip, { timeout: 1 });
+    const res = await ping.promise.probe(ip, { timeout: 0.5 });
     if (res.alive) {
       await new Promise(resolve => {
         arp.getMAC(ip, (err, macAddr) => {
