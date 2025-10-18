@@ -7,6 +7,7 @@ import morgan from 'morgan';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import routes from './routes/index.js';
+import { results } from './routes/devices.js';
 
 const app = express();
 
@@ -51,6 +52,15 @@ app.use('/api', routes);
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
+// User Type
+app.get('/clients', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/users/clients.html'));
+});
+app.get("/devices", (req, res) => {
+  res.json(Array.from(results.values()));
+});
+
+
 
 // fallback 404 for unknown routes (optional)
 app.use((req, res) => {
