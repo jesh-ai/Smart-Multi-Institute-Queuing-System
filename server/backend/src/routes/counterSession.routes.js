@@ -1,4 +1,5 @@
 import { createCounter, deleteCounter, fetchCounterSessions, updateCounter } from "../db/counters.js";
+import { getDeviceMac, getLocalMac } from "./devices.routes.js";
 
 
 export function getCounters(req, res) {
@@ -10,6 +11,7 @@ export function postCounter(req, res) {
   const { sessionId, counter } = req.body;
   if (!sessionId) return res.status(400).json({ error: "sessionId required" });
 
+  counter.mac = ""
   createCounter(sessionId, counter || {});
   res.json({ message: "Counter created", sessionId });
 }

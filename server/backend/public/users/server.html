@@ -36,7 +36,7 @@
       border: 1px solid #333;
       border-radius: 8px;
       padding: 15px;
-      min-width: 200px;
+      min-width: 220px;
       text-align: center;
       position: relative;
     }
@@ -47,6 +47,10 @@
     }
     .status {
       color: #0af;
+      margin-bottom: 6px;
+    }
+    .mac {
+      color: #ff0;
       margin-bottom: 8px;
     }
     .deleteBtn {
@@ -73,7 +77,7 @@
     let counterCount = 0;
 
     // Render a single counter box
-    function renderCounter(sessionId, createdAt, status) {
+    function renderCounter(sessionId, createdAt, status, mac) {
       const box = document.createElement("div");
       box.className = "counterBox";
       box.dataset.sessionId = sessionId;
@@ -82,6 +86,7 @@
         <div class="counterId">${sessionId}</div>
         <div>Created: ${new Date(createdAt).toLocaleTimeString()}</div>
         <div class="status">Status: <strong>${status}</strong></div>
+        <div class="mac">MAC: ${mac}</div>
         <button class="deleteBtn">×</button>
       `;
 
@@ -90,14 +95,25 @@
     }
 
     // Create a new counter locally + sync to backend
-    function createCounterSession() {
+    async function createCounterSession() {
       counterCount++;
       const sessionId = `session-${Date.now()}-${counterCount}`;
       const createdAt = new Date().toISOString();
       const status = "Inactive";
 
-      renderCounter(sessionId, createdAt, status);
-      onSessionCreated({ sessionId, createdAt, status });
+      // Retrieve MAC address from backend helper route (optional)
+      let mac = "unknown";
+      try {
+        const res = await fetch("/api/mac");
+        const data = await res.json();
+        mac = data.mac || "unknown";
+      } catch {
+        mac = "unknown";
+      }
+
+      const counter = { sessionId, createdAt, status, mac };
+      renderCounter(sessionId, createdAt, status, mac);
+      onSessionCreated(sessionId, counter);
     }
 
     // Delete a counter locally + sync to backend
@@ -113,20 +129,22 @@
         const res = await fetch("/api/counters", { cache: "no-store" });
         const data = await res.json();
 
-        container.innerHTML = ""; // clear existing boxes
+        container.innerHTML = "";
         Object.entries(data).forEach(([id, counter]) => {
-          renderCounter(id, counter.createdAt, counter.status);
+          renderCounter(
+            counter.sessionId,
+            counter.createdAt,
+            counter.status,
+            counter.mac || "None"
+          );
         });
-
-        console.log("Loaded counters:", data);
       } catch (err) {
         console.error("Error loading counters:", err);
       }
     }
 
     // Backend sync hooks
-    async function onSessionCreated(counter) {
-        const sessionId = counter.sessionId
+    async function onSessionCreated(sessionId, counter) {
       try {
         await fetch("/api/counters", {
           method: "POST",

@@ -1,7 +1,8 @@
 export class Counter {
-    constructor(sessionId, createdAt) {
+    constructor(sessionId, createdAt, mac) {
         this.sessionId = sessionId;
         this.status = "Inactive"
-        this.createdAt = this.createdAt;
+        this.createdAt = createdAt;
+        this.mac = mac
     }
 }
