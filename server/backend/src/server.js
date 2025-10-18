@@ -7,8 +7,7 @@ import morgan from 'morgan';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import routes from './routes/index.js';
-import { getLocalMac, results } from './routes/devices.js';
-import { Session } from "./models/session.js"
+import { results } from './routes/devices.js';
 import { getCurrentSession } from './routes/session.js';
 
 const app = express();
@@ -44,6 +43,14 @@ app.use(
   })
 );
 
+
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET");
+  next();
+});
+
+
 // Serve static assets from ../public
 app.use(express.static(path.join(__dirname, '../public')));
 
@@ -54,28 +61,13 @@ app.use('/api', routes);
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
-// User Type
-app.get('/clients', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/users/clients.html'));
-});
-app.get("/devices", (req, res) => {
-  res.set("Cache-Control", "no-store");
-  return res.json(Array.from(results.values()));
-});
-app.get('/mysession', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/users/mysession.html'));
-});
-app.get("/session", getCurrentSession);
-
-
 
 
 // fallback 404 for unknown routes (optional)
 app.use((req, res) => {
   res.status(404).json({ error: 'Not found' });
 });
-
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });

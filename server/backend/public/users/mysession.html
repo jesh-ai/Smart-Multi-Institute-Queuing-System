@@ -35,7 +35,7 @@
 
   <script>
     async function loadSession() {
-      const res = await fetch("/session");
+      const res = await fetch("/api/session");
       const data = await res.json();
       const tbody = document.querySelector("#sessionTable tbody");
       tbody.innerHTML = "";

@@ -1,6 +1,8 @@
 // src/routes/index.js
 import { Router } from 'express';
 import QRCode from 'qrcode';
+import { results } from './devices.js';
+import { getCurrentSession } from './session.js';
 
 const router = Router();
 
@@ -20,5 +22,9 @@ router.get('/qr', async (req, res) => {
     res.status(500).json({ error: 'Failed to generate QR' });
   }
 });
+router.get("/devices", (req, res) => {
+  res.json(Array.from(results.values()));
+});
+router.get("/session", getCurrentSession);
 
 export default router;
