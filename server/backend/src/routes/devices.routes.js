@@ -1,13 +1,13 @@
-import express from "express";
+
 import ping from "ping";
 import arp from "node-arp";
 import os from "os"
 import { Session } from "../models/session.js";
 import { randomUUID } from "crypto";
+import { fetchSessions, storeSession } from "../db/sessions.js";
 
 const subnet = "192.168.1";
-const duration = 5 // 12 * 60 * 60
-export const results = new Map(); 
+const duration =  12 * 60 * 60
 
 export function getLocalMac() {
   const interfaces = os.networkInterfaces();
@@ -28,11 +28,12 @@ export async function scanNetwork() {
       await new Promise(resolve => {
         arp.getMAC(ip, (err, macAddr) => {
           const mac = macAddr || "unknown";
+          const results = fetchSessions()
           let session = results.get(mac)
           const expired = Date.now() - new Date(session?.dateCreated).getTime() >= duration * 1000
           if (!session || expired ) {
-            session = new Session(ip, mac, "applicant", randomUUID())
-            results.set(mac, session);
+            session = new Session(ip, mac, randomUUID(), "applicant" )
+            storeSession(mac, session);
           } 
 
           resolve();

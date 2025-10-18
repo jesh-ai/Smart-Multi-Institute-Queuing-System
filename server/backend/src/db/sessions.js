@@ -1,9 +1,10 @@
 
-export const sessions = new Set()
+
+const results = new Map(); 
 
 export function fetchSessions() {
-    return []
+    return results
 }
-export function storeSession() {
-    return true
+export function storeSession(mac, session) {
+    results.set(mac, session)
 }

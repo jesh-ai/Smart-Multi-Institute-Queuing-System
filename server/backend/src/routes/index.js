@@ -1,8 +1,8 @@
 // src/routes/index.js
 import { Router } from 'express';
 import QRCode from 'qrcode';
-import { results } from './devices.routes.js';
 import { getCurrentSession } from './session.routes.js';
+import { fetchSessions } from '../db/sessions.js';
 
 const router = Router();
 
@@ -23,7 +23,7 @@ router.get('/qr', async (req, res) => {
   }
 });
 router.get("/devices", (req, res) => {
-  res.json(Array.from(results.values()));
+  res.json(Array.from(fetchSessions().values()));
 });
 router.get("/session", getCurrentSession);
 

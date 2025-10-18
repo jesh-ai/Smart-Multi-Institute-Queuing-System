@@ -1,6 +1,6 @@
 
 import arp from "node-arp";
-import { results } from "./devices.routes.js";
+import { fetchSessions } from "../db/sessions.js";
 
 export async function getCurrentSession(req, res) {
 
@@ -17,6 +17,7 @@ export async function getCurrentSession(req, res) {
     });
   });
 
+  const results = fetchSessions()
   const session = results.get(mac);
   res.json(session);
 };
