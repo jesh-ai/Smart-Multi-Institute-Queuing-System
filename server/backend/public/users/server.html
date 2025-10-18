@@ -46,6 +46,12 @@
     }
     .deleteBtn {
       background: red;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 4px 8px;
+      cursor: pointer;
+      margin-top: 8px;
     }
   </style>
 </head>
@@ -57,70 +63,89 @@
   <div id="counterContainer"></div>
 
   <script>
-  const container = document.getElementById("counterContainer");
-  const addBtn = document.getElementById("addCounterBtn");
-  let counterCount = 0;
+    const container = document.getElementById("counterContainer");
+    const addBtn = document.getElementById("addCounterBtn");
+    let counterCount = 0;
 
-  function createCounterSession() {
-    counterCount++;
-    const id = `session-${Date.now()}-${counterCount}`;
+    function renderCounter(id, createdAt) {
+      const box = document.createElement("div");
+      box.className = "counterBox";
+      box.dataset.sessionId = id;
 
-    const box = document.createElement("div");
-    box.className = "counterBox";
-    box.dataset.sessionId = id;
+      box.innerHTML = `
+        <div class="counterId">${id}</div>
+        <div>Created: ${new Date(createdAt).toLocaleTimeString()}</div>
+        <button class="deleteBtn">×</button>
+      `;
 
-    box.innerHTML = `
-      <div class="counterId">${id}</div>
-      <div>Created: ${new Date().toLocaleTimeString()}</div>
-      <button class="deleteBtn">×</button>
-    `;
-
-    box.querySelector(".deleteBtn").onclick = () => deleteCounterSession(id);
-    container.appendChild(box);
-
-    onSessionCreated(id);
-  }
-
-  function deleteCounterSession(id) {
-    const el = container.querySelector(`[data-session-id='${id}']`);
-    if (el) el.remove();
-    onSessionDeleted(id);
-  }
-
-  // Hooks to run backend syncs or logs
-  async function onSessionCreated(id) {
-    console.log("Created:", id);
-    try {
-      const res = await fetch("/api/counters", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          sessionId: id,
-          counter: { createdAt: new Date().toISOString() },
-        }),
-      });
-      const data = await res.json();
-      console.log("Server response:", data);
-    } catch (err) {
-      console.error("Error creating session:", err);
+      box.querySelector(".deleteBtn").onclick = () => deleteCounterSession(id);
+      container.appendChild(box);
     }
-  }
 
-  async function onSessionDeleted(id) {
-    console.log("Deleted:", id);
-    try {
-      const res = await fetch(`/api/counters/${id}`, {
-        method: "DELETE",
-      });
-      const data = await res.json();
-      console.log("Server response:", data);
-    } catch (err) {
-      console.error("Error deleting session:", err);
+    function createCounterSession() {
+      counterCount++;
+      const id = `session-${Date.now()}-${counterCount}`;
+      const createdAt = new Date().toISOString();
+
+      renderCounter(id, createdAt);
+      onSessionCreated(id, createdAt);
     }
-  }
 
-  addBtn.onclick = createCounterSession;
-</script>
+    function deleteCounterSession(id) {
+      const el = container.querySelector(`[data-session-id='${id}']`);
+      if (el) el.remove();
+      onSessionDeleted(id);
+    }
 
+    async function loadCounters() {
+      try {
+        const res = await fetch("/api/counters");
+        const data = await res.json();
+
+        container.innerHTML = ""; // clear current
+        Object.entries(data).forEach(([id, counter]) => {
+          const createdAt = counter?.createdAt || new Date().toISOString();
+          renderCounter(id, createdAt);
+        });
+
+        console.log("Loaded counters:", data);
+      } catch (err) {
+        console.error("Error loading counters:", err);
+      }
+    }
+
+    async function onSessionCreated(id, createdAt) {
+      console.log("Created:", id);
+      try {
+        const res = await fetch("/api/counters", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sessionId: id,
+            counter: { createdAt },
+          }),
+        });
+        const data = await res.json();
+        console.log("Server response:", data);
+      } catch (err) {
+        console.error("Error creating session:", err);
+      }
+    }
+
+    async function onSessionDeleted(id) {
+      console.log("Deleted:", id);
+      try {
+        const res = await fetch(`/api/counters/${id}`, { method: "DELETE" });
+        const data = await res.json();
+        console.log("Server response:", data);
+      } catch (err) {
+        console.error("Error deleting session:", err);
+      }
+    }
+
+    // Initialize
+    window.onload = loadCounters;
+    addBtn.onclick = createCounterSession;
+  </script>
 </body>
 </html>
