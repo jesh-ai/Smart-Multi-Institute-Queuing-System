@@ -6,6 +6,7 @@ import { Session } from "../models/session.js";
 import { randomUUID } from "crypto";
 
 const subnet = "192.168.1";
+const duration = 5 // 12 * 60 * 60
 export const results = new Map(); 
 
 export function getLocalMac() {
@@ -20,21 +21,20 @@ export function getLocalMac() {
   return "unknown";
 }
 export async function scanNetwork() {
-  for (let i = 1; i <= 253; i++) {
+  for (let i = 1; i <= 25; i++) {
     const ip = `${subnet}.${i}`;
     const res = await ping.promise.probe(ip, { timeout: 1 });
     if (res.alive) {
       await new Promise(resolve => {
         arp.getMAC(ip, (err, macAddr) => {
           const mac = macAddr || "unknown";
-          const time = new Date().toLocaleTimeString();
-          const host = res.host || "unknown";
           let session = results.get(mac)
-          if (!session) {
+          const expired = Date.now() - new Date(session?.dateCreated).getTime() >= duration * 1000
+          if (!session || expired ) {
             session = new Session(ip, mac, "applicant", randomUUID())
-          }
+            results.set(mac, session);
+          } 
 
-          results.set(mac, session);
           resolve();
         });
       });

@@ -1,4 +1,4 @@
-import { Session } from "../models/session.js";
+
 import arp from "node-arp";
 import { results } from "./devices.routes.js";
 
