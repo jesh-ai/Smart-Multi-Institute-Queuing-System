@@ -1,11 +1,22 @@
 import express from "express";
 import ping from "ping";
 import arp from "node-arp";
+import os from "os"
 
-const app = express();
 const subnet = "192.168.1";
 export const results = new Map(); 
 
+export function getLocalMac() {
+  const interfaces = os.networkInterfaces();
+  for (const name in interfaces) {
+    for (const iface of interfaces[name]) {
+      if (!iface.internal && iface.mac && iface.mac !== "00:00:00:00:00:00") {
+        return iface.mac;
+      }
+    }
+  }
+  return "unknown";
+}
 async function scanNetwork() {
   for (let i = 1; i <= 253; i++) {
     const ip = `${subnet}.${i}`;

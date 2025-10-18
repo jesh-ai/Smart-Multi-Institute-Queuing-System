@@ -7,7 +7,9 @@ import morgan from 'morgan';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import routes from './routes/index.js';
-import { results } from './routes/devices.js';
+import { getLocalMac, results } from './routes/devices.js';
+import { Session } from "./models/session.js"
+import { getCurrentSession } from './routes/session.js';
 
 const app = express();
 
@@ -57,8 +59,14 @@ app.get('/clients', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/users/clients.html'));
 });
 app.get("/devices", (req, res) => {
-  res.json(Array.from(results.values()));
+  res.set("Cache-Control", "no-store");
+  return res.json(Array.from(results.values()));
 });
+app.get('/mysession', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/users/mysession.html'));
+});
+app.get("/session", getCurrentSession);
+
 
 
 
