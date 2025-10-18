@@ -20,19 +20,20 @@ export function getLocalMac() {
   }
   return "unknown";
 }
-export function getDeviceMac(req) {
-
+export async function getDeviceMac(req) {
   const ip =
     req.headers["x-forwarded-for"]?.split(",")[0] ||
     req.socket.remoteAddress?.replace("::ffff:", "") ||
     "unknown";
 
-  let mac = "unknown";
+  if (ip === "unknown") return "unknown";
+
+  return new Promise(resolve => {
     arp.getMAC(ip, (err, macAddr) => {
-      mac = macAddr || "unknown";
-      return mac
+      resolve(macAddr || "unknown");
     });
-};
+  });
+}
 export async function scanNetwork() {
   for (let i = 1; i <= 25; i++) {
     const ip = `${subnet}.${i}`;

@@ -1,5 +1,6 @@
 import { createCounter, deleteCounter, fetchCounterSessions, updateCounter } from "../db/counters.js";
-import { getDeviceMac, getLocalMac } from "./devices.routes.js";
+import { fetchSessions, storeSession } from "../db/sessions.js";
+import { getDeviceMac } from "./devices.routes.js";
 
 
 export function getCounters(req, res) {
@@ -36,4 +37,21 @@ export function deleteCounterRoute(req, res) {
 
   deleteCounter(sessionId);
   res.json({ message: "Counter deleted", sessionId });
+}
+export async function  getCounterId(req, res) {
+  const id = req.params.id;
+  const counters = fetchCounterSessions()
+  if (!counters.has(id)) return res.status(404).json({ error: "Invalid key" });
+
+  const counter = counters.get(id)
+  const devices = fetchSessions()
+  const mac = await getDeviceMac(req)
+  const device = devices.get(mac)
+  device.userType = "counter"
+  counter.mac = mac
+  counter.status = "Active"
+  updateCounter(id, counter)
+  storeSession(mac, device)
+  
+  res.json(counters.get(id));
 }

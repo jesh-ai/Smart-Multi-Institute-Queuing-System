@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Login</title>
+  <style>
+    body {
+      background: #111;
+      color: #fff;
+      font-family: monospace;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    h2 {
+      margin-bottom: 20px;
+    }
+    input {
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #444;
+      width: 250px;
+      background: #222;
+      color: #fff;
+      font-size: 1rem;
+      text-align: center;
+    }
+    button {
+      margin-top: 15px;
+      padding: 8px 14px;
+      background: #0f0;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      color: #000;
+    }
+    .error {
+      color: red;
+      margin-top: 10px;
+      height: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Enter Session Key</h2>
+  <input type="text" id="sessionKey" placeholder="Session Key" />
+  <button id="loginBtn">Login</button>
+  <div class="error" id="errorMsg"></div>
+
+  <script>
+    const input = document.getElementById("sessionKey");
+    const btn = document.getElementById("loginBtn");
+    const errorMsg = document.getElementById("errorMsg");
+
+    btn.onclick = async () => {
+      const key = input.value.trim();
+      if (!key) {
+        errorMsg.textContent = "Please enter a session key.";
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/counters/${key}`, { cache: "no-store" });
+        if (res.ok) {
+          window.location.href = "/users/counter.html";
+        } else {
+          errorMsg.textContent = "Invalid session key.";
+        }
+      } catch (err) {
+        console.error(err);
+        errorMsg.textContent = "Connection error.";
+      }
+    };
+
+    // Allow pressing Enter to submit
+    input.addEventListener("keydown", e => {
+      if (e.key === "Enter") btn.click();
+    });
+  </script>
+</body>
+</html>
