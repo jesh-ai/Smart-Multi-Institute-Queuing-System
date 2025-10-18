@@ -45,15 +45,7 @@
       font-size: 1.2rem;
     }
     .deleteBtn {
-      position: absolute;
-      top: 5px;
-      right: 8px;
       background: red;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.8rem;
     }
   </style>
 </head>
@@ -78,9 +70,9 @@
     box.dataset.sessionId = id;
 
     box.innerHTML = `
-      <button class="deleteBtn">×</button>
       <div class="counterId">${id}</div>
       <div>Created: ${new Date().toLocaleTimeString()}</div>
+      <button class="deleteBtn">×</button>
     `;
 
     box.querySelector(".deleteBtn").onclick = () => deleteCounterSession(id);
