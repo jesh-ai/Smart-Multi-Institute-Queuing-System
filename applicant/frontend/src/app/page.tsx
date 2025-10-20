@@ -4,6 +4,7 @@ import Image from "next/image";
 import ChatInterface from "@/components/ChatInterface";
 import FeedbackPage from "@/components/FeedbackPage";
 import FormFillingPage from "@/components/FormFillingPage";
+import QueueChatUI from "@/components/Status";
 
 function DataPrivacyModal({
   onProceed,
@@ -152,7 +153,11 @@ export default function Home() {
 
           {/* Main Content */}
           {showChat ? (
-            <ChatInterface onShowForm={() => setShowForm(true)} />
+            <div>
+              <QueueChatUI/>
+              <ChatInterface onShowForm={() => setShowForm(true)} />
+            </div>
+            
           ) : (
             <div className="flex flex-col items-center justify-center flex-1 px-6">
               <div className="h-20 w-20 rounded-full bg-[#34495E] mb-4" />
