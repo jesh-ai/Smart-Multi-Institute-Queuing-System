@@ -1,0 +1,18 @@
+{
+  "Passport Application Form": {
+    "Message": "To apply for a passport, please prepare your valid ID and requirements.",
+    "Choices": {
+      "Choice1": "See list of valid IDs",
+      "Choice2": "Back to Main Menu"
+    },
+    "Errors": ""
+  },
+  "Check my queue status": {
+    "Message": "Your current queue number is A042. Estimated wait time: 15 minutes.",
+    "Choices": {
+      "Choice1": "Refresh status",
+      "Choice2": "Cancel queue"
+    },
+    "Errors": ""
+  }
+}

@@ -8,20 +8,15 @@ import express from "express";
 
 const router = Router();
 
-// simple QR code API
-router.get('/qr', async (req, res) => {
+// Example QR Code generator
+router.get("/qr", async (req, res) => {
   try {
-    // This is the URL the QR will contain (e.g., your test page)
-    const url = 'http://localhost:4000/test.html';
-
-    // Generate a Data URL (base64 PNG)
+    const url = "http://localhost:4000/test.html";
     const qrDataUrl = await QRCode.toDataURL(url);
-
-    // send JSON with the QR code
     res.json({ qr: qrDataUrl });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to generate QR' });
+    console.error("QR Error:", err);
+    res.status(500).json({ error: "Failed to generate QR" });
   }
 });
 router.get("/devices", (req, res) => {
@@ -44,5 +39,8 @@ console.warn("Server IP:", serverIp, "Client IP:", clientIp);
 res.json({ isServer: serverIp === clientIp });
 
 });
+
+// Applicant chatbot route
+router.use("/chatbot", applicantRoutes);
 
 export default router;
