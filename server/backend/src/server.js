@@ -1,7 +1,9 @@
 // src/server.js
 import express from 'express';
+import helmet from 'helmet';
 import compression from 'compression';
 import cors from 'cors';
+import morgan from 'morgan';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import routes from './routes/index.js';
@@ -13,10 +15,33 @@ const app = express();
 app.use(compression());
 app.use(cors());
 app.use(express.json());
+app.use(morgan('dev'));
 
 // __dirname for ESM
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Helmet with explicit CSP so:
+// - inline <script> in index.html can run ('unsafe-inline')
+// - QR data:image/png;base64,... can be used for <img> (data:)
+// - fetch() to the same origin is allowed (connect-src 'self')
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", 'data:'],
+        connectSrc: ["'self'", "http:", "https:"]
+,
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        objectSrc: ["'none'"],
+        baseUri: ["'self'"],
+        frameAncestors: ["'none'"]
+      }
+    }
+  })
+);
 
 // Serve static assets from ../public
 app.use(express.static(path.join(__dirname, '../public')));
