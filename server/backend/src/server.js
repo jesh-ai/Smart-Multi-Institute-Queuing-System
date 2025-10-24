@@ -7,6 +7,7 @@ import morgan from 'morgan';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import routes from './routes/index.js';
+import { startScan } from './controllers/session.controller.js';
 
 const app = express();
 
@@ -31,7 +32,8 @@ app.use(
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: ["'self'", 'data:'],
-        connectSrc: ["'self'"],
+        connectSrc: ["'self'", "http:", "https:"]
+,
         styleSrc: ["'self'", "'unsafe-inline'"],
         objectSrc: ["'none'"],
         baseUri: ["'self'"],
@@ -52,12 +54,13 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
+
 // fallback 404 for unknown routes (optional)
 app.use((req, res) => {
   res.status(404).json({ error: 'Not found' });
 });
-
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
+  startScan()
 });
