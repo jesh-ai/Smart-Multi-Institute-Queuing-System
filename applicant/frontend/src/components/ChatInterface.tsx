@@ -1,13 +1,77 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import QueueChatUI from "./Status";
 
 export default function ChatInterface({
   onShowForm,
+  desktopMenu,
 }: {
   onShowForm: () => void;
+  desktopMenu?: boolean;
 }) {
+  // local menu visibility (desktop only). Initialized from prop so we can hide menu after a selection
+  const [showMenu, setShowMenu] = useState<boolean>(!!desktopMenu);
+  // MenuScreen moved here for desktop
+  const MenuScreen = () => (
+    <div className="min-h-screen bg-white flex flex-col">
+      {/* Header is provided globally by layout.tsx; don't render it here to avoid duplicates */}
+
+      <main className="flex-1 flex flex-col items-center justify-center p-8">
+        <div className="mb-12 text-center">
+          <div className="w-20 h-20 bg-gray-700 rounded-full mx-auto mb-4"></div>
+          <h2 className="text-2xl font-bold text-gray-800">Welcome!</h2>
+          <p className="text-gray-600 italic">Get started</p>
+        </div>
+
+        <h3 className="text-2xl font-bold text-gray-800 mb-8">
+          What would you like to do?
+        </h3>
+
+        <div className="space-y-4 w-full max-w-md">
+          <button
+            onClick={() => {
+              // send the same inquiry message used by mobile/initial fetch and switch to chat view
+              handleSend("I would like to inquire", "closed");
+              setShowMenu(false);
+            }}
+            className="w-full bg-gray-700 hover:bg-gray-800 text-white rounded-lg p-6 flex items-center gap-4 transition-colors"
+          >
+            <div className="relative">
+              <div className="w-12 h-12 rounded-full bg-gray-600 flex items-center justify-center text-white text-2xl">
+                👤
+              </div>
+              <div className="absolute -top-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center text-gray-700 font-bold text-lg">
+                ?
+              </div>
+            </div>
+            <div className="text-left">
+              <h4 className="text-xl font-bold">Inquire</h4>
+              <p className="text-sm text-gray-300">
+                Ask about lorem <br /> ipsum...
+              </p>
+            </div>
+          </button>
+
+          <button className="w-full bg-gray-700 hover:bg-gray-800 text-white rounded-lg p-6 flex items-center gap-4 transition-colors">
+            <div className="relative">
+              <div className="w-12 h-12 rounded-full bg-gray-600 flex items-center justify-center text-white text-2xl">
+                📄
+              </div>
+              <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white">
+                ✓
+              </div>
+            </div>
+            <div className="text-left">
+              <h4 className="text-xl font-bold">Request</h4>
+              <p className="text-sm text-gray-300">
+                Request a document <br /> lorem ipsum...
+              </p>
+            </div>
+          </button>
+        </div>
+      </main>
+    </div>
+  );
   const [messages, setMessages] = useState<
     Array<{ sender: "user" | "bot"; text: string }>
   >([
@@ -145,6 +209,9 @@ export default function ChatInterface({
       handleSend(input, "open"); // Typed message = open type
     }
   };
+
+  // If desktop menu mode requested and still showing menu, show the menu screen instead of chat
+  if (showMenu) return <MenuScreen />;
 
   return (
     <div className="flex flex-col flex-1 min-h-0 bg-white">

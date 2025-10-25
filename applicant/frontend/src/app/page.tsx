@@ -5,6 +5,7 @@ import ChatInterface from "@/components/ChatInterface";
 import FeedbackPage from "@/components/FeedbackPage";
 import FormFillingPage from "@/components/FormFillingPage";
 import QueueChatUI from "@/components/Status";
+// Desktop flow: StartScreen and ConsentScreen are defined here. MenuScreen lives inside ChatInterface.
 
 function DataPrivacyModal({
   onProceed,
@@ -110,6 +111,25 @@ function DataPrivacyModal({
 }
 
 export default function Home() {
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener?.("change", update);
+    // fallback for older browsers
+    window.addEventListener("resize", update);
+    return () => {
+      mq.removeEventListener?.("change", update);
+      window.removeEventListener("resize", update);
+    };
+  }, []);
+  // desktop screen flow state (start -> consent -> menu)
+  const [desktopScreen, setDesktopScreen] = useState<
+    "start" | "consent" | "menu"
+  >("start");
   const [consented, setConsented] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
@@ -132,10 +152,69 @@ export default function Home() {
 
   const handleBackFromForm = () => {
     setShowForm(false);
-    // Show chat and reveal the status panel only after a successful form submit
     setShowChat(true);
     setShowStatus(true);
   };
+
+  // If desktop viewport, show the desktop start/consent screens here.
+  if (isDesktop) {
+    if (desktopScreen === "start") {
+      return (
+        <div className="min-h-screen bg-[#243344] flex items-center justify-center p-8">
+          <div
+            className="bg-[#e7edf4] border-[16px] border-[#3d5063] w-full max-w-6xl aspect-[16/9] flex flex-col items-center justify-center cursor-pointer shadow-xl"
+            onClick={() => setDesktopScreen("consent")}
+          >
+            <div className="mb-8">
+              <Image
+                src="/Insitute.png"
+                alt="Institute Logo"
+                width={192}
+                height={192}
+              />
+            </div>
+            <p className="text-4xl font-semibold text-gray-700 italic">
+              Press anywhere to start
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    if (desktopScreen === "consent") {
+      return (
+        <div className="min-h-screen bg-white flex flex-col">
+          {/* Header provided by layout.tsx to avoid duplicate headers */}
+          <main className="flex-1 flex items-center justify-center p-8">
+            <div className="bg-gray-400 rounded-lg p-12 w-full max-w-md relative shadow-lg">
+              <div className="absolute top-0 right-0 w-2 h-full bg-gray-600 rounded-r-lg"></div>
+
+              <h2 className="text-3xl font-bold text-gray-800 mb-8">
+                Data Privacy <br /> Consent
+              </h2>
+
+              <div className="space-y-4 mb-16">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 bg-white rounded-full"></div>
+                  <div className="h-px bg-gray-500 flex-1"></div>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setDesktopScreen("menu")}
+                className="bg-gray-700 text-white px-8 py-3 rounded-full font-semibold hover:bg-gray-800 transition-colors"
+              >
+                Accept
+              </button>
+            </div>
+          </main>
+        </div>
+      );
+    }
+
+    // desktopScreen === 'menu' -> render ChatInterface in menu mode
+    return <ChatInterface onShowForm={() => setShowForm(true)} desktopMenu />;
+  }
 
   return (
     <>
