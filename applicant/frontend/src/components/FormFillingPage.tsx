@@ -1,3 +1,4 @@
+"use client";
 import { useState, useEffect } from "react";
 
 // JSON types used for form definition and values

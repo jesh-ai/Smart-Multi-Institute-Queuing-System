@@ -853,5 +853,85 @@
     },
     "messageType": "open",
     "timestamp": "2025-10-25T05:41:32.075Z"
+  },
+  {
+    "userMessage": "Passport Record Certification Request Form",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-25T07:56:55.951Z"
+  },
+  {
+    "userMessage": "Passport Record Certification Request Form",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-25T07:57:18.361Z"
+  },
+  {
+    "userMessage": " applicant/frontend/interactions.json: needs merge error: you need to resolve your current index first",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T07:57:26.388Z"
+  },
+  {
+    "userMessage": " applicant/frontend/interactions.json: needs merge error: you need to resolve your current index first",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T07:57:28.191Z"
+  },
+  {
+    "userMessage": " applicant/frontend/interactions.json: needs merge error: you need to resolve your current index first",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T07:57:33.438Z"
+  },
+  {
+    "userMessage": "     {/* Input Area */}",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T08:05:18.811Z"
+  },
+  {
+    "userMessage": "     {/* Input Area */}",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T08:05:21.199Z"
+  },
+  {
+    "userMessage": "     {/* Input Area */}",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T08:05:23.049Z"
   }
 ]

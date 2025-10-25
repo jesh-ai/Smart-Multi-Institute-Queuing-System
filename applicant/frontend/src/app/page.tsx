@@ -114,6 +114,9 @@ export default function Home() {
   const [showChat, setShowChat] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  // showStatus controls visibility of the queue status panel.
+  // It should only be shown after the user submits the form.
+  const [showStatus, setShowStatus] = useState(false);
 
   const handleProceed = () => {
     setConsented(true);
@@ -129,7 +132,9 @@ export default function Home() {
 
   const handleBackFromForm = () => {
     setShowForm(false);
+    // Show chat and reveal the status panel only after a successful form submit
     setShowChat(true);
+    setShowStatus(true);
   };
 
   return (
@@ -154,10 +159,10 @@ export default function Home() {
           {/* Main Content */}
           {showChat ? (
             <div>
-              <QueueChatUI/>
+              {/* Status panel should be visible only after form submission */}
+              {showStatus && <QueueChatUI />}
               <ChatInterface onShowForm={() => setShowForm(true)} />
             </div>
-            
           ) : (
             <div className="flex flex-col items-center justify-center flex-1 px-6">
               <div className="h-20 w-20 rounded-full bg-[#34495E] mb-4" />

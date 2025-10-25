@@ -1,0 +1,291 @@
+{
+  "form": "1901",
+  "timestamp": "2025-10-25T08:05:01.778Z",
+  "data": {
+    "formNumber": "",
+    "formTitle": "",
+    "formSubtitle": "",
+    "version": "",
+    "registeringOffice": {
+      "type": "",
+      "options": []
+    },
+    "philSysCardNumber": "",
+    "part1_TaxpayerInfo": {
+      "tin": "",
+      "rdoCode": "",
+      "taxpayerType": {
+        "singleProprietorshipOnly": false,
+        "mixedIncome_CompAndProfessional": false,
+        "residentAlien_SingleProprietorship": false,
+        "mixedIncome_CompSinglePropAndProfessional": false,
+        "residentAlien_Professional": false,
+        "nonResidentAlien_EngagedInTradeBusiness": false,
+        "professional_Licensed": false,
+        "estate_FilipinoCitizen": false,
+        "professional_InGeneral": false,
+        "estate_ForeignNational": false,
+        "professionalAndSingleProprietor": false,
+        "trust_FilipinoCitizen": false,
+        "mixedIncome_CompAndSingleProprietor": false,
+        "trust_ForeignNational": false
+      },
+      "taxpayerName": {
+        "lastName": "",
+        "firstName": "",
+        "middleName": "",
+        "suffix": "",
+        "nickname": ""
+      },
+      "gender": "",
+      "genderOptions": [],
+      "civilStatus": "",
+      "civilStatusOptions": [],
+      "dateOfBirthOrganization": "",
+      "placeOfBirth": "",
+      "motherMaidenName": "",
+      "fatherName": "",
+      "citizenship": "",
+      "otherCitizenship": "",
+      "localResidenceAddress": {
+        "unitRoomFloor": "",
+        "buildingName": "",
+        "lotBlockPhase": "",
+        "streetName": "",
+        "subdivisionVillage": "",
+        "barangay": "",
+        "townDistrict": "",
+        "municipalityCity": "",
+        "province": "",
+        "zipCode": ""
+      },
+      "businessAddress": {
+        "unitRoomFloor": "",
+        "buildingName": "",
+        "lotBlockPhase": "",
+        "streetName": "",
+        "subdivisionVillage": "",
+        "barangay": "",
+        "townDistrict": "",
+        "municipalityCity": "",
+        "province": "",
+        "zipCode": ""
+      },
+      "foreignAddress": "",
+      "purposeOfTINApplication": "",
+      "identificationDetails": [
+        {
+          "type": "",
+          "idNumber": "",
+          "effectivityDate": "",
+          "expiryDate": "",
+          "issuer": "",
+          "placeCountryOfIssue": ""
+        }
+      ],
+      "preferredContact": {
+        "landlineNumber": "",
+        "faxNumber": "",
+        "mobileNumber": "",
+        "emailAddress": ""
+      },
+      "isAvailing8Percent": ""
+    },
+    "part2_TaxpayerClassification": {
+      "expectedAnnualGrossSales": "",
+      "options": []
+    },
+    "part3_SpouseInfo": {
+      "employmentStatus": "",
+      "options": [],
+      "spouseName": {
+        "lastName": "",
+        "firstName": "",
+        "middleName": "",
+        "suffix": ""
+      },
+      "spouseTIN": "",
+      "spouseEmployerName": "",
+      "spouseEmployerTIN": ""
+    },
+    "part4_AuthRepresentative": {
+      "representativeName": {
+        "individual": {
+          "lastName": "",
+          "firstName": "",
+          "middleName": "",
+          "suffix": "",
+          "nickname": ""
+        },
+        "nonIndividual": {
+          "registeredName": ""
+        }
+      },
+      "relationshipDate": "",
+      "addressType": "",
+      "options": [],
+      "address": {
+        "unitRoomFloor": "",
+        "buildingName": "",
+        "lotBlockPhase": "",
+        "streetName": "",
+        "subdivisionVillage": "",
+        "barangay": "",
+        "townDistrict": "",
+        "municipalityCity": "",
+        "province": "",
+        "zipCode": ""
+      },
+      "preferredContact": {
+        "landlineNumber": "",
+        "faxNumber": "",
+        "mobileNumber": "",
+        "emailAddress": ""
+      }
+    },
+    "part5_BusinessInfo": {
+      "singleBusinessNumber": "",
+      "industries": [
+        {
+          "industryType": "",
+          "tradeBusinessName": "",
+          "regulatoryBody": "",
+          "businessRegistrationNumber": "",
+          "businessRegistrationDate": "",
+          "lineOfBusiness": ""
+        }
+      ],
+      "incentivesDetails": {
+        "investmentPromotion": "",
+        "legalBasis": "",
+        "incentiveGranted": "",
+        "numberOfYears": "",
+        "incentiveStartDate": "",
+        "incentiveEndDate": ""
+      },
+      "registrationDetails": {
+        "registrationAccreditationNumber": "",
+        "effectivityDateFrom": "",
+        "effectivityDateTo": "",
+        "dateIssued": "",
+        "registeredActivity": "",
+        "taxRegime": "",
+        "activityStartDate": "",
+        "activityEndDate": ""
+      }
+    },
+    "part6_FacilityDetails": [
+      {
+        "facilityType": "",
+        "options": [],
+        "facilityTypeOther": "",
+        "facilityAddress": {
+          "unitRoomFloor": "",
+          "buildingName": "",
+          "lotBlockPhase": "",
+          "streetName": "",
+          "subdivisionVillage": "",
+          "barangay": "",
+          "townDistrict": "",
+          "municipalityCity": "",
+          "province": "",
+          "zipCode": ""
+        }
+      }
+    ],
+    "part8_Invoices": {
+      "birPrintedInvoices": {
+        "isIntendingToUse": "",
+        "type": "",
+        "typeOptions": [],
+        "numberOfBooklets": "",
+        "serialNumberStart": "",
+        "serialNumberEnd": ""
+      },
+      "authorityToPrint": {
+        "printerName": "",
+        "printerTIN": "",
+        "printerAccreditationNumber": "",
+        "dateOfAccreditation": "",
+        "registeredAddress": {
+          "unitRoomFloor": "",
+          "buildingName": "",
+          "lotBlockPhase": "",
+          "streetName": "",
+          "subdivisionVillage": "",
+          "barangay": "",
+          "townDistrict": "",
+          "municipalityCity": "",
+          "province": "",
+          "zipCode": ""
+        },
+        "contactNumber": "",
+        "emailAddress": "",
+        "mannerOfInvoices": "",
+        "mannerOptions": [],
+        "invoiceDescriptions": [
+          {
+            "isVAT": false,
+            "isNonVAT": false,
+            "description": "",
+            "isLoose": false,
+            "isBound": false,
+            "numberOfBoxesBooklets": "",
+            "numberOfSets": "",
+            "numberOfCopies": "",
+            "serialStart": "",
+            "serialEnd": ""
+          }
+        ]
+      }
+    },
+    "part9_MultipleEmployments": {
+      "isSuccessiveEmployment": false,
+      "isConcurrentEmployment": false,
+      "primaryCurrentEmployer": {
+        "name": "",
+        "tin": ""
+      },
+      "secondaryPreviousEmployers": [
+        {
+          "name": "",
+          "tin": ""
+        }
+      ],
+      "relationshipStartDate": "",
+      "primaryEmployerContact": {
+        "landlineNumber": "",
+        "faxNumber": "",
+        "mobileNumber": "",
+        "emailAddress": ""
+      }
+    },
+    "part10_PaymentOrder": {
+      "tin": "",
+      "rdoCode": "",
+      "forTheYear": "",
+      "taxpayerName": ""
+    },
+    "documentaryRequirements": {
+      "selfEmployedIndividuals": {
+        "soleProprietorOrNonPRC": [],
+        "prcRegulated": []
+      },
+      "estateAndTrust": {
+        "estate": [],
+        "trust": []
+      },
+      "branchRegistration": [],
+      "facilityRegistration": [],
+      "additionalDocuments": {
+        "throughRepresentative": [],
+        "estateAdministrator": [],
+        "foreignNationals": [],
+        "jobOrderContracts": [],
+        "commonCarrier": [],
+        "bmbeRegistered": [],
+        "incentiveRegistered": []
+      }
+    }
+  }
+}
