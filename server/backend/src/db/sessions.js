@@ -10,13 +10,7 @@ if (!fs.existsSync(dataDir)) {
 
 const db = new Database(path.join(dataDir, "sessions.sqlite"));
 
-db.prepare(`
-  CREATE TABLE IF NOT EXISTS sessions (
-    sid TEXT PRIMARY KEY,
-    sess TEXT,
-    expired INTEGER
-  )
-`).run();
+db.prepare(`CREATE TABLE IF NOT EXISTS sessions (sid TEXT PRIMARY KEY, expired INTEGER, sess TEXT)`).run();
 
 const DEFAULT_TTL_SECONDS = parseInt(process.env.SESSION_TTL || "86400", 10);
 
@@ -27,7 +21,6 @@ export function fetchSessions() {
       try {
         return [r.id, JSON.parse(r.data)];
       } catch (e) {
-        // If parsing fails, store raw value
         return [r.id, r.data];
       }
     })
