@@ -43,19 +43,31 @@ export default function QueueChatUI({
       ? "You may now leave the counter."
       : `Please proceed to Counter ${counter}.`;
 
+  // When keyboard opens on mobile, show only the small status pill (as requested)
+  // Offset the status below the main header so it doesn't get covered.
+  if (keyboardOpen) {
+    return (
+      // place below header (header uses top-0 and z-50)
+      <div className="sticky top-16 z-40 bg-white py-2">
+        <div className="text-sm text-white font-semibold bg-[#2b4059] p-2 rounded-lg w-[225px] mx-auto">
+          Queue Status:{" "}
+          <span className={`${statusColor} px-1 rounded`}>{status}</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="sticky top-0 flex flex-col text-gray-900">
-     
+    // offset from the top so header does not cover this sticky element
+    <div className="sticky top-16 flex flex-col text-gray-900">
       {/* Main chat bubble */}
       <main className="flex-1 px-4 py-5 space-y-3">
         <div className="max-w-sm bg-gray-100 rounded-2xl shadow p-4 space-y-3 border border-gray-200">
           <div className="flex justify-between items-center bg-gray-200 p-3 rounded-lg">
-            <div >
+            <div>
               <div className="text-sm text-white font-semibold bg-[#2b4059] p-2 rounded-lg w-[225px]">
                 Queue Status:{" "}
-                <span className={`${statusColor} px-1 rounded`}>
-                  {status}
-                </span>
+                <span className={`${statusColor} px-1 rounded`}>{status}</span>
               </div>
               <div className="text-4xl font-bold text-gray-900 mt-1">
                 {queueNumber}
@@ -88,7 +100,6 @@ export default function QueueChatUI({
           </div>
         </div>
       </main>
-
     </div>
   );
 }

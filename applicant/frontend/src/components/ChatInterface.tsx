@@ -147,9 +147,9 @@ export default function ChatInterface({
 
   return (
     <div className="flex flex-col flex-1 min-h-0 bg-white">
-      
       {/* Message Area */}
-      <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2">
+      {/* Add bottom padding so messages aren't covered by the fixed input area */}
+      <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2 pb-44">
         {messages.map((msg, idx) => (
           <div
             key={idx}
@@ -180,46 +180,48 @@ export default function ChatInterface({
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Area */}
-      <div className="sticky bottom-0 z-10 border-t bg-[#34495E] p-4">
-        <div className="flex items-center gap-2">
-          <input
-            type="text"
-            placeholder="Type here"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="flex-1 rounded-2xl bg-gray-300 px-4 py-2 text-sm text-black placeholder:text-[#34495E] focus:outline-none"
-          />
-          <button
-            onClick={() => handleSend(input, "open")}
-            className="rounded-full p-3"
-          >
-            <Image src="/send.png" alt="Send" width={23} height={23} />
-          </button>
-        </div>
-
-        {/* Quick Replies under input */}
-        <div className="flex gap-2 flex-wrap mt-2">
-          {quickReplies.map((reply, idx) => (
+      {/* Input Area - fixed to viewport bottom so it remains visible */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 border-t bg-[#34495E] p-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              placeholder="Type here"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="flex-1 rounded-2xl bg-gray-300 px-4 py-2 text-sm text-black placeholder:text-[#34495E] focus:outline-none"
+            />
             <button
-              key={idx}
-              onClick={() => handleSend(reply, "closed")}
-              className="px-4 py-1.5 rounded-full text-sm bg-gray-300 text-black hover:bg-gray-200"
+              onClick={() => handleSend(input, "open")}
+              className="rounded-full p-3"
             >
-              {reply}
+              <Image src="/send.png" alt="Send" width={23} height={23} />
             </button>
-          ))}
-        </div>
+          </div>
 
-        {/* Form Filling Button */}
-        <div className="mt-2">
-          <button
-            onClick={onShowForm}
-            className="w-full py-2 rounded-full text-sm bg-white text-[#34495E] font-semibold hover:bg-gray-100 transition-all"
-          >
-            📋 Fill Form
-          </button>
+          {/* Quick Replies under input */}
+          <div className="flex gap-2 flex-wrap mt-2">
+            {quickReplies.map((reply, idx) => (
+              <button
+                key={idx}
+                onClick={() => handleSend(reply, "closed")}
+                className="px-4 py-1.5 rounded-full text-sm bg-gray-300 text-black hover:bg-gray-200"
+              >
+                {reply}
+              </button>
+            ))}
+          </div>
+
+          {/* Form Filling Button */}
+          <div className="mt-2">
+            <button
+              onClick={onShowForm}
+              className="w-full py-2 rounded-full text-sm bg-white text-[#34495E] font-semibold hover:bg-gray-100 transition-all"
+            >
+              📋 Fill Form
+            </button>
+          </div>
         </div>
       </div>
     </div>
