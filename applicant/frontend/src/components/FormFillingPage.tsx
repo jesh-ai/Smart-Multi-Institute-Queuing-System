@@ -1,256 +1,149 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-// ChevronDown Icon Component
-function ChevronDown() {
-  return (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M5 7.5L10 12.5L15 7.5"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
+// JSON types used for form definition and values
+type JsonValue = string | number | boolean | null | JsonObject | JsonValue[];
+interface JsonObject {
+  [k: string]: JsonValue;
+}
+
+// helper: create an empty clone of the JSON structure (keeps keys, clears values)
+function deepCloneAndEmpty(obj: JsonValue): JsonValue {
+  if (Array.isArray(obj)) {
+    if (obj.length === 0) return [];
+    const first = obj[0];
+    if (typeof first === "object" && first !== null) {
+      return [deepCloneAndEmpty(first)];
+    }
+    return [];
+  }
+  if (obj === null) return "";
+  if (typeof obj === "object") {
+    const out: JsonObject = {};
+    for (const k of Object.keys(obj as JsonObject)) {
+      out[k] = deepCloneAndEmpty((obj as JsonObject)[k]);
+    }
+    return out;
+  }
+  if (typeof obj === "boolean") return false;
+  return "";
+}
+
+function isObjectEmptyValues(obj: JsonValue): boolean {
+  if (obj === null || obj === undefined) return true;
+  if (typeof obj === "string") return obj.trim() === "";
+  if (typeof obj === "boolean") return false;
+  if (Array.isArray(obj))
+    return obj.length === 0 || obj.every(isObjectEmptyValues);
+  if (typeof obj === "object") {
+    return Object.values(obj as JsonObject).every(isObjectEmptyValues);
+  }
+  return false;
 }
 
 export default function FormFillingPage({ onBack }: { onBack: () => void }) {
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    contact: "+63 ",
-    text: "",
-  });
+  const [formDef, setFormDef] = useState<JsonObject | null>(null);
+  const [formData, setFormData] = useState<JsonObject>({});
+  const [loading, setLoading] = useState(true);
 
-  const [errors, setErrors] = useState({
-    fullName: "",
-    email: "",
-    contact: "",
-  });
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    setErrors((prev) => ({ ...prev, [name]: "" }));
+  const handleChange = (path: string, value: JsonValue) => {
+    // update nested formData by path (dot separated)
+    setFormData((prev) => {
+      const clone: JsonObject = { ...(prev || {}) };
+      const parts = path.split(".");
+      let cur: unknown = clone;
+      for (let i = 0; i < parts.length - 1; i++) {
+        const p = parts[i];
+        const curObj = cur as JsonObject;
+        if (curObj[p] === undefined || curObj[p] === null)
+          curObj[p] = {} as JsonObject;
+        cur = curObj[p];
+      }
+      const lastKey = parts[parts.length - 1];
+      (cur as JsonObject)[lastKey] = value;
+      return clone;
+    });
   };
+  useEffect(() => {
+    // fetch form definition from API
+    const fetchForm = async () => {
+      try {
+        const res = await fetch("/api/get-form");
+        const json = await res.json();
+        setFormDef(json);
+        // initialize formData with values from json (keeping structure)
+        const initData = deepCloneAndEmpty(json) as JsonObject;
+        setFormData(initData);
+      } catch (err) {
+        console.error("failed to load form", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchForm();
+  }, []);
 
-  const handleShowExample = () => {
-    alert("Example: john.doe@example.com");
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validation
-    const newErrors = {
-      fullName: "",
-      email: "",
-      contact: "",
-    };
-
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = "Full name is required";
+    // Basic validation: require at least one non-empty field
+    const isEmpty = isObjectEmptyValues(formData);
+    if (isEmpty) {
+      alert("Please fill at least one field before submitting.");
+      return;
     }
 
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email is invalid";
-    }
-
-    if (!formData.contact.trim() || formData.contact === "+63 ") {
-      newErrors.contact = "Contact number is required";
-    } else if (formData.contact.replace(/\D/g, "").length !== 12) {
-      newErrors.contact = "Contact number must be 10 digits after +63";
-    }
-
-    setErrors(newErrors);
-
-    if (!newErrors.fullName && !newErrors.email && !newErrors.contact) {
-      alert(
-        `Form submitted!\nName: ${formData.fullName}\nEmail: ${formData.email}\nContact: ${formData.contact}\nText: ${formData.text}`
-      );
+    try {
+      const res = await fetch("/api/save-form-input", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          data: formData,
+          form: formDef?.formNumber || "unknown",
+        }),
+      });
+      if (!res.ok) throw new Error("Save failed");
+      await res.json();
+      alert("Form saved to form_input.json");
       onBack();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to save form input");
     }
   };
+  // use the helper defined above
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading form...
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
       {/* Form area centered */}
-      <main className="flex justify-center items-start flex-1 py-10 px-4">
-        <div className="w-full max-w-md bg-white rounded-lg shadow-lg overflow-hidden">
+      <main className="flex justify-center items-start flex-1 py-8 px-4">
+        <div className="w-full max-w-4xl bg-white rounded-lg shadow-lg overflow-hidden mx-auto">
           <form
             onSubmit={handleSubmit}
-            className="bg-gray-200 p-6 flex flex-col gap-4"
+            className="bg-gray-200 p-4 md:p-6 flex flex-col gap-4"
           >
-            {/* Full Name */}
-            <div>
-              <label className="block font-semibold text-gray-800">
-                Full Name
-              </label>
-              <input
-                type="text"
-                name="fullName"
-                value={formData.fullName}
-                onChange={handleChange}
-                className={`w-full p-2 border rounded-md mt-1 bg-white text-gray-900 placeholder-gray-400 
-                ${
-                  errors.fullName
-                    ? "border-red-500"
-                    : formData.fullName
-                    ? "border-green-500"
-                    : "border-gray-300"
-                }`}
-                placeholder="Jana Del Rosario"
-              />
-              <p className="text-xs text-gray-600 mt-1">
-                *Enter your legal name as shown on your Valid ID.
-              </p>
-              {errors.fullName && (
-                <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>
-              )}
-            </div>
-
-            {/* Email */}
-            <div>
-              <label className="block font-semibold text-gray-800">
-                Email Address
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className={`w-full p-2 border rounded-md mt-1 bg-white text-gray-900 placeholder-gray-400 
-                ${
-                  errors.email
-                    ? "border-red-500"
-                    : formData.email
-                    ? "border-green-500"
-                    : "border-gray-300"
-                }`}
-                placeholder="example@email.com"
-              />
-              <p className="text-xs text-gray-600 mt-1">
-                *Enter an active email address.
-              </p>
-
-              {errors.email && (
-                <div className="mt-2 bg-white border border-gray-300 p-2 rounded-md shadow-sm">
-                  <p className="text-sm text-gray-800">
-                    Looks like you missed the email field. Need help?
-                  </p>
-                  <div className="flex justify-end gap-2 mt-2">
-                    <button
-                      type="button"
-                      onClick={handleShowExample}
-                      className="px-2 py-1 text-xs bg-[#1c2b39] text-white rounded"
-                    >
-                      Show Example
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setErrors((prev) => ({ ...prev, email: "" }))
-                      }
-                      className="px-2 py-1 text-xs border border-gray-400 rounded"
-                    >
-                      Skip
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Contact */}
-            <div>
-              <label className="block font-semibold text-gray-800">
-                Contact Number
-              </label>
-              <input
-                type="tel"
-                name="contact"
-                value={formData.contact}
-                onChange={(e) => {
-                  let input = e.target.value.replace(/\D/g, "");
-
-                  if (!input.startsWith("63")) {
-                    input = "63" + input;
-                  }
-
-                  let formatted = "+63 ";
-
-                  if (input.length > 2) formatted += input.substring(2, 5);
-                  if (input.length > 5)
-                    formatted += " " + input.substring(5, 8);
-                  if (input.length > 8)
-                    formatted += " " + input.substring(8, 12);
-
-                  setFormData((prev) => ({ ...prev, contact: formatted }));
-                  setErrors((prev) => ({ ...prev, contact: "" }));
-                }}
-                maxLength={17}
-                className={`w-full p-2 border rounded-md mt-1 bg-white text-gray-900 placeholder-gray-400
-      ${
-        errors.contact
-          ? "border-red-500"
-          : formData.contact !== "+63 "
-          ? "border-green-500"
-          : "border-gray-300"
-      }
-    `}
-                placeholder="+63 912 345 6789"
-              />
-              <p className="text-xs text-gray-600 mt-1">
-                *Format: +63 XXX XXX XXXX
-              </p>
-              {errors.contact && (
-                <p className="text-red-500 text-sm mt-1">{errors.contact}</p>
-              )}
-            </div>
-
-            {/* Dropdown */}
-            <div>
-              <label className="block font-semibold text-gray-800">Text</label>
-              <div className="relative">
-                <select
-                  name="text"
-                  value={formData.text}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-md text-black bg-white appearance-none"
-                >
-                  <option value="">Select an option</option>
-                  <option value="Option 1">Option 1</option>
-                  <option value="Option 2">Option 2</option>
-                </select>
-                {/* Custom dropdown icon */}
-                <div className="pointer-events-none absolute right-3 top-3">
-                  <ChevronDown />
-                </div>
-              </div>
-            </div>
+            {/* Render dynamic fields from formDef */}
+            {formDef && renderObjectFields(formDef, "")}
 
             {/* Buttons */}
-            <div className="flex justify-between gap-2">
+            <div className="flex flex-col sm:flex-row sm:justify-between gap-2">
               <button
                 type="button"
                 onClick={onBack}
-                className="bg-gray-400 text-white font-semibold py-2 px-6 rounded-full hover:bg-gray-500 transition-all"
+                className="w-full sm:w-auto bg-gray-400 text-white font-semibold py-2 px-6 rounded-full hover:bg-gray-500 transition-all"
               >
                 Back
               </button>
               <button
                 type="submit"
-                className="bg-[#1c2b39] text-white font-semibold py-2 px-6 rounded-full hover:bg-[#243647] transition-all"
+                className="w-full sm:w-auto bg-[#1c2b39] text-white font-semibold py-2 px-6 rounded-full hover:bg-[#243647] transition-all"
               >
                 Submit
               </button>
@@ -260,4 +153,131 @@ export default function FormFillingPage({ onBack }: { onBack: () => void }) {
       </main>
     </div>
   );
+
+  // Recursive renderer
+  function humanize(key: string) {
+    // convert camelCase or snake_case to normal title
+    const withSpaces = key
+      // camelCase -> split
+      .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+      .replace(/[_\-]+/g, " ")
+      .trim();
+    return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1);
+  }
+
+  function renderObjectFields(obj: JsonValue, pathPrefix: string) {
+    if (obj === null || typeof obj !== "object") return null;
+    const asObj = obj as JsonObject;
+    return Object.keys(asObj).map((key) => {
+      const value = asObj[key];
+      const path = pathPrefix ? `${pathPrefix}.${key}` : key;
+
+      // primitives
+      if (typeof value === "string" || value === null) {
+        const raw = getValueAtPath(formData, path);
+        const val =
+          typeof raw === "string" || typeof raw === "number" ? String(raw) : "";
+        return (
+          <div key={path}>
+            <label className="block font-semibold text-gray-800">
+              {humanize(key)}
+            </label>
+            <input
+              type="text"
+              value={val}
+              onChange={(e) => handleChange(path, e.target.value as JsonValue)}
+              className="w-full p-2 border rounded-md mt-1 bg-white text-gray-900 placeholder-gray-400 border-gray-300"
+            />
+          </div>
+        );
+      }
+
+      if (typeof value === "boolean") {
+        const raw = getValueAtPath(formData, path);
+        const val = typeof raw === "boolean" ? raw : false;
+        return (
+          <div key={path} className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={val}
+              onChange={(e) =>
+                handleChange(path, e.target.checked as JsonValue)
+              }
+            />
+            <label className="font-semibold text-gray-800">
+              {humanize(key)}
+            </label>
+          </div>
+        );
+      }
+
+      if (Array.isArray(value)) {
+        // render one item for now
+        const itemsRaw = getValueAtPath(formData, path);
+        const items = Array.isArray(itemsRaw) ? (itemsRaw as JsonValue[]) : [];
+        return (
+          <div key={path} className="p-2 border rounded-md bg-white">
+            <label className="block font-semibold text-gray-800">
+              {humanize(key)}
+            </label>
+            {Array.isArray(value) &&
+            value.length > 0 &&
+            typeof value[0] === "object" ? (
+              // render fields for first object
+              (items as JsonValue[]).map((it, idx) => (
+                <div key={`${path}.${idx}`} className="mt-2 p-2 border rounded">
+                  {renderObjectFields(value[0], `${path}.${idx}`)}
+                </div>
+              ))
+            ) : (
+              <input
+                type="text"
+                value={items
+                  .map((v) =>
+                    typeof v === "string" || typeof v === "number"
+                      ? String(v)
+                      : ""
+                  )
+                  .join(", ")}
+                onChange={(e) =>
+                  handleChange(
+                    path,
+                    e.target.value
+                      .split(",")
+                      .map((s) => s.trim()) as JsonValue[]
+                  )
+                }
+                className="w-full p-2 border rounded-md mt-1 bg-white text-gray-900 placeholder-gray-400 border-gray-300"
+              />
+            )}
+          </div>
+        );
+      }
+
+      if (typeof value === "object") {
+        return (
+          <div key={path} className="p-2 border rounded-md bg-white">
+            <label className="block font-semibold text-gray-800">
+              {humanize(key)}
+            </label>
+            <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+              {renderObjectFields(value, path)}
+            </div>
+          </div>
+        );
+      }
+
+      return null;
+    });
+  }
+
+  function getValueAtPath(obj: JsonValue, path: string): JsonValue | undefined {
+    const parts = path.split(".");
+    let cur: JsonValue = obj;
+    for (const p of parts) {
+      if (cur == null) return undefined;
+      cur = (cur as JsonObject)[p];
+    }
+    return cur;
+  }
 }
