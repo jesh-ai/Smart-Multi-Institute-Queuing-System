@@ -1,0 +1,937 @@
+[
+  {
+    "userMessage": "Clearance",
+    "botResponse": {
+      "Message": "For clearance inquiries, please provide your student ID or reference number.",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-18T11:13:31.617Z"
+  },
+  {
+    "userMessage": "Passport Application Form",
+    "botResponse": {
+      "Message": "What would you like to inquire about?",
+      "Choices": {
+        "Choice1": "Passport Application Form",
+        "Choice2": "Passport Record Certification Request Form",
+        "Choice3": "Clearance",
+        "Choice4": "Other"
+      },
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-18T11:13:36.735Z"
+  },
+  {
+    "userMessage": "Passport Record Certification Request Form",
+    "botResponse": {
+      "Message": "What would you like to inquire about?",
+      "Choices": {
+        "Choice1": "Passport Application Form",
+        "Choice2": "Passport Record Certification Request Form",
+        "Choice3": "Clearance",
+        "Choice4": "Other"
+      },
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-18T11:13:38.359Z"
+  },
+  {
+    "userMessage": "Other",
+    "botResponse": {
+      "Message": "Please describe your concern, and we'll assist you shortly.",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-18T11:13:40.116Z"
+  },
+  {
+    "userMessage": "Clearance",
+    "botResponse": {
+      "Message": "For clearance inquiries, please provide your student ID or reference number.",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-18T11:13:42.575Z"
+  },
+  {
+    "userMessage": "Passport Record Certification Request Form",
+    "botResponse": {
+      "Message": "What would you like to inquire about?",
+      "Choices": {
+        "Choice1": "Passport Application Form",
+        "Choice2": "Passport Record Certification Request Form",
+        "Choice3": "Clearance",
+        "Choice4": "Other"
+      },
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-18T11:13:44.275Z"
+  },
+  {
+    "userMessage": "Passport Application Form",
+    "botResponse": {
+      "Message": "What would you like to inquire about?",
+      "Choices": {
+        "Choice1": "Passport Application Form",
+        "Choice2": "Passport Record Certification Request Form",
+        "Choice3": "Clearance",
+        "Choice4": "Other"
+      },
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-18T11:13:46.208Z"
+  },
+  {
+    "userMessage": "Passport Record Certification Request Form",
+    "botResponse": {
+      "Message": "What would you like to inquire about?",
+      "Choices": {
+        "Choice1": "Passport Application Form",
+        "Choice2": "Passport Record Certification Request Form",
+        "Choice3": "Clearance",
+        "Choice4": "Other"
+      },
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-18T11:13:48.014Z"
+  },
+  {
+    "userMessage": "Clearance",
+    "botResponse": {
+      "Message": "For clearance inquiries, please provide your student ID or reference number.",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-18T11:13:50.458Z"
+  },
+  {
+    "userMessage": "Other",
+    "botResponse": {
+      "Message": "Please describe your concern, and we'll assist you shortly.",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-18T11:13:52.122Z"
+  },
+  {
+    "userMessage": "experience",
+    "botResponse": {
+      "Message": "How was your experience?",
+      "Choices": {
+        "Choice1": "Very Poor",
+        "Choice2": "Fair",
+        "Choice3": "Good",
+        "Choice4": "Excellent"
+      },
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-18T11:14:18.638Z"
+  },
+  {
+    "userMessage": "Passport Record Certification Request Form",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-18T11:16:50.008Z"
+  },
+  {
+    "userMessage": "experience",
+    "botResponse": {
+      "Message": "How was your experience?",
+      "Choices": {
+        "Choice1": "Very Poor",
+        "Choice2": "Fair",
+        "Choice3": "Good",
+        "Choice4": "Excellent"
+      },
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-18T11:16:57.626Z"
+  },
+  {
+    "userMessage": "Excellent",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-18T11:16:59.970Z"
+  },
+  {
+    "userMessage": "assiist",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-18T11:17:09.988Z"
+  },
+  {
+    "userMessage": "assist",
+    "botResponse": {
+      "Message": "How can I assist you today:",
+      "Choices": {
+        "Choice1": "Check my queue status",
+        "Choice2": "Book a new appointment",
+        "Choice3": "Reschedule my appointment",
+        "Choice4": "Talk to a representative"
+      },
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-18T11:17:13.839Z"
+  },
+  {
+    "userMessage": "Book a new appointment",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-18T11:17:18.216Z"
+  },
+  {
+    "userMessage": "experience",
+    "botResponse": {
+      "Message": "How was your experience?",
+      "Choices": {
+        "Choice1": "Very Poor",
+        "Choice2": "Fair",
+        "Choice3": "Good",
+        "Choice4": "Excellent"
+      },
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-18T11:17:23.975Z"
+  },
+  {
+    "userMessage": "Clearance",
+    "botResponse": {
+      "Message": "For clearance inquiries, please provide your student ID or reference number.",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-18T11:19:23.649Z"
+  },
+  {
+    "userMessage": "experience",
+    "botResponse": {
+      "Message": "How was your experience?",
+      "Choices": {
+        "Choice1": "Very Poor",
+        "Choice2": "Fair",
+        "Choice3": "Good",
+        "Choice4": "Excellent"
+      },
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-18T11:19:30.216Z"
+  },
+  {
+    "userMessage": "Excellent",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-18T11:19:32.589Z"
+  },
+  {
+    "userMessage": "Passport Record Certification Request Form",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-18T11:20:11.469Z"
+  },
+  {
+    "userMessage": "experience",
+    "botResponse": {
+      "Message": "How was your experience?",
+      "Choices": {
+        "Choice1": "Very Poor",
+        "Choice2": "Fair",
+        "Choice3": "Good",
+        "Choice4": "Excellent"
+      },
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-18T11:20:15.120Z"
+  },
+  {
+    "userMessage": "Excellent",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-18T11:20:22.802Z"
+  },
+  {
+    "userMessage": "inqquire",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-18T11:20:44.723Z"
+  },
+  {
+    "userMessage": "inquire",
+    "botResponse": {
+      "Message": "What would you like to inquire about?",
+      "Choices": {
+        "Choice1": "Passport Application Form",
+        "Choice2": "Passport Record Certification Request Form",
+        "Choice3": "Clearance",
+        "Choice4": "Other"
+      },
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-18T11:20:47.664Z"
+  },
+  {
+    "userMessage": "Passport Application Form",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-18T11:20:50.518Z"
+  },
+  {
+    "userMessage": "assist",
+    "botResponse": {
+      "Message": "How can I assist you today:",
+      "Choices": {
+        "Choice1": "Check my queue status",
+        "Choice2": "Book a new appointment",
+        "Choice3": "Reschedule my appointment",
+        "Choice4": "Talk to a representative"
+      },
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-18T11:20:57.633Z"
+  },
+  {
+    "userMessage": "Book a new appointment",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-18T11:21:26.118Z"
+  },
+  {
+    "userMessage": "experience",
+    "botResponse": {
+      "Message": "How was your experience?",
+      "Choices": {
+        "Choice1": "Very Poor",
+        "Choice2": "Fair",
+        "Choice3": "Good",
+        "Choice4": "Excellent"
+      },
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-18T11:22:46.427Z"
+  },
+  {
+    "userMessage": "Good",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-18T11:22:50.125Z"
+  },
+  {
+    "userMessage": "experience",
+    "botResponse": {
+      "Message": "How was your experience?",
+      "Choices": {
+        "Choice1": "Very Poor",
+        "Choice2": "Fair",
+        "Choice3": "Good",
+        "Choice4": "Excellent"
+      },
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-18T11:23:38.159Z"
+  },
+  {
+    "userMessage": "Very Poor",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-18T11:23:53.440Z"
+  },
+  {
+    "userMessage": "appintment",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-18T11:24:04.403Z"
+  },
+  {
+    "userMessage": "appoinment",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-18T11:24:12.850Z"
+  },
+  {
+    "userMessage": "Clearance",
+    "botResponse": {
+      "Message": "For clearance inquiries, please provide your student ID or reference number.",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-18T11:27:01.859Z"
+  },
+  {
+    "userMessage": "Passport Record Certification Request Form",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-18T11:31:10.074Z"
+  },
+  {
+    "userMessage": "clearancce",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-18T11:31:15.162Z"
+  },
+  {
+    "userMessage": "cclearance",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-18T11:31:17.214Z"
+  },
+  {
+    "userMessage": "cclearance",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-18T11:31:19.982Z"
+  },
+  {
+    "userMessage": "clearance",
+    "botResponse": {
+      "Message": "For clearance inquiries, please provide your student ID or reference number.",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-18T11:31:22.827Z"
+  },
+  {
+    "userMessage": "ok",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-18T11:31:26.568Z"
+  },
+  {
+    "userMessage": "experience",
+    "botResponse": {
+      "Message": "How was your experience?",
+      "Choices": {
+        "Choice1": "Very Poor",
+        "Choice2": "Fair",
+        "Choice3": "Good",
+        "Choice4": "Excellent"
+      },
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-18T11:31:29.743Z"
+  },
+  {
+    "userMessage": "Excellent",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-18T11:31:31.558Z"
+  },
+  {
+    "userMessage": "Clearance",
+    "botResponse": {
+      "Message": "For clearance inquiries, please provide your student ID or reference number.",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-18T11:34:53.053Z"
+  },
+  {
+    "userMessage": "experience",
+    "botResponse": {
+      "Message": "How was your experience?",
+      "Choices": {
+        "Choice1": "Very Poor",
+        "Choice2": "Fair",
+        "Choice3": "Good",
+        "Choice4": "Excellent"
+      },
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-18T11:34:58.836Z"
+  },
+  {
+    "userMessage": "Good",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-18T11:35:00.679Z"
+  },
+  {
+    "userMessage": "Other",
+    "botResponse": {
+      "Message": "Please describe your concern, and we'll assist you shortly.",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-18T11:37:58.213Z"
+  },
+  {
+    "userMessage": "Other",
+    "botResponse": {
+      "Message": "Please describe your concern, and we'll assist you shortly.",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-18T11:51:10.306Z"
+  },
+  {
+    "userMessage": "Clearance",
+    "botResponse": {
+      "Message": "For clearance inquiries, please provide your student ID or reference number.",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-18T12:00:16.006Z"
+  },
+  {
+    "userMessage": "experience",
+    "botResponse": {
+      "Message": "How was your experience?",
+      "Choices": {
+        "Choice1": "Very Poor",
+        "Choice2": "Fair",
+        "Choice3": "Good",
+        "Choice4": "Excellent"
+      },
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-18T12:00:19.437Z"
+  },
+  {
+    "userMessage": "Excellent",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-18T12:00:20.734Z"
+  },
+  {
+    "userMessage": "Passport Record Certification Request Form",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-25T03:39:06.175Z"
+  },
+  {
+    "userMessage": "certificate",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T03:39:13.928Z"
+  },
+  {
+    "userMessage": "student",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T03:39:17.605Z"
+  },
+  {
+    "userMessage": "fill",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T03:41:17.840Z"
+  },
+  {
+    "userMessage": "what",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T03:41:19.188Z"
+  },
+  {
+    "userMessage": "certificate",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T03:41:21.701Z"
+  },
+  {
+    "userMessage": "clearance",
+    "botResponse": {
+      "Message": "For clearance inquiries, please provide your student ID or reference number.",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T03:41:31.242Z"
+  },
+  {
+    "userMessage": "clearance",
+    "botResponse": {
+      "Message": "For clearance inquiries, please provide your student ID or reference number.",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T03:43:17.965Z"
+  },
+  {
+    "userMessage": "exit",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T03:43:24.661Z"
+  },
+  {
+    "userMessage": "experience",
+    "botResponse": {
+      "Message": "How was your experience?",
+      "Choices": {
+        "Choice1": "Very Poor",
+        "Choice2": "Fair",
+        "Choice3": "Good",
+        "Choice4": "Excellent"
+      },
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T03:44:04.649Z"
+  },
+  {
+    "userMessage": "Fair",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-25T03:44:06.729Z"
+  },
+  {
+    "userMessage": "tangina",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T05:37:31.825Z"
+  },
+  {
+    "userMessage": "mo",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T05:37:34.914Z"
+  },
+  {
+    "userMessage": "gago",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T05:37:36.079Z"
+  },
+  {
+    "userMessage": "hello",
+    "botResponse": {
+      "Message": "Welcome!",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T05:37:40.415Z"
+  },
+  {
+    "userMessage": "experience",
+    "botResponse": {
+      "Message": "How was your experience?",
+      "Choices": {
+        "Choice1": "Very Poor",
+        "Choice2": "Fair",
+        "Choice3": "Good",
+        "Choice4": "Excellent"
+      },
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T05:38:09.006Z"
+  },
+  {
+    "userMessage": "fair",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T05:38:10.973Z"
+  },
+  {
+    "userMessage": "experience",
+    "botResponse": {
+      "Message": "How was your experience?",
+      "Choices": {
+        "Choice1": "Very Poor",
+        "Choice2": "Fair",
+        "Choice3": "Good",
+        "Choice4": "Excellent"
+      },
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T05:38:14.338Z"
+  },
+  {
+    "userMessage": "awefawef",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T05:41:28.156Z"
+  },
+  {
+    "userMessage": "awefawef",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T05:41:29.443Z"
+  },
+  {
+    "userMessage": "awefawef",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T05:41:30.533Z"
+  },
+  {
+    "userMessage": "awefawef",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T05:41:31.333Z"
+  },
+  {
+    "userMessage": "awefawefawef",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T05:41:32.075Z"
+  },
+  {
+    "userMessage": "Passport Record Certification Request Form",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-25T07:56:55.951Z"
+  },
+  {
+    "userMessage": "Passport Record Certification Request Form",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "closed",
+    "timestamp": "2025-10-25T07:57:18.361Z"
+  },
+  {
+    "userMessage": " applicant/frontend/interactions.json: needs merge error: you need to resolve your current index first",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T07:57:26.388Z"
+  },
+  {
+    "userMessage": " applicant/frontend/interactions.json: needs merge error: you need to resolve your current index first",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T07:57:28.191Z"
+  },
+  {
+    "userMessage": " applicant/frontend/interactions.json: needs merge error: you need to resolve your current index first",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T07:57:33.438Z"
+  },
+  {
+    "userMessage": "     {/* Input Area */}",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T08:05:18.811Z"
+  },
+  {
+    "userMessage": "     {/* Input Area */}",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T08:05:21.199Z"
+  },
+  {
+    "userMessage": "     {/* Input Area */}",
+    "botResponse": {
+      "Message": "I'm here to help. Could you please clarify your request?",
+      "Choices": {},
+      "Errors": ""
+    },
+    "messageType": "open",
+    "timestamp": "2025-10-25T08:05:23.049Z"
+  }
+]

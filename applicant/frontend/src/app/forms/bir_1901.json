@@ -1,0 +1,367 @@
+{
+  "formNumber": "1901",
+  "formTitle": "Application for Registration",
+  "formSubtitle": "For Self-Employed (Single Proprietor/Professional), Mixed Income Individuals, Non-Resident Alien Engaged in Trade/Business, Estate and Trust",
+  "version": "January 2024 (ENCS)",
+  "registeringOffice": {
+    "type": null,
+    "options": [
+      "Head Office",
+      "Branch Office",
+      "Facility"
+    ]
+  },
+  "philSysCardNumber": "",
+  "part1_TaxpayerInfo": {
+    "tin": "",
+    "rdoCode": "",
+    "taxpayerType": {
+      "singleProprietorshipOnly": false,
+      "mixedIncome_CompAndProfessional": false,
+      "residentAlien_SingleProprietorship": false,
+      "mixedIncome_CompSinglePropAndProfessional": false,
+      "residentAlien_Professional": false,
+      "nonResidentAlien_EngagedInTradeBusiness": false,
+      "professional_Licensed": false,
+      "estate_FilipinoCitizen": false,
+      "professional_InGeneral": false,
+      "estate_ForeignNational": false,
+      "professionalAndSingleProprietor": false,
+      "trust_FilipinoCitizen": false,
+      "mixedIncome_CompAndSingleProprietor": false,
+      "trust_ForeignNational": false
+    },
+    "taxpayerName": {
+      "lastName": "",
+      "firstName": "",
+      "middleName": "",
+      "suffix": "",
+      "nickname": ""
+    },
+    "gender": null,
+    "genderOptions": [
+      "Male",
+      "Female"
+    ],
+    "civilStatus": null,
+    "civilStatusOptions": [
+      "Single",
+      "Married",
+      "Widow/er",
+      "Legally Separated"
+    ],
+    "dateOfBirthOrganization": "",
+    "placeOfBirth": "",
+    "motherMaidenName": "",
+    "fatherName": "",
+    "citizenship": "",
+    "otherCitizenship": "",
+    "localResidenceAddress": {
+      "unitRoomFloor": "",
+      "buildingName": "",
+      "lotBlockPhase": "",
+      "streetName": "",
+      "subdivisionVillage": "",
+      "barangay": "",
+      "townDistrict": "",
+      "municipalityCity": "",
+      "province": "",
+      "zipCode": ""
+    },
+    "businessAddress": {
+      "unitRoomFloor": "",
+      "buildingName": "",
+      "lotBlockPhase": "",
+      "streetName": "",
+      "subdivisionVillage": "",
+      "barangay": "",
+      "townDistrict": "",
+      "municipalityCity": "",
+      "province": "",
+      "zipCode": ""
+    },
+    "foreignAddress": "",
+    "purposeOfTINApplication": "",
+    "identificationDetails": [
+      {
+        "type": "",
+        "idNumber": "",
+        "effectivityDate": "",
+        "expiryDate": "",
+        "issuer": "",
+        "placeCountryOfIssue": ""
+      }
+    ],
+    "preferredContact": {
+      "landlineNumber": "",
+      "faxNumber": "",
+      "mobileNumber": "",
+      "emailAddress": ""
+    },
+    "isAvailing8Percent": null
+  },
+  "part2_TaxpayerClassification": {
+    "expectedAnnualGrossSales": null,
+    "options": [
+      "Micro (less than P3M)",
+      "Small (P3M to < P20M)",
+      "Medium (P20M to < P1B)",
+      "Large (P1B and above)"
+    ]
+  },
+  "part3_SpouseInfo": {
+    "employmentStatus": null,
+    "options": [
+      "Unemployed",
+      "Employed Locally",
+      "Employed Abroad",
+      "Engaged in Business/Practice of Profession"
+    ],
+    "spouseName": {
+      "lastName": "",
+      "firstName": "",
+      "middleName": "",
+      "suffix": ""
+    },
+    "spouseTIN": "",
+    "spouseEmployerName": "",
+    "spouseEmployerTIN": ""
+  },
+  "part4_AuthRepresentative": {
+    "representativeName": {
+      "individual": {
+        "lastName": "",
+        "firstName": "",
+        "middleName": "",
+        "suffix": "",
+        "nickname": ""
+      },
+      "nonIndividual": {
+        "registeredName": ""
+      }
+    },
+    "relationshipDate": "",
+    "addressType": null,
+    "options": [
+      "Residence",
+      "Place of Business",
+      "Employer Address"
+    ],
+    "address": {
+      "unitRoomFloor": "",
+      "buildingName": "",
+      "lotBlockPhase": "",
+      "streetName": "",
+      "subdivisionVillage": "",
+      "barangay": "",
+      "townDistrict": "",
+      "municipalityCity": "",
+      "province": "",
+      "zipCode": ""
+    },
+    "preferredContact": {
+      "landlineNumber": "",
+      "faxNumber": "",
+      "mobileNumber": "",
+      "emailAddress": ""
+    }
+  },
+  "part5_BusinessInfo": {
+    "singleBusinessNumber": "",
+    "industries": [
+      {
+        "industryType": "Primary",
+        "tradeBusinessName": "",
+        "regulatoryBody": "",
+        "businessRegistrationNumber": "",
+        "businessRegistrationDate": "",
+        "lineOfBusiness": ""
+      },
+      {
+        "industryType": "Secondary",
+        "tradeBusinessName": "",
+        "regulatoryBody": "",
+        "businessRegistrationNumber": "",
+        "businessRegistrationDate": "",
+        "lineOfBusiness": ""
+      }
+    ],
+    "incentivesDetails": {
+      "investmentPromotion": "",
+      "legalBasis": "",
+      "incentiveGranted": "",
+      "numberOfYears": "",
+      "incentiveStartDate": "",
+      "incentiveEndDate": ""
+    },
+    "registrationDetails": {
+      "registrationAccreditationNumber": "",
+      "effectivityDateFrom": "",
+      "effectivityDateTo": "",
+      "dateIssued": "",
+      "registeredActivity": "",
+      "taxRegime": "",
+      "activityStartDate": "",
+      "activityEndDate": ""
+    }
+  },
+  "part6_FacilityDetails": [
+    {
+      "facilityType": null,
+      "options": [
+        "PP",
+        "SP",
+        "WH",
+        "SR",
+        "GG",
+        "BT",
+        "RP",
+        "Others"
+      ],
+      "facilityTypeOther": "",
+      "facilityAddress": {
+        "unitRoomFloor": "",
+        "buildingName": "",
+        "lotBlockPhase": "",
+        "streetName": "",
+        "subdivisionVillage": "",
+        "barangay": "",
+        "townDistrict": "",
+        "municipalityCity": "",
+        "province": "",
+        "zipCode": ""
+      }
+    }
+  ],
+  "part8_Invoices": {
+    "birPrintedInvoices": {
+      "isIntendingToUse": null,
+      "type": null,
+      "typeOptions": [
+        "VAT",
+        "NON-VAT"
+      ],
+      "numberOfBooklets": "",
+      "serialNumberStart": "",
+      "serialNumberEnd": ""
+    },
+    "authorityToPrint": {
+      "printerName": "",
+      "printerTIN": "",
+      "printerAccreditationNumber": "",
+      "dateOfAccreditation": "",
+      "registeredAddress": {
+        "unitRoomFloor": "",
+        "buildingName": "",
+        "lotBlockPhase": "",
+        "streetName": "",
+        "subdivisionVillage": "",
+        "barangay": "",
+        "townDistrict": "",
+        "municipalityCity": "",
+        "province": "",
+        "zipCode": ""
+      },
+      "contactNumber": "",
+      "emailAddress": "",
+      "mannerOfInvoices": null,
+      "mannerOptions": [
+        "Bound",
+        "Loose Leaf"
+      ],
+      "invoiceDescriptions": [
+        {
+          "isVAT": false,
+          "isNonVAT": false,
+          "description": "",
+          "isLoose": false,
+          "isBound": false,
+          "numberOfBoxesBooklets": "",
+          "numberOfSets": "",
+          "numberOfCopies": "",
+          "serialStart": "",
+          "serialEnd": ""
+        }
+      ]
+    }
+  },
+  "part9_MultipleEmployments": {
+    "isSuccessiveEmployment": false,
+    "isConcurrentEmployment": false,
+    "primaryCurrentEmployer": {
+      "name": "",
+      "tin": ""
+    },
+    "secondaryPreviousEmployers": [
+      {
+        "name": "",
+        "tin": ""
+      }
+    ],
+    "relationshipStartDate": "",
+    "primaryEmployerContact": {
+      "landlineNumber": "",
+      "faxNumber": "",
+      "mobileNumber": "",
+      "emailAddress": ""
+    }
+  },
+  "part10_PaymentOrder": {
+    "tin": "",
+    "rdoCode": "",
+    "forTheYear": "",
+    "taxpayerName": ""
+  },
+  "documentaryRequirements": {
+    "selfEmployedIndividuals": {
+      "soleProprietorOrNonPRC": [
+        "Any government-issued ID (e.g., PhilID/ePhilID, Passport, Driver's License/eDriver's License) showing name, address, and birthdate (1 photocopy)",
+        "If ID has no address, any proof of residence or business address (1 photocopy)"
+      ],
+      "prcRegulated": [
+        "Valid PRC ID (1 photocopy)",
+        "Government ID showing address or proof of residence/business address (1 photocopy)"
+      ]
+    },
+    "estateAndTrust": {
+      "estate": [
+        "Death Certificate of the decedent (1 photocopy)"
+      ],
+      "trust": [
+        "Irrevocable Trust Agreement (1 photocopy)"
+      ]
+    },
+    "branchRegistration": [
+      "BIR Printed Invoices (BPI) or Final clear sample of OWN Invoices (1 original)",
+      "DTI Certificate (if with business name) (1 photocopy)"
+    ],
+    "facilityRegistration": [
+      "BIR Form No. 1901 (2 originals)"
+    ],
+    "additionalDocuments": {
+      "throughRepresentative": [
+        "Special Power of Attorney (SPA) (1 original)",
+        "Any government-issued ID of taxpayer and representative (1 photocopy)"
+      ],
+      "estateAdministrator": [
+        "Document/s to prove as administrator or executor or heir (1 original)",
+        "Any government-issued ID of the administrator or executor (1 photocopy)"
+      ],
+      "foreignNationals": [
+        "Work Visa (9g) (1 photocopy)"
+      ],
+      "jobOrderContracts": [
+        "Service Contract Agreement (1 photocopy)"
+      ],
+      "commonCarrier": [
+        "Franchise Documents (e.g., Certificate of Public Convenience) (1 photocopy)"
+      ],
+      "bmbeRegistered": [
+        "Certificate of Authority (1 photocopy)"
+      ],
+      "incentiveRegistered": [
+        "Proof of Registration/Permit to Operate (BOI, PEZA, etc.) (1 photocopy)"
+      ]
+    }
+  }
+}
