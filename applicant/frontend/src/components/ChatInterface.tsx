@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import QueueChatUI from "./Status";
 
 export default function ChatInterface({
   onShowForm,
@@ -146,6 +147,7 @@ export default function ChatInterface({
 
   return (
     <div className="flex flex-col flex-1 min-h-0 bg-white">
+      
       {/* Message Area */}
       <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2">
         {messages.map((msg, idx) => (
