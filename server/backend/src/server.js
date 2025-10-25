@@ -7,7 +7,7 @@ import morgan from 'morgan';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import routes from './routes/index.js';
-import { recordSession, sessionMiddleware } from './middleware/session.js';
+import { sessionMiddleware, recordSession } from './middleware/session.js';
 
 const app = express();
 const corsOptions = {
@@ -21,7 +21,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(sessionMiddleware);
-app.use(recordSession) // Temporary while waiting for db
+app.use(recordSession);
 
 // __dirname workaround for ESM
 const __filename = fileURLToPath(import.meta.url);
