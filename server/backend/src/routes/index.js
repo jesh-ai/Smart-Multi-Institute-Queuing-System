@@ -21,4 +21,6 @@ router.get('/qr', async (req, res) => {
   }
 });
 
+router.use('/counter', counterRoutes);
+
 export default router;
