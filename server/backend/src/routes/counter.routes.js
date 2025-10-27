@@ -8,4 +8,5 @@ sessionRoutes.post("/counters", express.json(), postCounter);
 sessionRoutes.put("/counters/:id", express.json(), putCounter);
 sessionRoutes.delete("/counters/:id", deleteCounter);
 sessionRoutes.get("/counters/:id", getCounterId);
+
 export default sessionRoutes;

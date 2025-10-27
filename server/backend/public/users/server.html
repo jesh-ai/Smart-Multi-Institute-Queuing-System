@@ -95,7 +95,7 @@
         <div class="counterId">${sessionId}</div>
         <div>Created: ${new Date(createdAt).toLocaleTimeString()}</div>
         <div class="status">Status: <strong>${status}</strong></div>
-        <div class="mac">MAC: ${mac}</div>
+        <div class="mac">Device: ${mac}</div>
         <button class="deleteBtn">×</button>
       `;
       box.querySelector(".deleteBtn").onclick = () => deleteCounterSession(sessionId);

@@ -28,23 +28,23 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Helmet CSP configuration
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'"],
-        imgSrc: ["'self'", 'data:'],
-        connectSrc: ["'self'", "http:", "https:"]
-,
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        objectSrc: ["'none'"],
-        baseUri: ["'self'"],
-        frameAncestors: ["'none'"],
-      },
-    },
-  })
-);
+// app.use(
+//   helmet({
+//     contentSecurityPolicy: {
+//       directives: {
+//         defaultSrc: ["'self'"],
+//         scriptSrc: ["'self'", "'unsafe-inline'"],
+//         imgSrc: ["'self'", 'data:'],
+//         connectSrc: ["'self'", "http:", "https:"]
+// ,
+//         styleSrc: ["'self'", "'unsafe-inline'"],
+//         objectSrc: ["'none'"],
+//         baseUri: ["'self'"],
+//         frameAncestors: ["'none'"],
+//       },
+//     },
+//   })
+// );
 
 // Serve static assets
 app.use(express.static(path.join(__dirname, "../public")));
