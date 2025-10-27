@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
+
+import { Inter } from "next/font/google";
 import "../styles/globals.css";
 import Navbar from "@/components/NavBar";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Smart Multi-Institute Queuing System",
@@ -14,9 +18,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-[#f9f9f4] text-gray-900">
+      {
+
+      }
+      <body className={`${inter.className} min-h-screen bg-[#f9f9f4] text-gray-900`}>
         <Navbar />
-        <main className="p-6">{children}</main>
+        {
+
+        }
+        <main>{children}</main>
       </body>
     </html>
   );
