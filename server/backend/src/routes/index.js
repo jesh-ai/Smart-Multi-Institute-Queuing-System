@@ -3,6 +3,7 @@ import { Router } from 'express';
 import QRCode from 'qrcode';
 import sessionRoutes from './session.routes.js';
 import serverRoutes from './server.routes.js';
+import counterRoutes from './counter.routes.js';
 
 const router = Router();
 
@@ -20,6 +21,7 @@ router.get("/qr", async (req, res) => {
 
 router.use(sessionRoutes)
 router.use(serverRoutes)
+router.use(counterRoutes)
 // Applicant chatbot route
 // router.use("/chatbot", applicantRoutes);
 

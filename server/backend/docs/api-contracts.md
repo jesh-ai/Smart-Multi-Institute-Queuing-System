@@ -61,7 +61,7 @@ Retrieve all counters.
 
 ```json
 200: [
-  { "sessionId": "<sessionId>", "createdAt": "<timestamp>", "status": "active", "counter_Id": "<counterId>" }
+  { "sessionId": "<sessionId>", "createdAt": "<timestamp>", "status": "active", "counterId": "<counterId>" }
   ...
 ]
 ```
@@ -75,7 +75,7 @@ Retrieve info about a specific counter.
 **Response**
 
 ```json
-200: { "sessionId": "<sessionId>", "createdAt": "<timestamp>", "status": "active", "counter_Id": "<counterId>" }
+200: { "sessionId": "<sessionId>", "createdAt": "<timestamp>", "status": "active", "counterId": "<counterId>" }
 ```
 
 ---

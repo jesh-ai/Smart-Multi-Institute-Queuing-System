@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Smart Queue API Tester</title>
+  <style>
+    body { font-family: monospace; background: #111; color: #eee; padding: 20px; }
+    h2, h3 { color: #00bcd4; }
+    code { color: #8bc34a; }
+    button {
+      margin: 4px; padding: 8px 12px; background: #333; color: #fff; border: none;
+      cursor: pointer; border-radius: 4px;
+    }
+    button:hover { background: #555; }
+    pre {
+      background: #1b1b1b; padding: 15px; border-radius: 8px;
+      white-space: pre-wrap; word-wrap: break-word; line-height: 1.4;
+    }
+    input {
+      background: #1b1b1b; color: #eee; border: 1px solid #444; border-radius: 4px;
+      padding: 6px; width: 200px; margin: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Smart Queue API Tester</h2>
+  <p>Base URL: <code>http://192.168.1.6:4000/api</code></p>
+
+  <div>
+    <input id="counterId" type="text" placeholder="Enter counter ID (for PUT/DELETE)" />
+  </div>
+
+  <div>
+    <button onclick="testEndpoint('GET', '/counters')">GET /counters</button>
+    <button onclick="testEndpoint('POST', '/counters')">POST /counters</button>
+    <button onclick="testEndpoint('PUT', '/counters', true)">PUT /counters/:id</button>
+    <button onclick="testEndpoint('DELETE', '/counters', true)">DELETE /counters/:id</button>
+    <br />
+    <button onclick="testEndpoint('GET', '/devices')">GET /devices</button>
+    <button onclick="testEndpoint('GET', '/session')">GET /session</button>
+    <button onclick="testEndpoint('GET', '/server/check')">GET /server/check</button>
+  </div>
+
+  <h3>Response</h3>
+  <pre id="output">No request yet.</pre>
+
+  <script>
+    const BASE = "http://192.168.1.6:4000/api";
+
+    async function testEndpoint(method, path, needsId = false) {
+      const idInput = document.getElementById("counterId").value.trim();
+      const output = document.getElementById("output");
+      output.textContent = "Loading...";
+
+      try {
+        if (needsId && !idInput) {
+          output.textContent = "Error: Counter ID is required for this action.";
+          return;
+        }
+
+        const target = needsId ? `${path}/${idInput}` : path;
+        const opts = { method, headers: { "Content-Type": "application/json" } };
+        if (method === "POST" || method === "PUT")
+          opts.body = JSON.stringify({ name: "Test Counter" });
+
+        const res = await fetch(BASE + target, opts);
+        const text = await res.text();
+
+        let formatted;
+        try {
+          const json = JSON.parse(text);
+          formatted = JSON.stringify(json, null, 2);
+        } catch {
+          formatted = text;
+        }
+
+        output.textContent = `Method: ${method}\nEndpoint: ${target}\nStatus: ${res.status}\n\n${formatted}`;
+      } catch (err) {
+        output.textContent = "Error: " + err;
+      }
+    }
+  </script>
+</body>
+</html>
