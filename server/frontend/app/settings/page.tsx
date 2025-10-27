@@ -1,3 +1,4 @@
+// Dashboard - @FE - Jana
 "use client";
 import React from "react";
 import { Power } from "lucide-react";
