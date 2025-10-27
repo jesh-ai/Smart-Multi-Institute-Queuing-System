@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useEffect, useRef, useState } from "react";
 
 type QueueStatus = "IN LINE" | "PROCESSING" | "CLOSED";
 
@@ -17,19 +18,53 @@ export default function QueueChatUI({
   waitTime = "Approx. 2 mins wait time",
   message = "Please proceed to Counter 4.",
 }: Props) {
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
+  const initialViewportHeight = useRef<number | null>(null);
+
+  useEffect(() => {
+    // Only run in browser
+    if (typeof window === "undefined") return;
+
+    const getHeight = () =>
+      window.visualViewport ? window.visualViewport.height : window.innerHeight;
+
+    // store initial height
+    initialViewportHeight.current = getHeight();
+
+    const threshold = 150; // px reduction to treat as keyboard open
+
+    const onResize = () => {
+      const h = getHeight();
+      const initial = initialViewportHeight.current ?? window.innerHeight;
+      // if viewport height reduced significantly, keyboard likely opened
+      if (initial - h > threshold) {
+        setKeyboardOpen(true);
+      } else {
+        setKeyboardOpen(false);
+      }
+    };
+
+    // visualViewport provides better events on mobile
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", onResize);
+    } else {
+      window.addEventListener("resize", onResize);
+    }
+
+    return () => {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener("resize", onResize);
+      } else {
+        window.removeEventListener("resize", onResize);
+      }
+    };
+  }, []);
   const statusColor =
     status === "IN LINE"
       ? "text-yellow-600"
       : status === "PROCESSING"
       ? "text-green-600 bg-green-100"
       : "text-red-600 bg-red-100";
-
-  const bannerBg =
-    status === "IN LINE"
-      ? "bg-yellow-600"
-      : status === "PROCESSING"
-      ? "bg-green-600"
-      : "bg-red-600";
 
   const headerText =
     status === "IN LINE"
@@ -43,19 +78,29 @@ export default function QueueChatUI({
       ? "You may now leave the counter."
       : `Please proceed to Counter ${counter}.`;
 
+  // When keyboard opens on mobile, show only the small status pill (as requested)
+  if (keyboardOpen) {
+    return (
+      <div className="sticky top-12 z-20 bg-white py-2">
+        <div className="text-sm text-white font-semibold bg-[#2b4059] p-2 rounded-lg w-[225px] mx-auto">
+          Queue Status:{" "}
+          <span className={`${statusColor} px-1 rounded`}>{status}</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="sticky top-0 flex flex-col text-gray-900">
-     
+    // offset slightly so header (sticky top-0 z-50) remains visible above this
+    <div className="sticky top-16 z-40 flex flex-col text-gray-900">
       {/* Main chat bubble */}
       <main className="flex-1 px-4 py-5 space-y-3">
         <div className="max-w-sm bg-gray-100 rounded-2xl shadow p-4 space-y-3 border border-gray-200">
           <div className="flex justify-between items-center bg-gray-200 p-3 rounded-lg">
-            <div >
+            <div>
               <div className="text-sm text-white font-semibold bg-[#2b4059] p-2 rounded-lg w-[225px]">
                 Queue Status:{" "}
-                <span className={`${statusColor} px-1 rounded`}>
-                  {status}
-                </span>
+                <span className={`${statusColor} px-1 rounded`}>{status}</span>
               </div>
               <div className="text-4xl font-bold text-gray-900 mt-1">
                 {queueNumber}
@@ -88,7 +133,6 @@ export default function QueueChatUI({
           </div>
         </div>
       </main>
-
     </div>
   );
 }
