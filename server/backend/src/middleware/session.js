@@ -39,27 +39,18 @@ export function recordSession(req, res, next) {
   const wasMissingDate = !req.session.dateCreated;
   const wasMissingDevice = !req.session.deviceId;
   const isFirstSave = wasMissingDate || wasMissingDevice || req.session.isNew;
-
+  
   function normalizeIp(raw) {
     if (!raw) return null;
-    let s = String(raw).split(',')[0].trim();
-    if (!s) return null;
-    if (s.startsWith('[') && s.includes(']')) {
-      s = s.slice(1, s.indexOf(']'));
-    }
-    if (s.includes('%')) s = s.split('%')[0];
-    const mMapped = s.match(/::ffff:(\d+\.\d+\.\d+\.\d+)(?::\d+)?$/i);
-    if (mMapped) return mMapped[1];
-    const mV4 = s.match(/^(\d+\.\d+\.\d+\.\d+)(?::\d+)?$/);
-    if (mV4) return mV4[1];
-    const m6 = s.match(/^(.*?)(?::(\d+))?$/);
-    if (m6) return m6[1] || null;
-    return null;
+    const s = String(raw).split(',')[0].trim();
+    return s || null;
   }
 
   const forwarded = req.headers && (req.headers['x-forwarded-for'] || req.headers['X-Forwarded-For']);
   const ipFromHeader = forwarded ? String(forwarded).split(',')[0].trim() : null;
-  const rawIp = ipFromHeader || req.ip || (req.connection && req.connection.remoteAddress) || null;
+  const reqIp = req.ip || null;
+  const connIp = (req.connection && req.connection.remoteAddress) || (req.socket && req.socket.remoteAddress) || null;
+  const rawIp = ipFromHeader || reqIp || connIp || null;
   const cleanIp = normalizeIp(rawIp);
 
   const secFetchMode = (req.headers && (req.headers['sec-fetch-mode'] || req.headers['Sec-Fetch-Mode'])) || '';
@@ -69,7 +60,6 @@ export function recordSession(req, res, next) {
     if (wasMissingDate) req.session.dateCreated = new Date().toISOString();
     if (wasMissingDevice) req.session.deviceId = `device-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     if (cleanIp) req.session.ip = cleanIp;
-    req.session.lastSeen = new Date().toISOString();
     req.session.save((err) => {
       if (err) console.error("Error saving session:", err);
       else if (isFirstSave) console.debug("Session saved", req.sessionID, req.session.deviceId);

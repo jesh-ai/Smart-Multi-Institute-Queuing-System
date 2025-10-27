@@ -31,7 +31,10 @@ export function storeSession(sessionID, session) {
   const ttlMs = DEFAULT_TTL_SECONDS * 1000;
   const expiry = Date.now() + ttlMs;
 
-  db.prepare(
-    `INSERT OR REPLACE INTO sessions (sid, sess, expired) VALUES (?, ?, ?)`
-  ).run(sessionID, JSON.stringify(session), expiry);
+
+  db.prepare(`INSERT OR REPLACE INTO sessions (sid, sess, expired) VALUES (?, ?, ?)`).run(
+    sessionID,
+    JSON.stringify(session),
+    expiry
+  );
 }
