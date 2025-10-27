@@ -44,7 +44,7 @@ export async function getCounterId(req, res) {
 
   const sid = getDeviceId(req);
 
-  if (req.session) {session
+  if (req.session) {
     req.session.userType = "counter";
     try {
       await new Promise((resolve, reject) => {
