@@ -13,10 +13,10 @@ export default function ChatInterface({
   const [showMenu, setShowMenu] = useState<boolean>(!!desktopMenu);
   // MenuScreen moved here for desktop
   const MenuScreen = () => (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="h-full bg-white flex flex-col">
       {/* Header is provided globally by layout.tsx; don't render it here to avoid duplicates */}
 
-      <main className="flex-1 flex flex-col items-center justify-center p-8">
+      <main className="flex-1 flex flex-col items-center justify-center p-8 overflow-auto">
         <div className="mb-12 text-center">
           <div className="w-20 h-20 bg-gray-700 rounded-full mx-auto mb-4"></div>
           <h2 className="text-2xl font-bold text-gray-800">Welcome!</h2>

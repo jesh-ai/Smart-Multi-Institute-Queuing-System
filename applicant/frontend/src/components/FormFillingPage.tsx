@@ -42,6 +42,20 @@ function isObjectEmptyValues(obj: JsonValue): boolean {
 }
 
 export default function FormFillingPage({ onBack }: { onBack: () => void }) {
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener?.("change", update);
+    window.addEventListener("resize", update);
+    return () => {
+      mq.removeEventListener?.("change", update);
+      window.removeEventListener("resize", update);
+    };
+  }, []);
   const [formDef, setFormDef] = useState<JsonObject | null>(null);
   const [formData, setFormData] = useState<JsonObject>({});
   const [loading, setLoading] = useState(true);
@@ -117,6 +131,36 @@ export default function FormFillingPage({ onBack }: { onBack: () => void }) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         Loading form...
+      </div>
+    );
+  }
+
+  // Desktop: use the richer card layout inspired by FormPage.tsx but keep dynamic fields
+  if (isDesktop) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center bg-white overflow-auto">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-[#B7C3C7] rounded-lg shadow-md w-full max-w-3xl my-7 px-6 py-6 flex flex-col gap-3"
+        >
+          <h2 className="text-2xl font-bold text-[#34495E] pt-2">
+            Fill up form to proceed
+          </h2>
+
+          {/* Render dynamic fields from formDef (keeps the JSON-driven inputs) */}
+          <div className="space-y-4">
+            {formDef && renderObjectFields(formDef, "")}
+          </div>
+
+          <div className="flex justify-end mt-4 mb-4">
+            <button
+              type="submit"
+              className="px-8 py-2 rounded-full bg-[#132437] text-white hover:bg-[#0f1a29]"
+            >
+              Submit
+            </button>
+          </div>
+        </form>
       </div>
     );
   }

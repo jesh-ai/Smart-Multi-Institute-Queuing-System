@@ -156,24 +156,28 @@ export default function Home() {
     setShowStatus(true);
   };
 
+  const handleShowFeedback = () => {
+    setShowFeedback(true);
+  };
+
   // If desktop viewport, show the desktop start/consent screens here.
   if (isDesktop) {
     if (desktopScreen === "start") {
       return (
-        <div className="min-h-screen bg-[#243344] flex items-center justify-center p-8">
+        <div className="fixed inset-0 bg-[#243344] flex items-center justify-center p-8">
           <div
-            className="bg-[#e7edf4] border-[16px] border-[#3d5063] w-full max-w-6xl aspect-[16/9] flex flex-col items-center justify-center cursor-pointer shadow-xl"
+            className="bg-[#ffffff] border-[16px] border-[#3d5063] w-[95%] max-w-[1600px] aspect-[16/9] flex flex-col items-center justify-center cursor-pointer shadow-xl"
             onClick={() => setDesktopScreen("consent")}
           >
             <div className="mb-8">
               <Image
-                src="/Insitute.png"
+                src="/institute.png"
                 alt="Institute Logo"
-                width={192}
-                height={192}
+                width={280}
+                height={280}
               />
             </div>
-            <p className="text-4xl font-semibold text-gray-700 italic">
+            <p className="text-5xl font-semibold text-gray-700 italic">
               Press anywhere to start
             </p>
           </div>
@@ -183,9 +187,9 @@ export default function Home() {
 
     if (desktopScreen === "consent") {
       return (
-        <div className="min-h-screen bg-white flex flex-col">
+        <div className="h-full bg-white flex flex-col">
           {/* Header provided by layout.tsx to avoid duplicate headers */}
-          <main className="flex-1 flex items-center justify-center p-8">
+          <main className="flex-1 flex items-center justify-center p-8 overflow-auto">
             <div className="bg-gray-400 rounded-lg p-12 w-full max-w-md relative shadow-lg">
               <div className="absolute top-0 right-0 w-2 h-full bg-gray-600 rounded-r-lg"></div>
 
@@ -213,6 +217,21 @@ export default function Home() {
     }
 
     // desktopScreen === 'menu' -> render ChatInterface in menu mode
+    // If feedback should be shown (after clicking status), show feedback page
+    if (showFeedback) {
+      return <FeedbackPage onBack={handleBackFromFeedback} />;
+    }
+
+    // If status should be shown after form submission, show the queue status
+    if (showStatus) {
+      return <QueueChatUI onShowFeedback={handleShowFeedback} />;
+    }
+
+    // If the user requested the form on desktop, show the form page instead of the chat
+    if (showForm) {
+      return <FormFillingPage onBack={handleBackFromForm} />;
+    }
+
     return <ChatInterface onShowForm={() => setShowForm(true)} desktopMenu />;
   }
 
