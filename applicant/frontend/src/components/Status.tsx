@@ -9,6 +9,7 @@ interface Props {
   counter?: number;
   waitTime?: string;
   message?: string;
+  onShowFeedback?: () => void;
 }
 
 export default function QueueChatUI({
@@ -17,9 +18,24 @@ export default function QueueChatUI({
   counter = 4,
   waitTime = "Approx. 2 mins wait time",
   message = "Please proceed to Counter 4.",
+  onShowFeedback,
 }: Props) {
   const [keyboardOpen, setKeyboardOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
   const initialViewportHeight = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener?.("change", update);
+    window.addEventListener("resize", update);
+    return () => {
+      mq.removeEventListener?.("change", update);
+      window.removeEventListener("resize", update);
+    };
+  }, []);
 
   useEffect(() => {
     // Only run in browser
@@ -77,6 +93,41 @@ export default function QueueChatUI({
     status === "CLOSED"
       ? "You may now leave the counter."
       : `Please proceed to Counter ${counter}.`;
+
+  // Desktop: Show full-page queue status
+  if (isDesktop) {
+    return (
+      <div
+        className="h-full flex flex-col items-center justify-between bg-white pt-8 cursor-pointer"
+        onClick={onShowFeedback}
+      >
+        {/* Queue Info */}
+        <div className="flex flex-col items-center flex-grow justify-center">
+          <h1 className="text-6xl font-bold text-[#1F3243]">{queueNumber}</h1>
+          <p className="text-2xl text-[#1F3243] mt-2">
+            You have joined the queue
+          </p>
+          <p className="italic text-[#1F3243] text-lg">You are now in line</p>
+
+          <div className="bg-[#AEB8B8] rounded-lg justify-center p-10 mt-12 flex items-center gap-10 shadow-md">
+            <div className="text-[#1F3243] text-3xl">
+              <p>Please proceed to</p>
+              <p>
+                <strong>counter {counter}</strong> when{" "}
+              </p>
+              <strong>{queueNumber}</strong> is called
+            </div>
+            <div className="bg-[#1F3243] text-white text-center p-8 rounded-lg min-w-[200px]">
+              <p className="text-3xl font-semibold text-[#D5DBDB]">Counter</p>
+              <p className="text-8xl pt-6 font-bold text-[#D5DBDB]">
+                {counter}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // When keyboard opens on mobile, show only the small status pill (as requested)
   if (keyboardOpen) {
