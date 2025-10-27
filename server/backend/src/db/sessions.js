@@ -38,3 +38,39 @@ export function storeSession(sessionID, session) {
     expiry
   );
 }
+
+export function findSessionByDeviceId(deviceId) {
+  const rows = db.prepare("SELECT sid AS id, sess AS data FROM sessions").all();
+  for (const row of rows) {
+    try {
+      const sessionData = JSON.parse(row.data);
+      if (sessionData.deviceId === deviceId) {
+        return { id: row.id, data: sessionData };
+      }
+    } catch (e) {
+      // Skip invalid JSON
+    }
+  }
+  return null;
+}
+
+export function findSessionsByUserAgent(userAgent) {
+  const rows = db.prepare("SELECT sid AS id, sess AS data FROM sessions").all();
+  const matches = [];
+  for (const row of rows) {
+    try {
+      const sessionData = JSON.parse(row.data);
+      // Check if deviceId contains the user agent (since deviceId is "ip-useragent")
+      if (sessionData.deviceId && sessionData.deviceId.includes(userAgent)) {
+        matches.push({ id: row.id, data: sessionData });
+      }
+    } catch (e) {
+      // Skip invalid JSON
+    }
+  }
+  return matches;
+}
+
+export function deleteSession(sessionID) {
+  db.prepare("DELETE FROM sessions WHERE sid = ?").run(sessionID);
+}

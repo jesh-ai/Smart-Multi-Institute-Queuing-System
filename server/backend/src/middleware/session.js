@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import session from "express-session";
 import SQLiteStoreFactory from "connect-sqlite3";
+import { findSessionsByUserAgent } from "../db/sessions.js";
 
 const SQLiteStore = SQLiteStoreFactory(session);
 const isProd = process.env.NODE_ENV === "production";
@@ -30,43 +31,37 @@ export const sessionMiddleware = session({
 });
 
 export function recordSession(req, res, next) {
-  if (!req.session) return next();
-  const accept = (req.headers && req.headers.accept) || '';
-  const wantsHtml = accept.includes('text/html');
-  const cookieHeader = (req.headers && req.headers.cookie) || '';
-  const hasCookie = cookieHeader.includes('connect.sid');
+  const s = req.session;
+  if (!s) return next();
 
-  const wasMissingDate = !req.session.dateCreated;
-  const wasMissingDevice = !req.session.deviceId;
-  const isFirstSave = wasMissingDate || wasMissingDevice || req.session.isNew;
-  
-  function normalizeIp(raw) {
-    if (!raw) return null;
-    const s = String(raw).split(',')[0].trim();
-    return s || null;
+  const cookie = req.headers.cookie || '';
+  const hasCookie = cookie.includes('connect.sid');
+
+  function getIp() {
+    const raw = req.headers['x-forwarded-for'] || req.ip || req.socket?.remoteAddress || '';
+    let ip = String(raw).split(',')[0].trim();
+    if (ip.startsWith('::ffff:')) ip = ip.slice(7);
+    if (['::1', '127.0.0.1', 'localhost'].includes(ip)) return 'localhost';
+    return ip || null;
   }
 
-  const forwarded = req.headers && (req.headers['x-forwarded-for'] || req.headers['X-Forwarded-For']);
-  const ipFromHeader = forwarded ? String(forwarded).split(',')[0].trim() : null;
-  const reqIp = req.ip || null;
-  const connIp = (req.connection && req.connection.remoteAddress) || (req.socket && req.socket.remoteAddress) || null;
-  const rawIp = ipFromHeader || reqIp || connIp || null;
-  const cleanIp = normalizeIp(rawIp);
+  const ip = getIp();
+  const ua = req.headers['user-agent'] || 'unknown';
+  const normalizedIp = /^(localhost|192\.168\.|10\.|172\.16\.)/.test(ip || '') ? 'local-machine' : ip;
+  const fingerprint = `${normalizedIp}-${ua}`;
 
-  const secFetchMode = (req.headers && (req.headers['sec-fetch-mode'] || req.headers['Sec-Fetch-Mode'])) || '';
-  const secFetchDest = (req.headers && (req.headers['sec-fetch-dest'] || req.headers['Sec-Fetch-Dest'])) || '';
-  const isNavigation = secFetchMode === 'navigate' || secFetchDest === 'document';
-  if (hasCookie || isNavigation) {
-    if (wasMissingDate) req.session.dateCreated = new Date().toISOString();
-    if (wasMissingDevice) req.session.deviceId = `device-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-    if (cleanIp) req.session.ip = cleanIp;
-    req.session.save((err) => {
-      if (err) console.error("Error saving session:", err);
-      else if (isFirstSave) console.debug("Session saved", req.sessionID, req.session.deviceId);
-      next();
-    });
-    return;
+  if (!hasCookie) {
+    const existing = findSessionsByUserAgent(ua);
+    if (existing.length) return next();
   }
 
-  next();
+  if (!s.dateCreated) s.dateCreated = new Date().toISOString();
+  if (!s.deviceId || s.deviceId !== fingerprint) s.deviceId = fingerprint;
+  if (ip) s.ip = ip;
+
+  s.save(err => {
+    if (err) console.error('Session save error:', err);
+    else if (s.isNew) console.debug('Session created', s.id, s.deviceId);
+    next();
+  });
 }
