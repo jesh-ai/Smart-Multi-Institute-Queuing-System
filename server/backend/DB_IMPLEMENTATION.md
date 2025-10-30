@@ -3,7 +3,7 @@
 ## Overview
 This document details the SQLite database implementation for the applicant side of the Smart Multi-Institute Queuing System.
 
-## 📦 Installed Dependencies
+## Installed Dependencies
 ```bash
 npm install better-sqlite3 uuid
 ```
@@ -11,7 +11,7 @@ npm install better-sqlite3 uuid
 - **better-sqlite3**: Fast, synchronous SQLite3 bindings for Node.js
 - **uuid**: Generate unique session IDs
 
-## 🗄️ Database Schema
+## Database Schema
 
 Based on the official ERD: https://dbdiagram.io/d/SMART-QUEUING-SYSTEM-68cd7dbc960f6d821af5426b
 
@@ -102,7 +102,7 @@ Based on the official ERD: https://dbdiagram.io/d/SMART-QUEUING-SYSTEM-68cd7dbc9
 - `idx_audit_logs_user` - Fast user audit trail queries
 - `idx_session_responses` - Fast session response lookups
 
-## 📁 File Structure
+## File Structure
 
 ```
 server/backend/
@@ -124,67 +124,67 @@ server/backend/
 │   └── server.js                   # Server entry (initializes DB on start)
 ```
 
-## 🔧 CRUD Operations Implemented
+## CRUD Operations Implemented
 
 ### Applicant Operations
-- ✅ `createApplicant(name, contact, piiMinimized)`
-- ✅ `getApplicant(applicantId)`
-- ✅ `findApplicantByContact(contact)`
-- ✅ `updateApplicant(applicantId, ...)`
-- ✅ `deleteApplicant(applicantId)`
+- `createApplicant(name, contact, piiMinimized)`
+- `getApplicant(applicantId)`
+- `findApplicantByContact(contact)`
+- `updateApplicant(applicantId, ...)`
+- `deleteApplicant(applicantId)`
 
 ### Session Operations
-- ✅ `createSession(applicantId, instituteId, serviceId, aiThreadId)`
-- ✅ `getSession(sessionId)`
-- ✅ `getActiveSessions()`
-- ✅ `getSessionsByApplicant(applicantId)`
-- ✅ `updateSessionService(sessionId, serviceId)`
-- ✅ `updateSessionAIThread(sessionId, aiThreadId)`
-- ✅ `updateSessionStatus(sessionId, status)`
-- ✅ `touchSession(sessionId)` - Update activity timestamp
-- ✅ `completeSession(sessionId)`
-- ✅ `abandonSession(sessionId)`
-- ✅ `deleteSession(sessionId)`
-- ✅ `cleanupExpiredSessions(hoursOld)` - Utility
+- `createSession(applicantId, instituteId, serviceId, aiThreadId)`
+- `getSession(sessionId)`
+- `getActiveSessions()`
+- `getSessionsByApplicant(applicantId)`
+- `updateSessionService(sessionId, serviceId)`
+- `updateSessionAIThread(sessionId, aiThreadId)`
+- `updateSessionStatus(sessionId, status)`
+- `touchSession(sessionId)` - Update activity timestamp
+- `completeSession(sessionId)`
+- `abandonSession(sessionId)`
+- `deleteSession(sessionId)`
+- `cleanupExpiredSessions(hoursOld)` - Utility
 
 ### Queue Operations
-- ✅ `createQueueItem(sessionId, serviceId, priority)` - Auto-generates queue number
-- ✅ `getQueueItem(queueId)`
-- ✅ `getQueueBySession(sessionId)`
-- ✅ `getQueueByNumber(queueNo)`
-- ✅ `getWaitingQueue(serviceId, limit)`
-- ✅ `getAllWaitingQueue(limit)`
-- ✅ `callQueueItem(queueId, counterId)`
-- ✅ `serveQueueItem(queueId)`
-- ✅ `completeQueueItem(queueId)`
-- ✅ `cancelQueueItem(queueId)`
-- ✅ `markNoShow(queueId)`
-- ✅ `deleteQueueItem(queueId)`
-- ✅ `getQueueStats(serviceId)` - Analytics
+- `createQueueItem(sessionId, serviceId, priority)` - Auto-generates queue number
+- `getQueueItem(queueId)`
+- `getQueueBySession(sessionId)`
+- `getQueueByNumber(queueNo)`
+- `getWaitingQueue(serviceId, limit)`
+- `getAllWaitingQueue(limit)`
+- `callQueueItem(queueId, counterId)`
+- `serveQueueItem(queueId)`
+- `completeQueueItem(queueId)`
+- `cancelQueueItem(queueId)`
+- `markNoShow(queueId)`
+- `deleteQueueItem(queueId)`
+- `getQueueStats(serviceId)` - Analytics
 
 ### Response Operations
-- ✅ `createResponse(sessionId, questionKey, answer)`
-- ✅ `getSessionResponses(sessionId)`
-- ✅ `getResponse(sessionId, questionKey)`
-- ✅ `getSessionResponsesObject(sessionId)` - Returns key-value object
-- ✅ `updateResponse(sessionId, questionKey, newAnswer)`
-- ✅ `deleteSessionResponses(sessionId)`
-- ✅ `deleteResponse(responseId)`
+- `createResponse(sessionId, questionKey, answer)`
+- `getSessionResponses(sessionId)`
+- `getResponse(sessionId, questionKey)`
+- `getSessionResponsesObject(sessionId)` - Returns key-value object
+- `updateResponse(sessionId, questionKey, newAnswer)`
+- `deleteSessionResponses(sessionId)`
+- `deleteResponse(responseId)`
 
 ### Service/Institute Operations
-- ✅ `createInstitute(name, address)`
-- ✅ `getInstitute(instituteId)`
-- ✅ `getAllInstitutes()`
-- ✅ `updateInstitute(instituteId, name, address)`
-- ✅ `deleteInstitute(instituteId)`
-- ✅ `createService(instituteId, name, formId, avgTime, priorityRules)`
-- ✅ `getService(serviceId)` - Includes form schema
-- ✅ `getServicesByInstitute(instituteId)`
-- ✅ `getAllServices()`
-- ✅ `updateService(serviceId, ...)`
-- ✅ `deleteService(serviceId)`
+- `createInstitute(name, address)`
+- `getInstitute(instituteId)`
+- `getAllInstitutes()`
+- `updateInstitute(instituteId, name, address)`
+- `deleteInstitute(instituteId)`
+- `createService(instituteId, name, formId, avgTime, priorityRules)`
+- `getService(serviceId)` - Includes form schema
+- `getServicesByInstitute(instituteId)`
+- `getAllServices()`
+- `updateService(serviceId, ...)`
+- `deleteService(serviceId)`
 
-## 🎬 Initialization Flow
+## Initialization Flow
 
 1. Server starts → `src/server.js`
 2. Imports `initializeSchema()` and `seedInitialData()` from `src/config/schema.js`
@@ -196,7 +196,7 @@ server/backend/
    - 4 Services: Passport Application, Passport Renewal, Record Certification, Clearance
 6. Server starts listening on port 4000
 
-## 🔒 Security Features
+## Security Features
 
 - **Foreign Keys Enabled**: Data integrity enforced
 - **CASCADE DELETE**: Automatic cleanup of related records
@@ -204,7 +204,7 @@ server/backend/
 - **Audit Logs**: Track all user actions with payloads
 - **Input Validation**: CRUD operations include error handling
 
-## 📊 Seeded Data
+## Seeded Data
 
 ### Default Institute: DFA
 - **Name**: Department of Foreign Affairs
@@ -228,7 +228,7 @@ server/backend/
 }
 ```
 
-## ✅ Testing Performed
+## Testing Performed
 
 - [x] Database file created: `applicant.db`
 - [x] Schema initialization successful
@@ -238,7 +238,7 @@ server/backend/
 - [x] All indexes created
 - [x] Foreign key relationships enforced
 
-## 🚀 Next Steps
+## Next Steps
 
 1. **Integrate with ApplicantMessageSend.js**
    - Create/retrieve sessions on chatbot start
@@ -262,14 +262,14 @@ server/backend/
    - Input sanitization
    - Business logic validation
 
-## 📝 Notes
+## Notes
 
 - All timestamps stored as UNIX epoch (seconds)
 - Queue numbers auto-generated with prefix (e.g., "P001" for Passport)
 - Session status managed through state machine (active → completed/abandoned/expired)
 - Database uses better-sqlite3 (synchronous, fast, embedded)
 
-## 🔧 Maintenance
+## Maintenance
 
 ### Cleanup Old Sessions
 ```javascript
@@ -288,4 +288,4 @@ const serviceStats = getQueueStats(1); // Specific service
 
 **Database Location**: `server/backend/applicant.db`
 **Last Updated**: October 31, 2025
-**Status**: ✅ Ready for Integration
+**Status**: Ready for Integration
