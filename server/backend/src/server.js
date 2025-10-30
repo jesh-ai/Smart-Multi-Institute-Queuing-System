@@ -7,7 +7,13 @@ import morgan from 'morgan';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import routes from './routes/index.js';
+import { initializeSchema, seedInitialData } from './config/schema.js';
 import { startScan } from './controllers/session.controller.js';
+
+// Initialize database
+console.log('Initializing database...');
+initializeSchema();
+seedInitialData();
 
 const app = express();
 
