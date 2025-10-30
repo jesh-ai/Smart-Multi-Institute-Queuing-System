@@ -1,6 +1,7 @@
 import { Router } from "express";
 import QRCode from "qrcode";
 import applicantRoutes from "../applicant/ApplicantRoutes.js";
+import testRoutes from "./test.routes.js";
 
 const router = Router();
 
@@ -18,5 +19,8 @@ router.get("/qr", async (req, res) => {
 
 // Applicant chatbot route
 router.use("/chatbot", applicantRoutes);
+
+// Test/debug routes (for development only)
+router.use("/test", testRoutes);
 
 export default router;
