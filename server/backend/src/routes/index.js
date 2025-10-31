@@ -43,4 +43,6 @@ res.json({ isServer: serverIp === clientIp });
 // Applicant chatbot route
 router.use("/chatbot", applicantRoutes);
 
+router.use('/counter', counterRoutes);
+
 export default router;
