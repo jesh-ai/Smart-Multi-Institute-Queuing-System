@@ -28,7 +28,7 @@
       padding: 0.5rem 0.9rem; 
       cursor: pointer; 
     }
-    #gotoTest { 
+    #gotoTest, #gotoApiTester { 
       margin-top: 1rem; 
       padding: 0.5rem 1rem; 
       font-size: 1rem; 
@@ -41,7 +41,8 @@
     }
   </style>
 </head>
- <h1>Smart Queue</h1>
+<body>
+  <h1>Smart Queue</h1>
   <p id="scanHint">Scan to Begin</p>
 
   <div id="scannerWrap">
@@ -58,19 +59,21 @@
       <button id="toggleFlash" class="btn">Flashlight</button>
       <!-- <button id="proceed" class="btn">Proceed (skip scan)</button> -->
     </div>
+  </div>
 
-
-  <!-- button that appears after QR code is generated -->
-  <button id="gotoTest">Go to Test Page</button>
+  <!-- buttons that appear after QR code is generated -->
+  <div style="margin-top: 1rem;">
+    <button id="gotoTest">Go to Test Page</button>
+    <br>
+    <button id="gotoApiTester">Go to API Tester</button>
+  </div>
 
   <script>
-    //removed generateBtn
     const qrDiv = document.getElementById('qrcode');
     const gotoTestBtn = document.getElementById('gotoTest');
     const openCameraBtn = document.getElementById('openCamera');
     const flipCameraBtn = document.getElementById('flipCamera');
     const toggleFlashBtn = document.getElementById('toggleFlash');
-    //const proceedBtn = document.getElementById('proceed');
     const video = document.getElementById('videoPreview');
 
     // --- QR fetch on load
@@ -174,6 +177,12 @@
     // Keep "Go to Test Page" (do not remove)
     gotoTestBtn.addEventListener('click', () => {
       window.location.href = '/test.html';
+    });
+
+    // Go to API Tester
+    const gotoApiTesterBtn = document.getElementById('gotoApiTester');
+    gotoApiTesterBtn.addEventListener('click', () => {
+      window.location.href = '/api-tester.html';
     });
 
     // load QR immediately on page load
