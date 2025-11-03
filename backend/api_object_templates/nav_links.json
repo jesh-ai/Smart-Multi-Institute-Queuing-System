@@ -1,0 +1,27 @@
+[
+  {
+    "name": "Applicant Portal",
+    "href": "/",
+    "icon": "applicant"
+  },
+  {
+    "name": "Counter Dashboard", 
+    "href": "/counter",
+    "icon": "counter"
+  },
+  {
+    "name": "Queue Management",
+    "href": "/queue", 
+    "icon": "queue"
+  },
+  {
+    "name": "System Management",
+    "href": "/system",
+    "icon": "system"
+  },
+  {
+    "name": "Settings",
+    "href": "/settings",
+    "icon": "settings"
+  }
+]

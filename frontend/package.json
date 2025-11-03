@@ -1,0 +1,22 @@
+{
+  "name": "smart-queue-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:applicant\" \"npm run dev:counter\" \"npm run dev:server\"",
+    "dev:applicant": "cd applicant && npm run dev -- --port 3001",
+    "dev:counter": "cd counter && npm run dev -- --port 3002", 
+    "dev:server": "cd server && npm run dev -- --port 3000",
+    "build": "npm run build:applicant && npm run build:counter && npm run build:server",
+    "build:applicant": "cd applicant && npm run build",
+    "build:counter": "cd counter && npm run build",
+    "build:server": "cd server && npm run build",
+    "start": "concurrently \"npm run start:applicant\" \"npm run start:counter\" \"npm run start:server\"",
+    "start:applicant": "cd applicant && npm start -- --port 3001",
+    "start:counter": "cd counter && npm start -- --port 3002",
+    "start:server": "cd server && npm start -- --port 3000"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
