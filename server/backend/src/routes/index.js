@@ -4,6 +4,8 @@ import QRCode from 'qrcode';
 import { getCurrentSession } from './session.routes.js';
 import { fetchSessions } from '../db/sessions.js';
 import { deleteCounterRoute, getCounterId, getCounters, postCounter, putCounter } from './counterSession.routes.js';
+import applicantRoutes from '../applicant/ApplicantRoutes.js';
+import testRoutes from './test.routes.js';
 import express from "express";
 
 const router = Router();
