@@ -1,0 +1,8 @@
+[
+  { "id": 1, "counterName": "Counter Station 01", "sessionKey": "CS-2025-001-A4F9", "startedAt": "Oct 24, 2025 08:30 AM", "status": "Online", "endedAt": "-" },
+  { "id": 2, "counterName": "Counter Station 02", "sessionKey": "CS-2025-002-B7E2", "startedAt": "Oct 24, 2025 08:35 AM", "status": "Online", "endedAt": "-" },
+  { "id": 3, "counterName": "Counter Station 03", "sessionKey": "CS-2025-003-C9D1", "startedAt": "Oct 24, 2025 09:00 AM", "status": "Online", "endedAt": "-" },
+  { "id": 4, "counterName": "Counter Station 04", "sessionKey": "CS-2025-004-D2F8", "startedAt": "Oct 24, 2025 07:45 AM", "status": "Ended", "endedAt": "Oct 24, 2025 12:00 PM" },
+  { "id": 5, "counterName": "Counter Station 01", "sessionKey": "CS-2025-005-E6H3", "startedAt": "Oct 23, 2025 02:15 PM", "status": "Ended", "endedAt": "Oct 23, 2025 06:30 PM" },
+  { "id": 6, "counterName": "Counter Station 02", "sessionKey": "CS-2025-006-F1J7", "startedAt": "Oct 23, 2025 09:00 AM", "status": "Ended", "endedAt": "Oct 23, 2025 05:00 PM" }
+]

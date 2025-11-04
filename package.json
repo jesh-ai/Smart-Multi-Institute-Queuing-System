@@ -1,4 +1,29 @@
 {
+  "name": "smart-multi-institute-queuing-system",
+  "version": "1.0.0",
+  "description": "Smart Multi-Institute Queuing System with Frontend and Backend",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "install-all": "npm install && cd frontend && npm install && cd ../backend && npm install",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:frontend": "cd frontend && npm run dev:server",
+    "dev:backend": "cd backend && npm run dev",
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "start:frontend": "cd frontend && npm run start:server", 
+    "start:backend": "cd backend && npm start",
+    "build": "cd frontend && npm run build && cd ../backend && npm run build",
+    "server:start": "node scripts/server-start.js",
+    "server:stop": "node scripts/server-stop.js"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "open": "^10.1.0",
+    "kill-port": "^2.0.1"
+  },
   "dependencies": {
     "qrcode": "^1.5.4"
   }

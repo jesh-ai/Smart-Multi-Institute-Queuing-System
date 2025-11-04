@@ -1,0 +1,16 @@
+{
+  "queueStatus": { 
+    "inProgress": "0311", 
+    "nextInLine": "0312", 
+    "inQueue": "0200" 
+  },
+  "applicant": { 
+    "name": "Juana Del Rosario", 
+    "queue": "0311", 
+    "request": "Marriage Certificate" 
+  },
+  "counterStatus": { 
+    "status": "BUSY", 
+    "queue": "0311" 
+  }
+}

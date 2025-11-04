@@ -1,7 +1,51 @@
-## Smart-Multi-Institute-Queuing-System
-[applicant README](applicant/README.md)
-[counter README](counter/README.md)
-[server README](server/README.md)
+## Smart Multi-Institute Queuing System
+
+A comprehensive queuing system with Frontend (Next.js) and Backend (Node.js/Express) components.
+
+## Project Structure
+
+```
+Smart-Multi-Institute-Queuing-System/
+├── frontend/                # Shared frontend workspace
+│   ├── applicant/           # Applicant portal (Port 3001)
+│   ├── counter/             # Counter dashboard (Port 3002)
+│   ├── server/              # Server admin frontend (Port 3000)
+│   └── package.json         # Shared frontend dependencies
+├── backend/                 # Backend API server
+│   ├── src/                 # Source code
+│   ├── api_object_templates/ # JSON data templates
+│   └── package.json         # Backend dependencies
+├── scripts/                 # Server management scripts
+└── package.json             # Root workspace configuration
+```
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js (v18 or later)
+- npm
+
+### Installation
+
+1. **Install all dependencies:**
+   ```bash
+   npm run install-all
+   ```
+
+2. **Start the entire system:**
+   ```bash
+   npm run server:start
+   ```
+   This will:
+   - Start the backend server
+   - Start the server frontend (port 3000)
+   - Automatically open http://localhost:3000 in your browser
+
+3. **Stop the entire system:**
+   ```bash
+   npm run server:stop
+   ```
+   Or use the shutdown button in the server frontend settings page.
 
 ### UI/UX Lead - Frieda Marie V. Magaan
 #### Designers
