@@ -42,6 +42,20 @@ function isObjectEmptyValues(obj: JsonValue): boolean {
 }
 
 export default function FormFillingPage({ onBack }: { onBack: () => void }) {
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener?.("change", update);
+    window.addEventListener("resize", update);
+    return () => {
+      mq.removeEventListener?.("change", update);
+      window.removeEventListener("resize", update);
+    };
+  }, []);
   const [formDef, setFormDef] = useState<JsonObject | null>(null);
   const [formData, setFormData] = useState<JsonObject>({});
   const [loading, setLoading] = useState(true);
@@ -68,22 +82,14 @@ export default function FormFillingPage({ onBack }: { onBack: () => void }) {
     // fetch form definition from API
     const fetchForm = async () => {
       try {
-        const res = await fetch("http://localhost:4000/api/templates/form-input");
-        if (res.ok) {
-          const json = await res.json();
-          setFormDef(json);
-          // initialize formData with values from json (keeping structure)
-          const initData = deepCloneAndEmpty(json) as JsonObject;
-          setFormData(initData);
-        } else {
-          console.log('Missing API for /api/templates/form-input - using empty form');
-          setFormDef({});
-          setFormData({});
-        }
+        const res = await fetch("/api/get-form");
+        const json = await res.json();
+        setFormDef(json);
+        // initialize formData with values from json (keeping structure)
+        const initData = deepCloneAndEmpty(json) as JsonObject;
+        setFormData(initData);
       } catch (err) {
-        console.log('Missing API for /api/templates/form-input - fetch failed:', err);
-        setFormDef({});
-        setFormData({});
+        console.error("failed to load form", err);
       } finally {
         setLoading(false);
       }
@@ -101,15 +107,23 @@ export default function FormFillingPage({ onBack }: { onBack: () => void }) {
       return;
     }
 
-    // Log that we would save form data (simulating missing API)
-    console.log('Missing API for /api/save-form-input - would save:', {
-      data: formData,
-      form: formDef?.formNumber || "unknown",
-      timestamp: new Date().toISOString()
-    });
-    
-    alert("Form would be saved (API not connected)");
-    onBack();
+    try {
+      const res = await fetch("/api/save-form-input", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          data: formData,
+          form: formDef?.formNumber || "unknown",
+        }),
+      });
+      if (!res.ok) throw new Error("Save failed");
+      await res.json();
+      alert("Form saved to form_input.json");
+      onBack();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to save form input");
+    }
   };
   // use the helper defined above
 
@@ -117,6 +131,36 @@ export default function FormFillingPage({ onBack }: { onBack: () => void }) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         Loading form...
+      </div>
+    );
+  }
+
+  // Desktop: use the richer card layout inspired by FormPage.tsx but keep dynamic fields
+  if (isDesktop) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center bg-white overflow-auto">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-[#B7C3C7] rounded-lg shadow-md w-full max-w-3xl my-7 px-6 py-6 flex flex-col gap-3"
+        >
+          <h2 className="text-2xl font-bold text-[#34495E] pt-2">
+            Fill up form to proceed
+          </h2>
+
+          {/* Render dynamic fields from formDef (keeps the JSON-driven inputs) */}
+          <div className="space-y-4">
+            {formDef && renderObjectFields(formDef, "")}
+          </div>
+
+          <div className="flex justify-end mt-4 mb-4">
+            <button
+              type="submit"
+              className="px-8 py-2 rounded-full bg-[#132437] text-white hover:bg-[#0f1a29]"
+            >
+              Submit
+            </button>
+          </div>
+        </form>
       </div>
     );
   }

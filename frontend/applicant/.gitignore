@@ -41,3 +41,4 @@ yarn-error.log*
 next-env.d.ts
 
 /interactions.json
+/public/form_input.json
