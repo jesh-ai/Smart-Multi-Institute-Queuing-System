@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 
 // JSON types used for form definition and values
 type JsonValue = string | number | boolean | null | JsonObject | JsonValue[];
@@ -41,11 +42,8 @@ function isObjectEmptyValues(obj: JsonValue): boolean {
   return false;
 }
 
-export default function FormFillingPage({
-  onBackAction,
-}: {
-  onBackAction: () => void;
-}) {
+export default function FormFillingPage() {
+  const router = useRouter();
   const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
@@ -183,7 +181,7 @@ export default function FormFillingPage({
       if (!res.ok) throw new Error("Save failed");
       await res.json();
       alert("Form saved to form_input.json");
-      onBackAction();
+      router.back();
     } catch (err) {
       console.error(err);
       alert("Failed to save form input");
@@ -252,27 +250,43 @@ export default function FormFillingPage({
             )}
           </div>
 
-          <div className="flex justify-end mt-4 mb-4">
+          <div className="flex justify-between mt-4 mb-4">
             {(() => {
               const pages = chunk(leafFields, fieldsPerPage);
-              if (pageIndex < pages.length - 1) {
-                return (
+
+              return (
+                <>
+                  {/* Previous/Back button on the left */}
                   <button
                     type="button"
-                    onClick={() => setPageIndex((p) => p + 1)}
-                    className="px-8 py-2 rounded-full bg-[#132437] text-white hover:bg-[#0f1a29]"
+                    onClick={
+                      pageIndex === 0
+                        ? () => router.back()
+                        : () => setPageIndex((p) => p - 1)
+                    }
+                    className="px-8 py-2 rounded-full bg-gray-600 text-white hover:bg-gray-700"
                   >
-                    Next
+                    {pageIndex === 0 ? "Back" : "Previous"}
                   </button>
-                );
-              }
-              return (
-                <button
-                  type="submit"
-                  className="px-8 py-2 rounded-full bg-[#132437] text-white hover:bg-[#0f1a29]"
-                >
-                  Submit
-                </button>
+
+                  {/* Next/Submit button on the right */}
+                  {pageIndex < pages.length - 1 ? (
+                    <button
+                      type="button"
+                      onClick={() => setPageIndex((p) => p + 1)}
+                      className="px-8 py-2 rounded-full bg-[#132437] text-white hover:bg-[#0f1a29]"
+                    >
+                      Next
+                    </button>
+                  ) : (
+                    <button
+                      type="submit"
+                      className="px-8 py-2 rounded-full bg-[#132437] text-white hover:bg-[#0f1a29]"
+                    >
+                      Submit
+                    </button>
+                  )}
+                </>
               );
             })()}
           </div>
@@ -339,7 +353,7 @@ export default function FormFillingPage({
                       type="button"
                       onClick={
                         pageIndex === 0
-                          ? onBackAction
+                          ? () => router.back()
                           : () => setPageIndex((p) => p - 1)
                       }
                       className="w-full sm:w-auto bg-gray-400 text-white font-semibold py-2 px-6 rounded-full hover:bg-gray-500 transition-all"
