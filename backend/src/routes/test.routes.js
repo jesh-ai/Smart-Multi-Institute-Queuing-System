@@ -3,14 +3,14 @@ import { Router } from "express";
 import {
   getAllInstitutes,
   getAllServices,
-} from "../applicant/db/serviceOperations.js";
+} from "../db/serviceOperations.js";
 import {
   getActiveSessions,
   getSession,
-} from "../applicant/db/sessionOperations.js";
+} from "../db/sessionOperations.js";
 import {
   getAllWaitingQueue,
-} from "../applicant/db/queueOperations.js";
+} from "../db/queueOperations.js";
 import db from "../config/database.js";
 
 const router = Router();

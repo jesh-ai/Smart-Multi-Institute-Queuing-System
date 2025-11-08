@@ -1,5 +1,5 @@
 // CRUD operations for Session Responses
-import db from "../../config/database.js";
+import db from "../config/database.js";
 
 // CREATE - Save a response
 export function createResponse(sessionId, questionKey, answer) {

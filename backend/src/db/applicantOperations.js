@@ -1,5 +1,5 @@
 // CRUD operations for Applicants
-import db from "../../config/database.js";
+import db from "../config/database.js";
 
 // CREATE - Register new applicant (PII minimized)
 export function createApplicant(name, contact, piiMinimized = null) {
