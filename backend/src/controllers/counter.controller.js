@@ -1,4 +1,4 @@
-const counterManager = require('../utils/counterManager');
+import * as counterManager from "../utils/counterManager.js"
 
 async function setupCounter(req, res, next) {
   try {
@@ -50,11 +50,6 @@ function getCounter(req, res) {
   return res.json(counterManager.listCounters());
 }
 
-module.exports = {
-  setupCounter,
-  completeTransaction,
-  getCounter
-};
 import { createCounter, delCounter, fetchCounterSessions, updateCounter } from "../db/counters.js";
 import { fetchSessions, storeSession } from "../db/sessions.js";
 import { Counter } from "../models/counter.model.js";

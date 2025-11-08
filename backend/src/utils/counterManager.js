@@ -39,11 +39,3 @@ function getCounter(id) {
 function listCounters() {
   return Array.from(counters.values());
 }
-
-module.exports = {
-  createCounter,
-  assignEntryToCounter,
-  completeTransaction,
-  getCounter,
-  listCounters
-};

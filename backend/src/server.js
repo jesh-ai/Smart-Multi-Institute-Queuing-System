@@ -7,12 +7,8 @@ import morgan from 'morgan';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import routes from './routes/index.js';
-<<<<<<< HEAD:backend/src/server.js
 import { initializeSchema, seedInitialData } from './config/schema.js';
-import { startScan } from './controllers/session.controller.js';
-=======
 import { sessionMiddleware, recordSession } from './middleware/session.js';
->>>>>>> user-type-2:server/backend/src/server.js
 
 // Initialize database
 console.log('Initializing database...');
@@ -37,26 +33,6 @@ app.use(recordSession);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-<<<<<<< HEAD:backend/src/server.js
-// Helmet with CSP disabled for development testing
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'"],
-        imgSrc: ["'self'", 'data:'],
-        connectSrc: ["'self'", "http:", "https:"]
-,
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        objectSrc: ["'none'"],
-        baseUri: ["'self'"],
-        frameAncestors: ["'none'"],
-      },
-    },
-  })
-);
-=======
 // Helmet CSP configuration
 // app.use(
 //   helmet({
@@ -75,7 +51,6 @@ app.use(
 //     },
 //   })
 // );
->>>>>>> user-type-2:server/backend/src/server.js
 
 // Serve static assets
 app.use(express.static(path.join(__dirname, "../public")));

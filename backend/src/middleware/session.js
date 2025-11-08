@@ -15,7 +15,7 @@ if (!fs.existsSync(dataDir)) {
 export const sessionMiddleware = session({
   name: "connect.sid",
   store: new SQLiteStore({
-    db: "sessions.sqlite",
+    db: "sessions.db",
     dir: dataDir,
     ttl: 86400,
   }),

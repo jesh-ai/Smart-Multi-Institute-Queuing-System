@@ -1,13 +1,8 @@
 // src/routes/index.js
 import { Router } from 'express';
 import QRCode from 'qrcode';
-import { getCurrentSession } from './session.routes.js';
-import { fetchSessions } from '../db/sessions.js';
-import { deleteCounterRoute, getCounterId, getCounters, postCounter, putCounter } from './counterSession.routes.js';
-import applicantRoutes from '../applicant/ApplicantRoutes.js';
 import testRoutes from './test.routes.js';
 import templatesRoutes from './templates.js';
-import express from "express";
 import sessionRoutes from './session.routes.js';
 import serverRoutes from './server.routes.js';
 import counterRoutes from './counter.routes.js';
