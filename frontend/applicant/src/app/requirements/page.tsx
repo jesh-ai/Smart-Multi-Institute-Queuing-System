@@ -1,18 +1,40 @@
 "use client";
-import Image from "next/image";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function RequirementsPage() {
   const router = useRouter();
+  const [requirements, setRequirements] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Fetch requirements from the backend JSON file
+    fetch("/api/requirements")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.requirements && Array.isArray(data.requirements)) {
+          setRequirements(data.requirements);
+        }
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.error("Failed to load requirements:", err);
+        // Fallback to hardcoded values
+        setRequirements([
+          "High School Diploma",
+          "Certificate of Good Moral Character",
+          "Birth Certificate (PSA)",
+          "2x2 ID Picture (2 copies)",
+          "Medical Clearance",
+          "Entrance Exam Result",
+        ]);
+        setIsLoading(false);
+      });
+  }, []);
 
   const handleYes = () => {
     // Navigate to form filling page
     router.push("/form");
-  };
-
-  const handleNo = () => {
-    // Navigate back or show message
-    router.back();
   };
 
   return (
@@ -29,14 +51,15 @@ export default function RequirementsPage() {
           <p className="font-semibold text-[#34495E] mb-3 text-lg">
             Requirements:
           </p>
-          <ul className="list-disc list-inside text-base text-[#1B2631] space-y-2 text-left w-full px-6">
-            <li>High School Diploma</li>
-            <li>Certificate of Good Moral Character</li>
-            <li>Birth Certificate (PSA)</li>
-            <li>2x2 ID Picture (2 copies)</li>
-            <li>Medical Clearance</li>
-            <li>Entrance Exam Result</li>
-          </ul>
+          {isLoading ? (
+            <p className="text-gray-600">Loading requirements...</p>
+          ) : (
+            <ul className="list-disc list-inside text-base text-[#1B2631] space-y-2 text-left w-full px-6">
+              {requirements.map((req, index) => (
+                <li key={index}>{req}</li>
+              ))}
+            </ul>
+          )}
         </div>
 
         {/* Buttons */}

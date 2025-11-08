@@ -1,10 +1,11 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function ChatInterface() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   // local menu visibility (desktop only).
   const [showMenu, setShowMenu] = useState<boolean>(true);
@@ -107,6 +108,17 @@ export default function ChatInterface() {
     };
     fetchInitialResponse();
   }, []);
+
+  // Handle incoming message from URL parameter (e.g., from "Other" request)
+  useEffect(() => {
+    const message = searchParams.get("message");
+    if (message) {
+      // Hide menu and send the message
+      setShowMenu(false);
+      handleSend(message, "closed");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const handleSend = async (
     text: string,

@@ -44,12 +44,32 @@ export default function RequestPage() {
       });
   }, []);
 
-  const handleRequestClick = (request: RequestChoice) => {
-    // Navigate to requirements page or handle the request
-    console.log("Selected request:", request.title);
-    // You can navigate to a requirements page or show requirements modal
-    // For now, let's navigate to a requirements check page
-    router.push("/requirements");
+  const handleRequestClick = async (request: RequestChoice) => {
+    // If "Other" is selected, send message to chat and navigate to chat
+    if (request.title.toLowerCase() === "other") {
+      try {
+        // Save the interaction
+        await fetch("/api/save-interaction", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userMessage: "Other",
+            botResponse:
+              "Please describe your concern, and we'll assist you shortly.",
+            interactionType: "closed",
+          }),
+        });
+      } catch (error) {
+        console.error("Failed to save interaction:", error);
+      }
+
+      // Navigate to chat page with the message
+      router.push("/chat?message=Other");
+    } else {
+      // For other requests, navigate to requirements page
+      console.log("Selected request:", request.title);
+      router.push("/requirements");
+    }
   };
 
   return (
