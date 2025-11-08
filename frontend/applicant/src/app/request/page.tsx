@@ -66,9 +66,9 @@ export default function RequestPage() {
       // Navigate to chat page with the message
       router.push("/chat?message=Other");
     } else {
-      // For other requests, navigate to requirements page
+      // For other requests, navigate to requirements page with form parameter
       console.log("Selected request:", request.title);
-      router.push("/requirements");
+      router.push(`/requirements?form=${encodeURIComponent(request.title)}`);
     }
   };
 

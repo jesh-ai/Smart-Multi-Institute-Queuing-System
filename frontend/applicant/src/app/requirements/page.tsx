@@ -1,19 +1,38 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function RequirementsPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [requirements, setRequirements] = useState<string[]>([]);
+  const [formName, setFormName] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const form = searchParams.get("form") || "";
+    setFormName(form);
+
     // Fetch requirements from the backend JSON file
     fetch("/api/requirements")
       .then((res) => res.json())
       .then((data) => {
-        if (data.requirements && Array.isArray(data.requirements)) {
+        // Check if the form exists in the data
+        if (form && data[form]) {
+          setRequirements(data[form].requirements || []);
+        } else if (data.requirements && Array.isArray(data.requirements)) {
+          // Fallback to old format if exists
           setRequirements(data.requirements);
+        } else {
+          // Default fallback
+          setRequirements([
+            "High School Diploma",
+            "Certificate of Good Moral Character",
+            "Birth Certificate (PSA)",
+            "2x2 ID Picture (2 copies)",
+            "Medical Clearance",
+            "Entrance Exam Result",
+          ]);
         }
         setIsLoading(false);
       })
@@ -30,7 +49,7 @@ export default function RequirementsPage() {
         ]);
         setIsLoading(false);
       });
-  }, []);
+  }, [searchParams]);
 
   const handleYes = () => {
     // Navigate to form filling page
@@ -41,6 +60,13 @@ export default function RequirementsPage() {
     <div className="flex flex-col min-h-screen bg-white">
       {/* Centered Content */}
       <div className="flex flex-col items-center justify-center flex-1 text-center px-4">
+        {/* Form Name (if available) */}
+        {formName && (
+          <h2 className="text-xl font-semibold text-[#34495E] mb-4">
+            {formName}
+          </h2>
+        )}
+
         {/* Question */}
         <h1 className="text-3xl font-bold text-black mb-20 text-center">
           Do you have all the requirements needed?
