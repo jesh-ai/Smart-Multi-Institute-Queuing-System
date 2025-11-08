@@ -7,7 +7,7 @@ export default function ChatInterface() {
   const router = useRouter();
 
   // local menu visibility (desktop only).
-  const [showMenu, setShowMenu] = useState<boolean>(false);
+  const [showMenu, setShowMenu] = useState<boolean>(true);
   // MenuScreen moved here for desktop
   const MenuScreen = () => (
     <div className="h-full bg-white flex flex-col">
@@ -49,7 +49,10 @@ export default function ChatInterface() {
             </div>
           </button>
 
-          <button className="w-full bg-gray-700 hover:bg-gray-800 text-white rounded-lg p-6 flex items-center gap-4 transition-colors">
+          <button
+            onClick={() => router.push("/request")}
+            className="w-full bg-gray-700 hover:bg-gray-800 text-white rounded-lg p-6 flex items-center gap-4 transition-colors"
+          >
             <div className="relative">
               <div className="w-12 h-12 rounded-full bg-gray-600 flex items-center justify-center text-white text-2xl">
                 📄
