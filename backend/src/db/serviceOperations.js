@@ -1,5 +1,5 @@
 // CRUD operations for Services and Institutes
-import db from "../../config/database.js";
+import db from "../config/database.js";
 
 // ============ INSTITUTES ============
 

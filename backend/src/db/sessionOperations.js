@@ -1,5 +1,5 @@
 // CRUD operations for Sessions
-import db from "../../config/database.js";
+import db from "../config/database.js";
 import { v4 as uuidv4 } from "uuid";
 
 // CREATE - Start a new session

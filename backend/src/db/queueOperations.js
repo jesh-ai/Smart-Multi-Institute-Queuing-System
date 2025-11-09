@@ -1,5 +1,5 @@
 // CRUD operations for Queue
-import db from "../../config/database.js";
+import db from "../config/database.js";
 
 // Helper function to generate queue number
 function generateQueueNumber(serviceId) {

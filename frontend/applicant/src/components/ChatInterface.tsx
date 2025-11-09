@@ -1,13 +1,77 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import QueueChatUI from "./Status";
 
 export default function ChatInterface({
   onShowForm,
+  desktopMenu,
 }: {
   onShowForm: () => void;
+  desktopMenu?: boolean;
 }) {
+  // local menu visibility (desktop only). Initialized from prop so we can hide menu after a selection
+  const [showMenu, setShowMenu] = useState<boolean>(!!desktopMenu);
+  // MenuScreen moved here for desktop
+  const MenuScreen = () => (
+    <div className="h-full bg-white flex flex-col">
+      {/* Header is provided globally by layout.tsx; don't render it here to avoid duplicates */}
+
+      <main className="flex-1 flex flex-col items-center justify-center p-8 overflow-auto">
+        <div className="mb-12 text-center">
+          <div className="w-20 h-20 bg-gray-700 rounded-full mx-auto mb-4"></div>
+          <h2 className="text-2xl font-bold text-gray-800">Welcome!</h2>
+          <p className="text-gray-600 italic">Get started</p>
+        </div>
+
+        <h3 className="text-2xl font-bold text-gray-800 mb-8">
+          What would you like to do?
+        </h3>
+
+        <div className="space-y-4 w-full max-w-md">
+          <button
+            onClick={() => {
+              // send the same inquiry message used by mobile/initial fetch and switch to chat view
+              handleSend("I would like to inquire", "closed");
+              setShowMenu(false);
+            }}
+            className="w-full bg-gray-700 hover:bg-gray-800 text-white rounded-lg p-6 flex items-center gap-4 transition-colors"
+          >
+            <div className="relative">
+              <div className="w-12 h-12 rounded-full bg-gray-600 flex items-center justify-center text-white text-2xl">
+                👤
+              </div>
+              <div className="absolute -top-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center text-gray-700 font-bold text-lg">
+                ?
+              </div>
+            </div>
+            <div className="text-left">
+              <h4 className="text-xl font-bold">Inquire</h4>
+              <p className="text-sm text-gray-300">
+                Ask about lorem <br /> ipsum...
+              </p>
+            </div>
+          </button>
+
+          <button className="w-full bg-gray-700 hover:bg-gray-800 text-white rounded-lg p-6 flex items-center gap-4 transition-colors">
+            <div className="relative">
+              <div className="w-12 h-12 rounded-full bg-gray-600 flex items-center justify-center text-white text-2xl">
+                📄
+              </div>
+              <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white">
+                ✓
+              </div>
+            </div>
+            <div className="text-left">
+              <h4 className="text-xl font-bold">Request</h4>
+              <p className="text-sm text-gray-300">
+                Request a document <br /> lorem ipsum...
+              </p>
+            </div>
+          </button>
+        </div>
+      </main>
+    </div>
+  );
   const [messages, setMessages] = useState<
     Array<{ sender: "user" | "bot"; text: string }>
   >([
@@ -24,25 +88,21 @@ export default function ChatInterface({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Initialize quick replies from the initial response
+  // Initialize quick replies from the initial bot response
   useEffect(() => {
     const fetchInitialResponse = async () => {
       try {
-        // Try to get responses from backend template
-        const response = await fetch('http://localhost:4000/api/templates/responses');
-        if (response.ok) {
-          const responseData = await response.json();
-          if (responseData.inquiry && responseData.inquiry.Choices) {
-            const choices = Object.values(responseData.inquiry.Choices);
-            setQuickReplies(choices);
-          }
-        } else {
-          console.log('Missing API for /api/templates/responses - using fallback');
-          setQuickReplies(['Passport Application Form', 'Clearance', 'Other']);
+        const apiResponse = await fetch(
+          `/api/get-response?message=${encodeURIComponent(
+            "I would like to inquire"
+          )}`
+        );
+        const response = await apiResponse.json();
+        if (response.choices && response.choices.length > 0) {
+          setQuickReplies(response.choices);
         }
       } catch (error) {
-        console.log('Missing API for /api/templates/responses - fetch failed:', error);
-        setQuickReplies(['Passport Application Form', 'Clearance', 'Other']);
+        console.error("Error fetching initial response:", error);
       }
     };
     fetchInitialResponse();
@@ -60,58 +120,77 @@ export default function ChatInterface({
     setIsLoading(true);
 
     try {
-      // Since AI API calls should be ignored, use template responses
-      const response = await fetch('http://localhost:4000/api/templates/responses');
-      let botMessage = "I'm here to help. Could you please clarify your request?";
-      let choices: string[] = [];
+      // Fetch response from API
+      const apiResponse = await fetch(
+        `/api/get-response?message=${encodeURIComponent(text)}`
+      );
 
-      if (response.ok) {
-        const responseData = await response.json();
-        
-        // Simple response logic based on keywords
-        if (text.toLowerCase().includes('clearance')) {
-          botMessage = responseData.clearance?.Message || botMessage;
-        } else if (text.toLowerCase().includes('experience')) {
-          botMessage = responseData.experience?.Message || botMessage;
-          choices = Object.values(responseData.experience?.Choices || {});
-        } else if (text.toLowerCase().includes('inquire')) {
-          botMessage = responseData.inquiry?.Message || botMessage;
-          choices = Object.values(responseData.inquiry?.Choices || {});
-        } else if (text.toLowerCase().includes('assist')) {
-          botMessage = responseData.assistToday?.Message || botMessage;
-          choices = Object.values(responseData.assistToday?.Choices || {});
-        } else if (text.toLowerCase().includes('hello') || text.toLowerCase().includes('hi')) {
-          botMessage = responseData.greetings?.Message || botMessage;
-        } else if (text.toLowerCase().includes('other')) {
-          botMessage = responseData.other?.Message || botMessage;
+      if (!apiResponse.ok) {
+        throw new Error("Failed to fetch response");
+      }
+
+      const response = await apiResponse.json();
+
+      if (response.error) {
+        // Handle error
+        setMessages((prev) => [
+          ...prev,
+          {
+            sender: "bot",
+            text: "Sorry, there was an error processing your request.",
+          },
+        ]);
+      } else {
+        // Add bot response
+        setMessages((prev) => [
+          ...prev,
+          { sender: "bot", text: response.message },
+        ]);
+
+        // Update quick replies dynamically based on bot response
+        if (response.choices && response.choices.length > 0) {
+          // Show quick replies if bot has choices available
+          setQuickReplies(response.choices);
+        } else {
+          // Clear quick replies if no choices in response
+          setQuickReplies([]);
         }
-      } else {
-        console.log('Missing API for /api/templates/responses - using default response');
+
+        // Save interaction to JSON file via POST request
+        try {
+          await fetch("/api/save-interaction", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              userMessage: text,
+              botResponse: {
+                Message: response.message,
+                Choices: response.choices.reduce(
+                  (
+                    acc: Record<string, string>,
+                    choice: string,
+                    idx: number
+                  ) => {
+                    acc[`Choice${idx + 1}`] = choice;
+                    return acc;
+                  },
+                  {}
+                ),
+                Errors: response.error,
+              },
+              messageType,
+              timestamp: new Date().toISOString(),
+            }),
+          });
+        } catch (saveError) {
+          console.error("Error saving interaction:", saveError);
+          // Don't disrupt user experience if save fails
+        }
       }
-
-      // Add bot response
-      setMessages((prev) => [
-        ...prev,
-        { sender: "bot", text: botMessage },
-      ]);
-
-      // Update quick replies
-      if (choices.length > 0) {
-        setQuickReplies(choices);
-      } else {
-        setQuickReplies([]);
-      }
-
-      // Log that we would save interaction (simulating missing API)
-      console.log('Missing API for /api/save-interaction - would save:', {
-        userMessage: text,
-        botResponse: botMessage,
-        messageType,
-        timestamp: new Date().toISOString(),
-      });
-
     } catch (error) {
-      console.log('Missing API for chat processing - fetch failed:', error);
+      console.error("Error processing message:", error);
       setMessages((prev) => [
         ...prev,
         {
@@ -130,6 +209,9 @@ export default function ChatInterface({
       handleSend(input, "open"); // Typed message = open type
     }
   };
+
+  // If desktop menu mode requested and still showing menu, show the menu screen instead of chat
+  if (showMenu) return <MenuScreen />;
 
   return (
     <div className="flex flex-col flex-1 min-h-0 bg-white">
