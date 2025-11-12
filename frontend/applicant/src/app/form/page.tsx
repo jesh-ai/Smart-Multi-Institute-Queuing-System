@@ -1,6 +1,8 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { NeedHelp } from "../../components/NeedHelp";
+import HelpChatbot from "../../components/HelpChatbot";
 
 // JSON types used for form definition and values
 type JsonValue = string | number | boolean | null | JsonObject | JsonValue[];
@@ -45,6 +47,16 @@ function isObjectEmptyValues(obj: JsonValue): boolean {
 export default function FormFillingPage() {
   const router = useRouter();
   const [isDesktop, setIsDesktop] = useState(false);
+
+  // 🧠 Manage chatbot visibility
+  const [showChat, setShowChat] = useState(false);
+
+  // Listen for openHelpChat event from NeedHelp component
+  useEffect(() => {
+    const openChat = () => setShowChat(true);
+    window.addEventListener("openHelpChat", openChat);
+    return () => window.removeEventListener("openHelpChat", openChat);
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -205,6 +217,8 @@ export default function FormFillingPage() {
           onSubmit={handleSubmit}
           className="bg-[#B7C3C7] rounded-lg shadow-md w-full max-w-3xl my-7 px-6 py-6 flex flex-col gap-3"
         >
+          {/* Add NeedHelp here */}
+          <NeedHelp message="Need Help?" />
           <h2 className="text-2xl font-bold text-[#34495E] pt-2">
             Fill up form to proceed
           </h2>
@@ -291,6 +305,7 @@ export default function FormFillingPage() {
             })()}
           </div>
         </form>
+        {showChat && <HelpChatbot onClose={() => setShowChat(false)} />}
       </div>
     );
   }
@@ -304,6 +319,9 @@ export default function FormFillingPage() {
             onSubmit={handleSubmit}
             className="bg-gray-200 p-4 md:p-6 flex flex-col gap-4"
           >
+            {/* Add NeedHelp for mobile */}
+            <NeedHelp message="Need Help?" />
+
             {/* Render dynamic fields from formDef (paginated) */}
             {formDef && (
               <>
@@ -383,6 +401,7 @@ export default function FormFillingPage() {
           </form>
         </div>
       </main>
+      {showChat && <HelpChatbot onClose={() => setShowChat(false)} />}
     </div>
   );
 

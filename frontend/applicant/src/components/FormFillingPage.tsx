@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
+import { NeedHelp } from "./NeedHelp";
 
 // JSON types used for form definition and values
 type JsonValue = string | number | boolean | null | JsonObject | JsonValue[];
@@ -207,6 +208,8 @@ export default function FormFillingPage({
           onSubmit={handleSubmit}
           className="bg-[#B7C3C7] rounded-lg shadow-md w-full max-w-3xl my-7 px-6 py-6 flex flex-col gap-3"
         >
+          {/* Add NeedHelp here */}
+          <NeedHelp message="Need Help?" />
           <h2 className="text-2xl font-bold text-[#34495E] pt-2">
             Fill up form to proceed
           </h2>
