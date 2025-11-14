@@ -1,7 +1,10 @@
 import express from "express";
-import {createConversation} from "../controllers/applicant/createConversation.js";
+import { createContext, updateMessages, getMessages } from "../controllers/applicantContext.js";
 
 
 const applicantRoutes = express.Router();
-applicantRoutes.post("/createConversation/:sessionId", createConversation);
+applicantRoutes.post("/createContext/:sessionId", createContext);
+applicantRoutes.post("/updateMessages/:sessionId", updateMessages);
+applicantRoutes.post("/getMessages/:sessionId", getMessages);
 export default applicantRoutes;
+
