@@ -12,7 +12,23 @@ export default function ChatInterface() {
   // MenuScreen moved here for desktop
   const MenuScreen = () => (
     <div className="h-full bg-white flex flex-col">
-      {/* Header is provided globally by layout.tsx; don't render it here to avoid duplicates */}
+      {/* Custom Header */}
+<div className="bg-[#34495E] text-white px-6 py-4 shadow-lg flex items-center gap-4 sticky top-0 z-50">
+  <button 
+    onClick={() => setShowMenu(true)}
+    className="text-2xl hover:opacity-80 transition-opacity"
+  >
+    &lt;
+  </button>
+  <Image
+    src="/ALVin.png"
+    alt="ALVin Logo"
+    width={50}
+    height={50}
+    className="rounded-full"
+  />
+  <h1 className="text-2xl font-bold">ALVin</h1>
+</div>
 
       <main className="flex-1 flex flex-col items-center justify-center p-8 overflow-auto">
         <div className="mb-12 text-center">
@@ -227,6 +243,23 @@ export default function ChatInterface() {
 
   return (
     <div className="flex flex-col flex-1 min-h-0 bg-white">
+            {/* Custom Header */}
+<div className="bg-[#34495E] text-white px-6 py-4 shadow-lg flex items-center gap-4 sticky top-0 z-50">
+  <button 
+    onClick={() => setShowMenu(true)}
+    className="text-2xl hover:opacity-80 transition-opacity"
+  >
+    &lt;
+  </button>
+  <Image
+    src="/ALVin.png"
+    alt="ALVin Logo"
+    width={50}
+    height={50}
+    className="rounded-full"
+  />
+  <h1 className="text-2xl font-bold">ALVin</h1>
+</div>
       {/* Message Area */}
       {/* Add bottom padding so messages aren't covered by the fixed input area */}
       <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2 pb-44">

@@ -43,23 +43,109 @@ function DataPrivacyModal({
         </div>
 
         {/* Body */}
-        <div className="p-4 overflow-y-auto text-xs sm:text-sm md:text-base text-[#34495E] flex-1">
-          <p className="mb-2">
-            We value your privacy. This consent explains how we collect,
-            process, and protect your personal data.
-          </p>
-          <p className="mb-2">
-            By proceeding, you acknowledge that you have read and understood our
-            privacy practices, and you consent to the collection and processing
-            of your data in accordance with applicable laws.
-          </p>
-          <p className="mb-2">
-            Your data will only be used for the purpose of this system and will
-            not be shared with third parties without your permission.
-          </p>
-          <p className="mb-2">
-            If you do not agree, you may choose to cancel and discontinue using
-            this service.
+        <div className="bg-white rounded-lg p-4 overflow-y-auto h-[300px] text-xs sm:text-sm md:text-base text-[#34495E] mb-6">
+          <p className="mb-2 text-justify"> 
+            <strong>Privacy Statement</strong> <br/>
+            This Privacy Notice explains how the Smart Queuing System collects, uses, stores, 
+            protects, and shares your personal data. The system may process information through 
+            camera access, facial or biometric capture, QR scanning, and related features. By 
+            using the system, you give your consent where required to the collection and processing 
+            of your personal data as described in this notice.<br/><br/>
+
+            This notice is issued in compliance with the Data Privacy Act of 2012 (Republic Act No. 
+            10173), its Implementing Rules and Regulations (IRR), and relevant issuances of the 
+            National Privacy Commission (e.g., NPC Circular No. 2023-04, and related guidelines).<br/><br/>
+          </p> 
+          <p className="mb-2 text-justify"> 
+            <strong>Personal Information</strong><br/>
+            We may collect and store the following information, among others, in our database:<br/>
+          </p> 
+            <ul className="list-disc list-inside ml-4 mb-4 text-[#34495E]">
+             <li>Full Name</li>
+             <li>Address</li>
+           </ul>
+
+          <p className="mb-2 text-justify"> 
+            <strong>Collection Method</strong><br/>
+            We collect personal information manually or electronically through online application 
+            forms connected to the Smart Queuing System. As part of system operations, specific 
+            data—such as, but not limited to, the following—are automatically generated:<br/>
+            <ul className="list-disc list-inside ml-4 mb-4 text-[#34495E]">
+            <li>Queue Numbers</li>
+            <li>Timestamps</li>
+            <li>Session IDs</li>
+            </ul>
+            The system collects a copy of the consent text, in addition to the previously stated 
+            data, to establish proof of lawful processing in accordance with data privacy 
+            requirements.<br/><br/>
+
+            <strong>Purpose of Collection</strong><br/>
+            We collect your information to operate and improve the Smart Queuing System. This 
+            involves verifying your identity, assigning a queue number or ticket, processing QR 
+            scans for entry or tracking, preventing fraud or misuse, keeping system logs, 
+            generating analytics to enhance service quality, ensuring security, and meeting 
+            applicable legal and regulatory obligations.<br/><br/>  
+
+            <strong>Use of Data</strong><br/>
+            The personal data collected will be used solely to manage and improve the queuing 
+            process within the participating institution.<br/><br/>
+
+            Your personal information is processed for the following purposes:<br/>
+            <ul className="list-disc list-inside ml-4 mb-4 text-[#34495E]">
+            <li>To assign and manage queue numbers for applicants.</li>
+            <li>To provide real-time updates regarding queue status.</li>
+            <li>To assist personnel in administering queues and prioritizing applicants when necessary.</li>
+            </ul>
+            <strong>Disclosure of Personal Data</strong><br/>
+            All personal data are handled with the highest degree of confidentiality. We will not 
+            disclose or make it accessible to any party unless required by law or authorized by 
+            your consent. When necessary, applicant inputs may be processed by external AI 
+            providers under strict safeguards to ensure that only the essential data is shared.<br/><br/>
+
+            <strong>Data Protection & Security</strong><br/>
+            Only duly authorized personnel may process personal data. We regularly assess and 
+            enhance all security measures to ensure compliance with the Data Privacy Act of 2012 
+            (Republic Act No. 10173) and its Implementing Rules and Regulations (IRR).<br/><br/>
+
+            <strong>Storage & Disposal</strong><br/>
+            Any personal data that is gathered is protected against any accidental or unlawful 
+            alteration, disclosure, or destruction, including against any form of unlawful 
+            processing. Appropriate measures are applied to store collected personal information 
+            securely, based on the nature or degree of the information.<br/><br/>
+
+            Sensitive or administrative actions are further secured through device registration 
+            and two-factor authentication, with all activities being fully logged.<br/><br/>
+
+            We retain data in accordance with established policies and legal requirements, as outlined below:<br/>
+            <ul className="list-disc list-inside ml-4 mb-4 text-[#34495E]">
+            <li>Queue and Session Data are only kept during service fulfillment and are properly anonymized after.</li>
+            <li>Entries are retained for one (1) to three (3) years to comply with legal and reporting requirements before being fully archived/anonymized.</li>
+            <li>Audit Logs are kept for security monitoring while following retention schedules.</li>
+            <li>Backups are created nightly using pg_dump field, and Write-Ahead Log shipping to an offline NAS; encrypted in storage, and transit.</li>
+            </ul>
+            <strong>Rights of Data Subjects</strong><br/>
+            As a data subject under the Data Privacy Act of 2012 (RA 10173), you have the right to be 
+            informed whether your personal data is or will be processed, to access the data and information 
+            about how it is processed, to correct or update inaccurate or incomplete data, to block, remove, 
+            or erase data under certain conditions, to object to processing that is based on legitimate interests 
+            or is otherwise objectionable, to receive your data in a portable format where applicable, to be 
+            indemnified for damages arising from unauthorized or improper processing, and for these rights to 
+            be exercised by your lawful heirs or assigns if you are incapacitated or deceased.<br/><br/>
+
+            <strong>Revision of Notice:</strong><br/>
+            Authorized personnel may periodically revise or update this Privacy Notice (for example, 
+            to reflect changes in law, system features, or data practices). The revised notice will 
+            be published on the website or within the System, and its effective date will be 
+            indicated. Significant changes will be communicated to you (e.g., via app notice, 
+            email, or on-site signage), and if required, we will obtain fresh consent before 
+            applying those changes. In case of a data breach, users who are affected, as well as 
+            the National Privacy Commission, will be notified as required by law.<br/><br/>
+
+            <strong>Author of notice:</strong><br/>
+            The Smart Queuing System (name subject to change) issues this Privacy Notice in its 
+            capacity as the Personal Information Controller, dated [20 September 2025].<br/>
+            Approval<br/>
+            Smart Queuing System<br/>
           </p>
         </div>
 
@@ -137,6 +223,7 @@ export default function Home() {
 
   const handleProceed = () => {
     setConsented(true);
+    router.push("/chat");
   };
 
   const handleDecline = () => {
@@ -185,18 +272,116 @@ export default function Home() {
           {/* Header provided by layout.tsx to avoid duplicate headers */}
           <main className="flex-1 flex items-center justify-center p-8 overflow-auto">
             <div className="bg-gray-400 rounded-lg p-12 w-full max-w-md relative shadow-lg">
-              <div className="absolute top-0 right-0 w-2 h-full bg-gray-600 rounded-r-lg"></div>
 
               <h2 className="text-3xl font-bold text-gray-800 mb-8">
                 Data Privacy <br /> Consent
               </h2>
 
-              <div className="space-y-4 mb-16">
-                <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 bg-white rounded-full"></div>
-                  <div className="h-px bg-gray-500 flex-1"></div>
-                </div>
-              </div>
+              <div className="bg-white rounded-lg p-4 overflow-y-auto h-[300px] text-xs sm:text-sm md:text-base text-[#34495E] mb-6">
+          <p className="mb-2 text-justify"> 
+            <strong>Privacy Statement</strong> <br/>
+            This Privacy Notice explains how the Smart Queuing System collects, uses, stores, 
+            protects, and shares your personal data. The system may process information through 
+            camera access, facial or biometric capture, QR scanning, and related features. By 
+            using the system, you give your consent where required to the collection and processing 
+            of your personal data as described in this notice.<br/><br/>
+
+            This notice is issued in compliance with the Data Privacy Act of 2012 (Republic Act No. 
+            10173), its Implementing Rules and Regulations (IRR), and relevant issuances of the 
+            National Privacy Commission (e.g., NPC Circular No. 2023-04, and related guidelines).<br/><br/>
+          </p> 
+          <p className="mb-2 text-justify"> 
+            <strong>Personal Information</strong><br/>
+            We may collect and store the following information, among others, in our database:<br/>
+          </p> 
+            <ul className="list-disc list-inside ml-4 mb-4 text-[#34495E]">
+             <li>Full Name</li>
+             <li>Address</li>
+           </ul>
+
+          <p className="mb-2 text-justify"> 
+            <strong>Collection Method</strong><br/>
+            We collect personal information manually or electronically through online application 
+            forms connected to the Smart Queuing System. As part of system operations, specific 
+            data—such as, but not limited to, the following—are automatically generated:<br/>
+            <ul className="list-disc list-inside ml-4 mb-4 text-[#34495E]">
+            <li>Queue Numbers</li>
+            <li>Timestamps</li>
+            <li>Session IDs</li>
+            </ul>
+            The system collects a copy of the consent text, in addition to the previously stated 
+            data, to establish proof of lawful processing in accordance with data privacy 
+            requirements.<br/><br/>
+
+            <strong>Purpose of Collection</strong><br/>
+            We collect your information to operate and improve the Smart Queuing System. This 
+            involves verifying your identity, assigning a queue number or ticket, processing QR 
+            scans for entry or tracking, preventing fraud or misuse, keeping system logs, 
+            generating analytics to enhance service quality, ensuring security, and meeting 
+            applicable legal and regulatory obligations.<br/><br/>  
+
+            <strong>Use of Data</strong><br/>
+            The personal data collected will be used solely to manage and improve the queuing 
+            process within the participating institution.<br/><br/>
+
+            Your personal information is processed for the following purposes:<br/>
+            <ul className="list-disc list-inside ml-4 mb-4 text-[#34495E]">
+            <li>To assign and manage queue numbers for applicants.</li>
+            <li>To provide real-time updates regarding queue status.</li>
+            <li>To assist personnel in administering queues and prioritizing applicants when necessary.</li>
+            </ul>
+            <strong>Disclosure of Personal Data</strong><br/>
+            All personal data are handled with the highest degree of confidentiality. We will not 
+            disclose or make it accessible to any party unless required by law or authorized by 
+            your consent. When necessary, applicant inputs may be processed by external AI 
+            providers under strict safeguards to ensure that only the essential data is shared.<br/><br/>
+
+            <strong>Data Protection & Security</strong><br/>
+            Only duly authorized personnel may process personal data. We regularly assess and 
+            enhance all security measures to ensure compliance with the Data Privacy Act of 2012 
+            (Republic Act No. 10173) and its Implementing Rules and Regulations (IRR).<br/><br/>
+
+            <strong>Storage & Disposal</strong><br/>
+            Any personal data that is gathered is protected against any accidental or unlawful 
+            alteration, disclosure, or destruction, including against any form of unlawful 
+            processing. Appropriate measures are applied to store collected personal information 
+            securely, based on the nature or degree of the information.<br/><br/>
+
+            Sensitive or administrative actions are further secured through device registration 
+            and two-factor authentication, with all activities being fully logged.<br/><br/>
+
+            We retain data in accordance with established policies and legal requirements, as outlined below:<br/>
+            <ul className="list-disc list-inside ml-4 mb-4 text-[#34495E]">
+            <li>Queue and Session Data are only kept during service fulfillment and are properly anonymized after.</li>
+            <li>Entries are retained for one (1) to three (3) years to comply with legal and reporting requirements before being fully archived/anonymized.</li>
+            <li>Audit Logs are kept for security monitoring while following retention schedules.</li>
+            <li>Backups are created nightly using pg_dump field, and Write-Ahead Log shipping to an offline NAS; encrypted in storage, and transit.</li>
+            </ul>
+            <strong>Rights of Data Subjects</strong><br/>
+            As a data subject under the Data Privacy Act of 2012 (RA 10173), you have the right to be 
+            informed whether your personal data is or will be processed, to access the data and information 
+            about how it is processed, to correct or update inaccurate or incomplete data, to block, remove, 
+            or erase data under certain conditions, to object to processing that is based on legitimate interests 
+            or is otherwise objectionable, to receive your data in a portable format where applicable, to be 
+            indemnified for damages arising from unauthorized or improper processing, and for these rights to 
+            be exercised by your lawful heirs or assigns if you are incapacitated or deceased.<br/><br/>
+
+            <strong>Revision of Notice:</strong><br/>
+            Authorized personnel may periodically revise or update this Privacy Notice (for example, 
+            to reflect changes in law, system features, or data practices). The revised notice will 
+            be published on the website or within the System, and its effective date will be 
+            indicated. Significant changes will be communicated to you (e.g., via app notice, 
+            email, or on-site signage), and if required, we will obtain fresh consent before 
+            applying those changes. In case of a data breach, users who are affected, as well as 
+            the National Privacy Commission, will be notified as required by law.<br/><br/>
+
+            <strong>Author of notice:</strong><br/>
+            The Smart Queuing System (name subject to change) issues this Privacy Notice in its 
+            capacity as the Personal Information Controller, dated [20 September 2025].<br/>
+            Approval<br/>
+            Smart Queuing System<br/>
+          </p>
+        </div>
 
               <button
                 onClick={() => setDesktopScreen("menu")}
