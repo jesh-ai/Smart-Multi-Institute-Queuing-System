@@ -1,0 +1,1 @@
+# Directory for session_<sessionId>.txt containing the conversation history for each session
