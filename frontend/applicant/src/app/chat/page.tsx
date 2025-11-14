@@ -13,22 +13,22 @@ export default function ChatInterface() {
   const MenuScreen = () => (
     <div className="h-full bg-white flex flex-col">
       {/* Custom Header */}
-<div className="bg-[#34495E] text-white px-6 py-4 shadow-lg flex items-center gap-4 sticky top-0 z-50">
-  <button 
-    onClick={() => setShowMenu(true)}
-    className="text-2xl hover:opacity-80 transition-opacity"
-  >
-    &lt;
-  </button>
-  <Image
-    src="/ALVin.png"
-    alt="ALVin Logo"
-    width={50}
-    height={50}
-    className="rounded-full"
-  />
-  <h1 className="text-2xl font-bold">ALVin</h1>
-</div>
+      <div className="bg-[#34495E] text-white px-6 py-4 shadow-lg flex items-center gap-4 sticky top-0 z-50">
+        <button
+          onClick={() => setShowMenu(true)}
+          className="text-2xl hover:opacity-80 transition-opacity"
+        >
+          &lt;
+        </button>
+        <Image
+          src="/ALVin.png"
+          alt="ALVin Logo"
+          width={50}
+          height={50}
+          className="rounded-full"
+        />
+        <h1 className="text-2xl font-bold">ALVin</h1>
+      </div>
 
       <main className="flex-1 flex flex-col items-center justify-center p-8 overflow-auto">
         <div className="mb-12 text-center">
@@ -61,7 +61,8 @@ export default function ChatInterface() {
             <div className="text-left">
               <h4 className="text-xl font-bold">Inquire</h4>
               <p className="text-sm text-gray-300">
-                Ask about lorem <br /> ipsum...
+                {/* message */}
+                <br />
               </p>
             </div>
           </button>
@@ -80,9 +81,7 @@ export default function ChatInterface() {
             </div>
             <div className="text-left">
               <h4 className="text-xl font-bold">Request</h4>
-              <p className="text-sm text-gray-300">
-                Request a document <br /> lorem ipsum...
-              </p>
+              <p className="text-sm text-gray-300">{/* message */}</p>
             </div>
           </button>
         </div>
@@ -152,11 +151,7 @@ export default function ChatInterface() {
       const apiResponse = await fetch(
         `/api/get-response?message=${encodeURIComponent(text)}`
       );
-
-      if (!apiResponse.ok) {
-        throw new Error("Failed to fetch response");
-      }
-
+      if (!apiResponse.ok) throw new Error("Failed to fetch response");
       const response = await apiResponse.json();
 
       if (response.error) {
@@ -243,23 +238,23 @@ export default function ChatInterface() {
 
   return (
     <div className="flex flex-col flex-1 min-h-0 bg-white">
-            {/* Custom Header */}
-<div className="bg-[#34495E] text-white px-6 py-4 shadow-lg flex items-center gap-4 sticky top-0 z-50">
-  <button 
-    onClick={() => setShowMenu(true)}
-    className="text-2xl hover:opacity-80 transition-opacity"
-  >
-    &lt;
-  </button>
-  <Image
-    src="/ALVin.png"
-    alt="ALVin Logo"
-    width={50}
-    height={50}
-    className="rounded-full"
-  />
-  <h1 className="text-2xl font-bold">ALVin</h1>
-</div>
+      {/* Custom Header */}
+      <div className="bg-[#34495E] text-white px-6 py-4 shadow-lg flex items-center gap-4 sticky top-0 z-50">
+        <button
+          onClick={() => setShowMenu(true)}
+          className="text-2xl hover:opacity-80 transition-opacity"
+        >
+          &lt;
+        </button>
+        <Image
+          src="/ALVin.png"
+          alt="ALVin Logo"
+          width={50}
+          height={50}
+          className="rounded-full"
+        />
+        <h1 className="text-2xl font-bold">ALVin</h1>
+      </div>
       {/* Message Area */}
       {/* Add bottom padding so messages aren't covered by the fixed input area */}
       <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2 pb-44">
