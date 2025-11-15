@@ -1,0 +1,1199 @@
+{
+  "institutions": [
+    {
+      "id": "comelec",
+      "name": "Commission on Elections",
+      "code": "COMELEC",
+      "description": "Constitutional commission responsible for enforcing election laws in the Philippines",
+      "forms": [
+        {
+          "id": "comelec_cef1",
+          "formNumber": "CEF-1",
+          "title": "Application for Registration/Transfer/Reactivation/Change of Name/Correction of Entries",
+          "officialTitle": "CEF – 1, Series of 2022",
+          "description": "Voter Registration Application Form for Regular and Katipunan ng Kabataan",
+          "category": "Voter Registration",
+          "version": "2022",
+          "pages": 2,
+          "totalFields": 45,
+          "applicationTypes": [
+            {
+              "id": "new_registration",
+              "name": "Application for Registration",
+              "description": "For new voter registration"
+            },
+            {
+              "id": "transfer_same_city",
+              "name": "Application for Transfer of Registration Record within the same City/Municipality/District",
+              "description": "Transfer within same locality"
+            },
+            {
+              "id": "transfer_different_city",
+              "name": "Application for Transfer of Registration Record from another City/Municipality/District",
+              "description": "Transfer from different locality"
+            },
+            {
+              "id": "transfer_foreign_to_local",
+              "name": "Application for Transfer of Registration Record from foreign post to local OEO",
+              "description": "Transfer from overseas to local"
+            },
+            {
+              "id": "reactivation",
+              "name": "Application for Reactivation of Registration Record",
+              "description": "Reactivate deactivated voter record"
+            },
+            {
+              "id": "change_name_correction",
+              "name": "Application for Change of Name due to Marriage or Court Order/Correction of Entries",
+              "description": "Name change or data correction"
+            },
+            {
+              "id": "inclusion_reinstatement",
+              "name": "Application for Inclusion of Records in the Book of Voters/Reinstatement of Name in the List of Voters",
+              "description": "Include or reinstate voter record"
+            }
+          ],
+          "sections": [
+            {
+              "id": "front_page_declaration",
+              "name": "Front Page Declaration",
+              "fields": [
+                {
+                  "id": "application_type",
+                  "fieldNumber": "app_type",
+                  "label": "Application Type",
+                  "fieldType": "select",
+                  "required": true,
+                  "options": [
+                    {"value": "new_registration", "label": "APPLICATION FOR REGISTRATION"},
+                    {"value": "transfer_same_city", "label": "APPLICATION FOR TRANSFER OF REGISTRATION RECORD within the same City/Municipality/District"},
+                    {"value": "transfer_different_city", "label": "APPLICATION FOR TRANSFER OF REGISTRATION RECORD from another City/Municipality/District"},
+                    {"value": "transfer_foreign_to_local", "label": "APPLICATION FOR TRANSFER OF REGISTRATION RECORD from foreign post to local OEO"},
+                    {"value": "reactivation", "label": "APPLICATION FOR REACTIVATION OF REGISTRATION RECORD"},
+                    {"value": "change_name_correction", "label": "APPLICATION FOR CHANGE OF NAME DUE TO MARRIAGE OR COURT ORDER/CORRECTION OF ENTRIES"},
+                    {"value": "inclusion_reinstatement", "label": "APPLICATION FOR INCLUSION OF RECORDS IN THE BOOK OF VOTERS / REINSTATEMENT OF NAME IN THE LIST OF VOTERS"}
+                  ]
+                },
+                {
+                  "id": "applicant_declaration",
+                  "fieldNumber": "declaration",
+                  "label": "I, [Name], Filipino, born on [Date], a duly registered voter in:",
+                  "fieldType": "declaration_group",
+                  "required": true,
+                  "components": [
+                    {
+                      "id": "declarant_name",
+                      "label": "Name",
+                      "fieldType": "text",
+                      "required": true
+                    },
+                    {
+                      "id": "birth_date_front",
+                      "label": "Date of Birth",
+                      "fieldType": "date",
+                      "required": true,
+                      "format": "MMMM DD, YYYY"
+                    },
+                    {
+                      "id": "current_registration_type",
+                      "label": "Current Registration",
+                      "fieldType": "radio",
+                      "required": true,
+                      "options": [
+                        {
+                          "value": "local",
+                          "label": "Precinct No. _____, Barangay ___________, City/Municipality of _____________, Province of __________________"
+                        },
+                        {
+                          "value": "foreign",
+                          "label": "foreign post located in ___________________________, Country of __________________________"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "new_residence",
+                  "fieldNumber": "new_res",
+                  "label": "My New Residence is:",
+                  "fieldType": "address_group",
+                  "required": true,
+                  "components": [
+                    {
+                      "id": "house_street",
+                      "label": "House No. & Street",
+                      "fieldType": "text",
+                      "required": true
+                    },
+                    {
+                      "id": "barangay",
+                      "label": "Barangay",
+                      "fieldType": "text",
+                      "required": true
+                    },
+                    {
+                      "id": "city_municipality",
+                      "label": "City/Municipality/District",
+                      "fieldType": "text",
+                      "required": true
+                    },
+                    {
+                      "id": "province",
+                      "label": "Province",
+                      "fieldType": "text",
+                      "required": true
+                    }
+                  ]
+                },
+                {
+                  "id": "residence_period",
+                  "fieldNumber": "res_period",
+                  "label": "I have resided in my new residence for:",
+                  "fieldType": "duration",
+                  "required": true,
+                  "components": [
+                    {
+                      "id": "years_residence",
+                      "label": "Years",
+                      "fieldType": "number",
+                      "required": true,
+                      "min": 0
+                    },
+                    {
+                      "id": "months_residence",
+                      "label": "Months",
+                      "fieldType": "number",
+                      "required": true,
+                      "min": 0,
+                      "max": 11
+                    }
+                  ]
+                },
+                {
+                  "id": "reactivation_reason",
+                  "fieldNumber": "react_reason",
+                  "label": "Reason for Deactivation (for Reactivation only):",
+                  "fieldType": "select",
+                  "required": false,
+                  "options": [
+                    {"value": "imprisonment", "label": "Sentenced by final judgment to suffer imprisonment for not less than one (1) year"},
+                    {"value": "disloyalty", "label": "Convicted by final judgment of a crime involving disloyalty to the duly constituted government, etc;"},
+                    {"value": "insane", "label": "Declared by competent authority to be insane or incompetent"},
+                    {"value": "failed_to_vote", "label": "Failed to vote in two (2) successive preceding regular elections"},
+                    {"value": "loss_citizenship", "label": "Loss of Filipino citizenship"},
+                    {"value": "court_exclusion", "label": "Exclusion by a court order"},
+                    {"value": "failed_validate", "label": "Failure to Validate"}
+                  ],
+                  "conditional": {
+                    "show": "application_type == 'reactivation'"
+                  }
+                },
+                {
+                  "id": "change_correction_data",
+                  "fieldNumber": "change_data",
+                  "label": "Change/Correction of Data (for Change of Name/Correction only):",
+                  "fieldType": "comparison_group",
+                  "required": false,
+                  "components": [
+                    {
+                      "id": "present_data",
+                      "label": "Present Data/Information",
+                      "fieldType": "textarea",
+                      "required": false
+                    },
+                    {
+                      "id": "new_corrected_data",
+                      "label": "New/Corrected Data/Information",
+                      "fieldType": "textarea",
+                      "required": false
+                    }
+                  ],
+                  "conditional": {
+                    "show": "application_type == 'change_name_correction'"
+                  }
+                },
+                {
+                  "id": "inclusion_reason",
+                  "fieldNumber": "inclusion_reason",
+                  "label": "Reason for Inclusion/Reinstatement:",
+                  "fieldType": "select",
+                  "required": false,
+                  "options": [
+                    {"value": "transfer_foreign_same", "label": "Reinstatement of records due to transfer from foreign post to same local City/Municipality/District"},
+                    {"value": "inclusion_book", "label": "Inclusion of VRR in the precinct book of voters"},
+                    {"value": "omitted_list", "label": "Reinstatement of the name of the registered voter which has been omitted in the list of voters"}
+                  ],
+                  "conditional": {
+                    "show": "application_type == 'inclusion_reinstatement'"
+                  }
+                },
+                {
+                  "id": "affirmation_section",
+                  "fieldNumber": "affirmation",
+                  "label": "IN WITNESS WHEREOF, I hereunto affix my signature",
+                  "fieldType": "signature_date_location",
+                  "required": true,
+                  "components": [
+                    {
+                      "id": "signature_date",
+                      "label": "Date",
+                      "fieldType": "date_parts",
+                      "required": true,
+                      "components": [
+                        {
+                          "id": "day",
+                          "label": "Day",
+                          "fieldType": "number",
+                          "required": true,
+                          "min": 1,
+                          "max": 31
+                        },
+                        {
+                          "id": "month",
+                          "label": "Month",
+                          "fieldType": "text",
+                          "required": true
+                        },
+                        {
+                          "id": "year",
+                          "label": "Year",
+                          "fieldType": "number",
+                          "required": true,
+                          "min": 2020,
+                          "max": 2030
+                        }
+                      ]
+                    },
+                    {
+                      "id": "location",
+                      "label": "Location",
+                      "fieldType": "text",
+                      "required": true
+                    },
+                    {
+                      "id": "province_affirmation",
+                      "label": "Province",
+                      "fieldType": "text",
+                      "required": true
+                    },
+                    {
+                      "id": "applicant_signature_front",
+                      "label": "Signature above printed name",
+                      "fieldType": "signature",
+                      "required": true
+                    }
+                  ]
+                },
+                {
+                  "id": "eo_subscription",
+                  "fieldNumber": "eo_subscribe",
+                  "label": "SUBSCRIBED AND SWORN to before me on the above date.",
+                  "fieldType": "signature",
+                  "required": true,
+                  "adminOnly": true,
+                  "components": [
+                    {
+                      "id": "eo_signature_front",
+                      "label": "EO/Administering Officer",
+                      "fieldType": "signature",
+                      "required": true
+                    }
+                  ]
+                },
+                {
+                  "id": "inclusion_request",
+                  "fieldNumber": "inclusion_req",
+                  "label": "Inclusion/Reinstatement Request",
+                  "fieldType": "text",
+                  "required": false,
+                  "defaultValue": "I do hereby request that my name which has been omitted in the list of voters/my registration record which has not been included in the precinct book of voters of Precinct No. _______, be reinstated/included therein. The said reinstatement of name/inclusion of registration record is necessary and valid.",
+                  "conditional": {
+                    "show": "application_type == 'inclusion_reinstatement'"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "part1_personal_information",
+              "name": "Part 1 - PERSONAL INFORMATION",
+              "instructions": "To be filled out by Applicant",
+              "fields": [
+                {
+                  "id": "application_number",
+                  "fieldNumber": "app_no",
+                  "label": "Application No.",
+                  "fieldType": "text",
+                  "required": false,
+                  "adminOnly": true
+                },
+                {
+                  "id": "precinct_number",
+                  "fieldNumber": "precinct_no",
+                  "label": "Precinct No.",
+                  "fieldType": "text",
+                  "required": false,
+                  "adminOnly": true
+                },
+                {
+                  "id": "name",
+                  "fieldNumber": "name",
+                  "label": "NAME",
+                  "fieldType": "name",
+                  "required": true,
+                  "components": [
+                    {
+                      "id": "last_name",
+                      "label": "Last",
+                      "fieldType": "text",
+                      "required": true,
+                      "validation": {"minLength": 1, "maxLength": 50}
+                    },
+                    {
+                      "id": "first_name",
+                      "label": "First",
+                      "fieldType": "text",
+                      "required": true,
+                      "validation": {"minLength": 1, "maxLength": 50}
+                    },
+                    {
+                      "id": "middle_name",
+                      "label": "Middle",
+                      "fieldType": "text",
+                      "required": false,
+                      "validation": {"maxLength": 50}
+                    }
+                  ]
+                },
+                {
+                  "id": "suffix",
+                  "fieldNumber": "suffix",
+                  "label": "Suffix, if any",
+                  "fieldType": "text",
+                  "required": false,
+                  "validation": {"maxLength": 10},
+                  "placeholder": "Ex.: Jr., Sr., III"
+                },
+                {
+                  "id": "residence_address",
+                  "fieldNumber": "residence",
+                  "label": "RESIDENCE/ADDRESS",
+                  "fieldType": "ph_address_comelec",
+                  "required": true,
+                  "components": [
+                    {
+                      "id": "province",
+                      "label": "Province",
+                      "fieldType": "text",
+                      "required": true,
+                      "validation": {"maxLength": 50}
+                    },
+                    {
+                      "id": "city_municipality",
+                      "label": "City/Municipality",
+                      "fieldType": "text",
+                      "required": true,
+                      "validation": {"maxLength": 50}
+                    },
+                    {
+                      "id": "barangay_sitio_purok",
+                      "label": "Barangay/Sitio/Purok",
+                      "fieldType": "text",
+                      "required": true,
+                      "validation": {"maxLength": 50}
+                    },
+                    {
+                      "id": "house_no_street",
+                      "label": "House No. / Street",
+                      "fieldType": "text",
+                      "required": true,
+                      "validation": {"maxLength": 100}
+                    }
+                  ]
+                },
+                {
+                  "id": "citizenship",
+                  "fieldNumber": "citizenship",
+                  "label": "CITIZENSHIP",
+                  "fieldType": "radio",
+                  "required": true,
+                  "options": [
+                    {"value": "by_birth", "label": "By Birth"},
+                    {"value": "naturalized", "label": "Naturalized"},
+                    {"value": "reacquired", "label": "Reacquired"}
+                  ]
+                },
+                {
+                  "id": "sex",
+                  "fieldNumber": "sex",
+                  "label": "SEX",
+                  "fieldType": "radio",
+                  "required": true,
+                  "options": [
+                    {"value": "male", "label": "Male"},
+                    {"value": "female", "label": "Female"}
+                  ]
+                },
+                {
+                  "id": "civil_status",
+                  "fieldNumber": "civil_status",
+                  "label": "CIVIL STATUS",
+                  "fieldType": "select",
+                  "required": true,
+                  "options": [
+                    {"value": "single", "label": "Single"},
+                    {"value": "married", "label": "Married"},
+                    {"value": "widow", "label": "Widow/er"},
+                    {"value": "legally_separated", "label": "Legally Separated"}
+                  ]
+                },
+                {
+                  "id": "date_of_birth",
+                  "fieldNumber": "dob",
+                  "label": "DATE OF BIRTH",
+                  "fieldType": "date_components",
+                  "required": true,
+                  "components": [
+                    {
+                      "id": "birth_month",
+                      "label": "Month",
+                      "fieldType": "select",
+                      "required": true,
+                      "options": [
+                        {"value": "01", "label": "January"}, {"value": "02", "label": "February"}, {"value": "03", "label": "March"},
+                        {"value": "04", "label": "April"}, {"value": "05", "label": "May"}, {"value": "06", "label": "June"},
+                        {"value": "07", "label": "July"}, {"value": "08", "label": "August"}, {"value": "09", "label": "September"},
+                        {"value": "10", "label": "October"}, {"value": "11", "label": "November"}, {"value": "12", "label": "December"}
+                      ]
+                    },
+                    {
+                      "id": "birth_day",
+                      "label": "Day",
+                      "fieldType": "number",
+                      "required": true,
+                      "min": 1,
+                      "max": 31
+                    },
+                    {
+                      "id": "birth_year",
+                      "label": "Year",
+                      "fieldType": "number",
+                      "required": true,
+                      "min": 1900,
+                      "max": 2024
+                    }
+                  ]
+                },
+                {
+                  "id": "place_of_birth",
+                  "fieldNumber": "pob",
+                  "label": "PLACE OF BIRTH",
+                  "fieldType": "location",
+                  "required": true,
+                  "components": [
+                    {
+                      "id": "city_municipality_birth",
+                      "label": "City/Municipality",
+                      "fieldType": "text",
+                      "required": true
+                    },
+                    {
+                      "id": "province_birth",
+                      "label": "Province",
+                      "fieldType": "text",
+                      "required": true
+                    }
+                  ]
+                },
+                {
+                  "id": "parents_name",
+                  "fieldNumber": "parents",
+                  "label": "PARENT'S NAME",
+                  "fieldType": "parent_names",
+                  "required": true,
+                  "components": [
+                    {
+                      "id": "fathers_name",
+                      "label": "Father's Name",
+                      "fieldType": "text",
+                      "required": true,
+                      "validation": {"maxLength": 100}
+                    },
+                    {
+                      "id": "mothers_maiden_name",
+                      "label": "Mother's Maiden Name",
+                      "fieldType": "text",
+                      "required": true,
+                      "validation": {"maxLength": 100}
+                    }
+                  ]
+                },
+                {
+                  "id": "spouse_name",
+                  "fieldNumber": "spouse",
+                  "label": "Name of Spouse, If Married",
+                  "fieldType": "text",
+                  "required": false,
+                  "validation": {"maxLength": 100},
+                  "conditional": {
+                    "show": "civil_status == 'married'"
+                  }
+                },
+                {
+                  "id": "profession_occupation",
+                  "fieldNumber": "profession",
+                  "label": "PROFESSION/OCCUPATION",
+                  "fieldType": "text",
+                  "required": true,
+                  "validation": {"maxLength": 50}
+                },
+                {
+                  "id": "period_residence_ph",
+                  "fieldNumber": "period_res_ph",
+                  "label": "PERIOD OF RESIDENCE IN THE PHILIPPINES",
+                  "fieldType": "duration",
+                  "required": true,
+                  "components": [
+                    {
+                      "id": "years_ph",
+                      "label": "No. of Years",
+                      "fieldType": "number",
+                      "required": true,
+                      "min": 0
+                    },
+                    {
+                      "id": "months_ph",
+                      "label": "No. of Months",
+                      "fieldType": "number",
+                      "required": true,
+                      "min": 0,
+                      "max": 11
+                    }
+                  ]
+                },
+                {
+                  "id": "period_residence_city",
+                  "fieldNumber": "period_res_city",
+                  "label": "PERIOD OF RESIDENCE IN THE CITY/MUNICIPALITY",
+                  "fieldType": "duration",
+                  "required": true,
+                  "components": [
+                    {
+                      "id": "years_city",
+                      "label": "No. of Years",
+                      "fieldType": "number",
+                      "required": true,
+                      "min": 0
+                    },
+                    {
+                      "id": "months_city",
+                      "label": "No. of Months",
+                      "fieldType": "number",
+                      "required": true,
+                      "min": 0,
+                      "max": 11
+                    }
+                  ]
+                },
+                {
+                  "id": "naturalization_details",
+                  "fieldNumber": "naturalization",
+                  "label": "If naturalized/reacquired, state date of naturalization/reacquisition and Certificate Number",
+                  "fieldType": "naturalization_group",
+                  "required": false,
+                  "components": [
+                    {
+                      "id": "date_naturalization",
+                      "label": "Date of Naturalization/Reacquisition",
+                      "fieldType": "date_components",
+                      "required": false,
+                      "components": [
+                        {
+                          "id": "nat_month",
+                          "label": "Month",
+                          "fieldType": "select",
+                          "required": false,
+                          "options": [
+                            {"value": "01", "label": "January"}, {"value": "02", "label": "February"}, {"value": "03", "label": "March"},
+                            {"value": "04", "label": "April"}, {"value": "05", "label": "May"}, {"value": "06", "label": "June"},
+                            {"value": "07", "label": "July"}, {"value": "08", "label": "August"}, {"value": "09", "label": "September"},
+                            {"value": "10", "label": "October"}, {"value": "11", "label": "November"}, {"value": "12", "label": "December"}
+                          ]
+                        },
+                        {
+                          "id": "nat_day",
+                          "label": "Day",
+                          "fieldType": "number",
+                          "required": false,
+                          "min": 1,
+                          "max": 31
+                        },
+                        {
+                          "id": "nat_year",
+                          "label": "Year",
+                          "fieldType": "number",
+                          "required": false,
+                          "min": 1900,
+                          "max": 2024
+                        }
+                      ]
+                    },
+                    {
+                      "id": "certificate_number",
+                      "label": "Certificate No./Order of Approval",
+                      "fieldType": "text",
+                      "required": false
+                    }
+                  ],
+                  "conditional": {
+                    "show": "citizenship IN ['naturalized', 'reacquired']"
+                  }
+                },
+                {
+                  "id": "contact_info",
+                  "fieldNumber": "contact",
+                  "label": "Contact Information",
+                  "fieldType": "contact",
+                  "required": true,
+                  "components": [
+                    {
+                      "id": "contact_number",
+                      "label": "Contact No.",
+                      "fieldType": "tel",
+                      "required": true,
+                      "pattern": "09[0-9]{9}"
+                    },
+                    {
+                      "id": "email_address",
+                      "label": "E-Mail Address",
+                      "fieldType": "email",
+                      "required": false
+                    }
+                  ]
+                },
+                {
+                  "id": "special_categories",
+                  "fieldNumber": "special_cat",
+                  "label": "Special Categories",
+                  "fieldType": "checkbox_group",
+                  "required": false,
+                  "options": [
+                    {"value": "indigenous_people", "label": "Indigenous People"},
+                    {"value": "illiterate", "label": "Illiterate"},
+                    {"value": "senior_citizen", "label": "Senior Citizen"},
+                    {"value": "person_with_disability", "label": "Person with Disability"}
+                  ]
+                },
+                {
+                  "id": "tribe",
+                  "fieldNumber": "tribe",
+                  "label": "Tribe (if Indigenous People)",
+                  "fieldType": "text",
+                  "required": false,
+                  "conditional": {
+                    "show": "special_categories INCLUDES 'indigenous_people'"
+                  }
+                },
+                {
+                  "id": "disability_type",
+                  "fieldNumber": "disability",
+                  "label": "Type of Disability",
+                  "fieldType": "checkbox_group",
+                  "required": false,
+                  "options": [
+                    {"value": "deaf", "label": "Deaf/Hard of Hearing"},
+                    {"value": "intellectual", "label": "Intellectual"},
+                    {"value": "learning", "label": "Learning"},
+                    {"value": "mental", "label": "Mental"},
+                    {"value": "physical", "label": "Physical"},
+                    {"value": "psychosocial", "label": "Psychosocial"},
+                    {"value": "speech_language", "label": "Speech and Language"},
+                    {"value": "visual", "label": "Visual"},
+                    {"value": "cancer", "label": "Cancer"},
+                    {"value": "rare_disease", "label": "Rare Disease"}
+                  ],
+                  "conditional": {
+                    "show": "special_categories INCLUDES 'person_with_disability'"
+                  }
+                },
+                {
+                  "id": "assistance_needed",
+                  "fieldNumber": "assistance",
+                  "label": "Assistance Needed",
+                  "fieldType": "select",
+                  "required": false,
+                  "options": [
+                    {"value": "assistor", "label": "Assistor"},
+                    {"value": "communication", "label": "Communication Assistance"},
+                    {"value": "visual", "label": "Visual Assistance"},
+                    {"value": "none", "label": "None"}
+                  ],
+                  "conditional": {
+                    "show": "special_categories INCLUDES 'person_with_disability' OR special_categories INCLUDES 'senior_citizen' OR special_categories INCLUDES 'illiterate'"
+                  }
+                },
+                {
+                  "id": "accessible_polling",
+                  "fieldNumber": "accessible",
+                  "label": "Are you willing to vote in the Accessible Polling Place (APP) located on the ground floor?",
+                  "fieldType": "radio",
+                  "required": false,
+                  "options": [
+                    {"value": "yes", "label": "YES"},
+                    {"value": "no", "label": "NO"}
+                  ],
+                  "conditional": {
+                    "show": "special_categories INCLUDES 'senior_citizen' OR special_categories INCLUDES 'person_with_disability'"
+                  }
+                },
+                {
+                  "id": "assistor_name",
+                  "fieldNumber": "assistor",
+                  "label": "Assistor's Name",
+                  "fieldType": "text",
+                  "required": false,
+                  "instructions": "Fill out and attach Certification/Attestation Form",
+                  "conditional": {
+                    "show": "special_categories INCLUDES 'illiterate' OR special_categories INCLUDES 'person_with_disability' OR special_categories INCLUDES 'senior_citizen'"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "part2_oath_consent",
+              "name": "Part 2 - OATH, NOTICE and CONSENT",
+              "fields": [
+                {
+                  "id": "voter_type_selection",
+                  "fieldNumber": "voter_type_select",
+                  "label": "Voter Registration Type Selection",
+                  "fieldType": "radio",
+                  "required": true,
+                  "options": [
+                    {"value": "regular", "label": "I signify and confirm my intention to undergo the process of voter registration (18 years old and above)"},
+                    {"value": "katipunan_kabataan", "label": "I signify and confirm my intention to undergo the process of voter registration in the Katipunan ng Kabataan (15 to 17 years old)"}
+                  ]
+                },
+                {
+                  "id": "oath_regular",
+                  "fieldNumber": "oath_reg",
+                  "label": "OATH, NOTICE and CONSENT (REGULAR)",
+                  "fieldType": "oath_declaration",
+                  "required": false,
+                  "text": "I do solemnly swear that the above statements regarding my person are true and correct; that I possess all the qualifications and none of the disqualifications of a voter; and that I am: not registered in any precinct; registered in a precinct of another City/Municipality/District in the Philippines and that I have reviewed the entries encoded in the VRS and I confirm that the same are correct, accurate and consistent with the information I supplied in this application form. Further, by affixing my signature below, I authorize and give my consent to the Commission on Elections and the concerned Election Registration Board to collect and process the personal data I supplied herein for purposes of voter registration and elections, and for other purposes and allowable disclosures under B.P. Blg. 881, R.A. No. 8189, 10173 and 10367, and the relevant Resolutions of the Commission on Elections.",
+                  "components": [
+                    {
+                      "id": "registration_status",
+                      "label": "Registration Status",
+                      "fieldType": "radio",
+                      "required": true,
+                      "options": [
+                        {"value": "not_registered", "label": "not registered in any precinct"},
+                        {"value": "registered_elsewhere", "label": "registered in a precinct of another City/Municipality/District in the Philippines"}
+                      ]
+                    },
+                    {
+                      "id": "applicant_signature",
+                      "label": "Signature/Thumbmark above Printed Name",
+                      "fieldType": "signature",
+                      "required": true
+                    },
+                    {
+                      "id": "date_signed",
+                      "label": "Date",
+                      "fieldType": "date_components",
+                      "required": true,
+                      "components": [
+                        {
+                          "id": "sign_month",
+                          "label": "Month",
+                          "fieldType": "select",
+                          "required": true,
+                          "options": [
+                            {"value": "01", "label": "January"}, {"value": "02", "label": "February"}, {"value": "03", "label": "March"},
+                            {"value": "04", "label": "April"}, {"value": "05", "label": "May"}, {"value": "06", "label": "June"},
+                            {"value": "07", "label": "July"}, {"value": "08", "label": "August"}, {"value": "09", "label": "September"},
+                            {"value": "10", "label": "October"}, {"value": "11", "label": "November"}, {"value": "12", "label": "December"}
+                          ]
+                        },
+                        {
+                          "id": "sign_day",
+                          "label": "Day",
+                          "fieldType": "number",
+                          "required": true,
+                          "min": 1,
+                          "max": 31
+                        },
+                        {
+                          "id": "sign_year",
+                          "label": "Year",
+                          "fieldType": "number",
+                          "required": true,
+                          "min": 2020,
+                          "max": 2030
+                        }
+                      ]
+                    }
+                  ],
+                  "conditional": {
+                    "show": "voter_type_selection == 'regular'"
+                  }
+                },
+                {
+                  "id": "oath_katipunan",
+                  "fieldNumber": "oath_kk",
+                  "label": "OATH, NOTICE and CONSENT (KATIPUNAN NG KABATAAN)",
+                  "fieldType": "oath_declaration",
+                  "required": false,
+                  "text": "I do solemnly swear that the above statements regarding my person are true and correct; that I possess all the qualifications and none of the disqualifications of a voter of Katipunan ng Kabataan; that I am: not registered in any precinct registered in a precinct of another City/Municipality/District in the Philippines and that I have reviewed the entries encoded in the VRS and I confirm that the same are correct, accurate and consistent with the information I supplied in this application form. Moreover, by affixing my signature below, I authorize and give my consent to the Commission on Elections and the concerned Election Registration Board to collect and process the personal data I supplied herein for purposes of voter's registration and elections, and for other purposes and allowable disclosures under B.P. Blg. 881, R.A. No. 8189, 10173 and 10367, and 10742 and the relevant resolutions of the Commission on Elections. Furthermore, I understand that when I reach eighteen (18) years of age, the personal data I supplied herein will be further processed by the Commission on Elections, and upon approval by the Election Registration Board, will be included in and consolidated with the database of voters who are at least eighteen (18) years of age for purposes of subsequent elections and for other lawful purposes and allowable disclosures mentioned above, to which further processing and its purposes I give my consent do not give my consent and that when I reach thirty one (31) years of age, my personal data in the Katipunan ng Kabataan database will be deleted accordingly.",
+                  "components": [
+                    {
+                      "id": "registration_status_kk",
+                      "label": "Registration Status",
+                      "fieldType": "radio",
+                      "required": true,
+                      "options": [
+                        {"value": "not_registered", "label": "not registered in any precinct"},
+                        {"value": "registered_elsewhere", "label": "registered in a precinct of another City/Municipality/District in the Philippines"}
+                      ]
+                    },
+                    {
+                      "id": "consent_transfer_18",
+                      "label": "Consent for data transfer at age 18",
+                      "fieldType": "radio",
+                      "required": true,
+                      "options": [
+                        {"value": "give_consent", "label": "give my consent"},
+                        {"value": "not_give_consent", "label": "do not give my consent"}
+                      ]
+                    },
+                    {
+                      "id": "applicant_signature_kk",
+                      "label": "Signature/Thumbmark above Printed Name",
+                      "fieldType": "signature",
+                      "required": true
+                    },
+                    {
+                      "id": "date_signed_kk",
+                      "label": "Date",
+                      "fieldType": "date_components",
+                      "required": true,
+                      "components": [
+                        {
+                          "id": "sign_month_kk",
+                          "label": "Month",
+                          "fieldType": "select",
+                          "required": true
+                        },
+                        {
+                          "id": "sign_day_kk",
+                          "label": "Day",
+                          "fieldType": "number",
+                          "required": true,
+                          "min": 1,
+                          "max": 31
+                        },
+                        {
+                          "id": "sign_year_kk",
+                          "label": "Year",
+                          "fieldType": "number",
+                          "required": true,
+                          "min": 2020,
+                          "max": 2030
+                        }
+                      ]
+                    }
+                  ],
+                  "conditional": {
+                    "show": "voter_type_selection == 'katipunan_kabataan'"
+                  }
+                },
+                {
+                  "id": "eo_signature_part2",
+                  "fieldNumber": "eo_sig_2",
+                  "label": "Election Officer/Administering Officer",
+                  "fieldType": "signature",
+                  "required": true,
+                  "adminOnly": true
+                }
+              ]
+            },
+            {
+              "id": "part3_erb_action",
+              "name": "Part 3 - ACTION BY THE ELECTION REGISTRATION BOARD",
+              "adminOnly": true,
+              "fields": [
+                {
+                  "id": "erb_decision",
+                  "fieldNumber": "decision",
+                  "label": "ERB Decision",
+                  "fieldType": "radio",
+                  "required": true,
+                  "adminOnly": true,
+                  "options": [
+                    {"value": "approved", "label": "Approved"},
+                    {"value": "disapproved", "label": "Disapproved"}
+                  ]
+                },
+                {
+                  "id": "precinct_assignment",
+                  "fieldNumber": "precinct",
+                  "label": "With Precinct Assignment No.",
+                  "fieldType": "text",
+                  "required": false,
+                  "adminOnly": true,
+                  "conditional": {
+                    "show": "erb_decision == 'approved'"
+                  }
+                },
+                {
+                  "id": "decision_date",
+                  "fieldNumber": "decision_date",
+                  "label": "Decision Date",
+                  "fieldType": "date_components",
+                  "required": true,
+                  "adminOnly": true,
+                  "components": [
+                    {
+                      "id": "decision_month",
+                      "label": "Month",
+                      "fieldType": "select",
+                      "required": true
+                    },
+                    {
+                      "id": "decision_year",
+                      "label": "Year",
+                      "fieldType": "number",
+                      "required": true,
+                      "min": 2020,
+                      "max": 2030
+                    }
+                  ]
+                },
+                {
+                  "id": "disapproval_reason",
+                  "fieldNumber": "disapprove_reason",
+                  "label": "Reason for disapproval",
+                  "fieldType": "text",
+                  "required": false,
+                  "adminOnly": true,
+                  "conditional": {
+                    "show": "erb_decision == 'disapproved'"
+                  }
+                },
+                {
+                  "id": "erb_members_signatures",
+                  "fieldNumber": "members_sig",
+                  "label": "ERB Members Signatures",
+                  "fieldType": "signature_group",
+                  "required": true,
+                  "adminOnly": true,
+                  "components": [
+                    {
+                      "id": "chairperson_signature",
+                      "label": "Chairperson (Signature above Printed Name)",
+                      "fieldType": "signature",
+                      "required": true
+                    },
+                    {
+                      "id": "member1_signature",
+                      "label": "Member (Signature above Printed Name)",
+                      "fieldType": "signature",
+                      "required": true
+                    },
+                    {
+                      "id": "member2_signature",
+                      "label": "Member (Signature above Printed Name)",
+                      "fieldType": "signature",
+                      "required": true
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "biometric_section",
+              "name": "BIOMETRICS",
+              "adminOnly": true,
+              "fields": [
+                {
+                  "id": "thumbprints",
+                  "fieldNumber": "thumbprints",
+                  "label": "ROLLED THUMBPRINTS",
+                  "fieldType": "biometric",
+                  "required": true,
+                  "adminOnly": true,
+                  "components": [
+                    {
+                      "id": "left_thumb",
+                      "label": "Left Thumb",
+                      "fieldType": "fingerprint",
+                      "required": true
+                    },
+                    {
+                      "id": "right_thumb",
+                      "label": "Right Thumb",
+                      "fieldType": "fingerprint",
+                      "required": true
+                    }
+                  ]
+                },
+                {
+                  "id": "specimen_signatures",
+                  "fieldNumber": "signatures",
+                  "label": "SPECIMEN SIGNATURES",
+                  "fieldType": "signature",
+                  "required": true,
+                  "adminOnly": true
+                }
+              ]
+            },
+            {
+              "id": "part4_vin",
+              "name": "Part 4 - VOTER'S IDENTIFICATION NUMBER",
+              "adminOnly": true,
+              "fields": [
+                {
+                  "id": "vin_components",
+                  "fieldNumber": "vin",
+                  "label": "Voter Identification Number",
+                  "fieldType": "vin_generator",
+                  "required": true,
+                  "adminOnly": true,
+                  "components": [
+                    {
+                      "id": "province_code",
+                      "label": "Prov Code",
+                      "fieldType": "text",
+                      "required": true
+                    },
+                    {
+                      "id": "city_municipality_code",
+                      "label": "City/Mun/Dist. Code",
+                      "fieldType": "text",
+                      "required": true
+                    },
+                    {
+                      "id": "name_code",
+                      "label": "Name Code",
+                      "fieldType": "text",
+                      "required": true
+                    },
+                    {
+                      "id": "birth_code",
+                      "label": "Birth Code",
+                      "fieldType": "text",
+                      "required": true
+                    }
+                  ]
+                },
+                {
+                  "id": "application_type_code",
+                  "fieldNumber": "app_type_code",
+                  "label": "Type of Application",
+                  "fieldType": "select",
+                  "required": true,
+                  "adminOnly": true,
+                  "options": [
+                    {"value": "registration", "label": "Registration"},
+                    {"value": "transfer", "label": "Transfer"},
+                    {"value": "transfer_reactivation", "label": "Transfer with Reactivation"},
+                    {"value": "reactivation", "label": "Reactivation"},
+                    {"value": "change_name", "label": "Change of Name/Correction of Entry"},
+                    {"value": "reinstatement", "label": "Reinstatement/Inclusion"}
+                  ]
+                },
+                {
+                  "id": "application_number_vin",
+                  "fieldNumber": "app_no_vin",
+                  "label": "Application No.",
+                  "fieldType": "text",
+                  "required": true,
+                  "adminOnly": true
+                }
+              ]
+            },
+            {
+              "id": "acknowledgement_section",
+              "name": "ACKNOWLEDGEMENT RECEIPT",
+              "fields": [
+                {
+                  "id": "acknowledgement_message",
+                  "fieldNumber": "ack_msg",
+                  "label": "Acknowledgement Message",
+                  "fieldType": "info_text",
+                  "required": false,
+                  "text": "This is to acknowledge receipt of your application. Your application is subject for Approval/Disapproval by the Election Registration Board (ERB). You need not appear in the ERB hearing unless required through a written notice."
+                },
+                {
+                  "id": "erb_hearing_date",
+                  "fieldNumber": "hearing_date",
+                  "label": "Date of ERB Hearing",
+                  "fieldType": "date",
+                  "required": false,
+                  "adminOnly": true
+                },
+                {
+                  "id": "eo_interviewer_signature",
+                  "fieldNumber": "eo_interviewer",
+                  "label": "EO/ Interviewer Signature above Printed Name",
+                  "fieldType": "signature",
+                  "required": true,
+                  "adminOnly": true
+                }
+              ]
+            }
+          ],
+          "validationRules": {
+            "ageRequirements": [
+              {
+                "voter_type": "regular",
+                "min_age": 18,
+                "max_age": null
+              },
+              {
+                "voter_type": "katipunan_kabataan", 
+                "min_age": 15,
+                "max_age": 17
+              }
+            ],
+            "residenceRequirements": [
+              {
+                "requirement": "Must have resided in the Philippines for at least one (1) year",
+                "condition": "years_ph >= 1 OR (years_ph == 0 AND months_ph >= 0)"
+              },
+              {
+                "requirement": "Must have resided in the city/municipality for at least six (6) months",
+                "condition": "years_city >= 1 OR (years_city == 0 AND months_city >= 6)"
+              }
+            ],
+            "documentRequirements": {
+              "change_name_correction": [
+                "Certified Copy or Certificate of Court Order",
+                "Certificate of Live Birth", 
+                "Marriage Certificate (if applicable)"
+              ],
+              "reactivation": [
+                "Certification/order of the court (for imprisonment, disloyalty, insanity, loss of citizenship, court exclusion)"
+              ]
+            }
+          },
+          "legalReferences": [
+            "B.P. Blg. 881 (Omnibus Election Code)",
+            "R.A. No. 8189 (Voter's Registration Act of 1996)",
+            "R.A. No. 10173 (Data Privacy Act of 2012)", 
+            "R.A. No. 10367 (Mandatory Biometrics Registration Act)",
+            "R.A. No. 10742 (Sangguniang Kabataan Reform Act of 2015)"
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "lastUpdated": "2024-01-15",
+    "formats": {
+      "date": "MM/DD/YYYY",
+      "phone": "09XXXXXXXXX"
+    }
+  }
+}

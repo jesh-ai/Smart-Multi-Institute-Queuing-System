@@ -1,0 +1,342 @@
+{
+  "institutions": [
+    {
+      "id": "comelec",
+      "name": "Commission on Elections",
+      "code": "COMELEC",
+      "description": "Constitutional commission responsible for enforcing election laws in the Philippines",
+      "forms": [
+        {
+          "id": "affidavit_of_identification",
+          "formNumber": "AFFIDAVIT_OF_ID",
+          "title": "Affidavit of Identification",
+          "officialTitle": "AFFIDAVIT OF IDENTIFICATION",
+          "description": "Affidavit for verifying the identity and qualifications of a voter registration applicant",
+          "category": "Supporting Document",
+          "version": "",
+          "pages": 1,
+          "totalFields": 23,
+          "sections": [
+            {
+              "id": "affiant_information",
+              "name": "Affiant Information",
+              "fields": [
+                {
+                  "id": "affiant_name",
+                  "fieldNumber": "affiant_name",
+                  "label": "I, [Name], of legal age, Filipino, and a residence of [Address], under oath, declare:",
+                  "fieldType": "declaration_group",
+                  "required": true,
+                  "components": [
+                    {
+                      "id": "affiant_full_name",
+                      "label": "Affiant Name",
+                      "fieldType": "text",
+                      "required": true,
+                      "validation": {"minLength": 1, "maxLength": 100}
+                    },
+                    {
+                      "id": "affiant_address",
+                      "label": "Affiant Residence Address",
+                      "fieldType": "text",
+                      "required": true,
+                      "validation": {"minLength": 1, "maxLength": 150}
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "declaration_statements",
+              "name": "Declaration Statements",
+              "fields": [
+                {
+                  "id": "statement_1",
+                  "fieldNumber": "1",
+                  "label": "That I personally know applicant:",
+                  "fieldType": "text",
+                  "required": true,
+                  "validation": {"minLength": 1, "maxLength": 100},
+                  "instructions": "full name of applicant"
+                },
+                {
+                  "id": "statement_2",
+                  "fieldNumber": "2",
+                  "label": "That to my knowledge, he/she was born on [Date] at [Place of Birth] and presently residing at [Current Address]",
+                  "fieldType": "statement_group",
+                  "required": true,
+                  "components": [
+                    {
+                      "id": "applicant_birth_date",
+                      "label": "Date of Birth",
+                      "fieldType": "date",
+                      "required": true,
+                      "format": "MM/DD/YYYY"
+                    },
+                    {
+                      "id": "applicant_birth_place",
+                      "label": "Place of Birth",
+                      "fieldType": "text",
+                      "required": true,
+                      "validation": {"maxLength": 100}
+                    },
+                    {
+                      "id": "applicant_current_address",
+                      "label": "Present Residence Address",
+                      "fieldType": "text",
+                      "required": true,
+                      "validation": {"maxLength": 150}
+                    }
+                  ]
+                },
+                {
+                  "id": "statement_3",
+                  "fieldNumber": "3",
+                  "label": "That to my knowledge, the applicant has all the qualifications and none of the disqualifications of a voter",
+                  "fieldType": "confirmation",
+                  "required": true,
+                  "defaultValue": true
+                },
+                {
+                  "id": "statement_4",
+                  "fieldNumber": "4",
+                  "label": "That I am:",
+                  "fieldType": "affiant_type",
+                  "required": true,
+                  "components": [
+                    {
+                      "id": "affiant_category",
+                      "label": "Affiant Category",
+                      "fieldType": "radio",
+                      "required": true,
+                      "options": [
+                        {"value": "registered_voter", "label": "a registered voter"},
+                        {"value": "relative", "label": "a relative of the applicant within the fourth civil degree of consanguinity/affinity"}
+                      ]
+                    },
+                    {
+                      "id": "voter_details",
+                      "fieldNumber": "4a",
+                      "label": "Registered Voter Details",
+                      "fieldType": "voter_information",
+                      "required": false,
+                      "components": [
+                        {
+                          "id": "precinct_number",
+                          "label": "Precinct No.",
+                          "fieldType": "text",
+                          "required": false
+                        },
+                        {
+                          "id": "barangay",
+                          "label": "Barangay",
+                          "fieldType": "text",
+                          "required": false
+                        },
+                        {
+                          "id": "city_municipality",
+                          "label": "City/Municipality",
+                          "fieldType": "text",
+                          "required": false
+                        },
+                        {
+                          "id": "province",
+                          "label": "Province",
+                          "fieldType": "text",
+                          "required": false
+                        }
+                      ],
+                      "conditional": {
+                        "show": "affiant_category == 'registered_voter'"
+                      }
+                    },
+                    {
+                      "id": "relationship_type",
+                      "fieldNumber": "4b",
+                      "label": "Relationship to Applicant",
+                      "fieldType": "relationship_selector",
+                      "required": false,
+                      "components": [
+                        {
+                          "id": "relationship",
+                          "label": "Relationship",
+                          "fieldType": "select",
+                          "required": false,
+                          "options": [
+                            {"value": "parent", "label": "Parent"},
+                            {"value": "son_daughter", "label": "Son/daughter"},
+                            {"value": "grandparent", "label": "Grandmother/grandfather"},
+                            {"value": "sibling", "label": "Brother/sister"},
+                            {"value": "uncle_aunt", "label": "Uncle/aunt"},
+                            {"value": "in_law", "label": "Brother-in-law/sister-in-law"}
+                          ]
+                        }
+                      ],
+                      "conditional": {
+                        "show": "affiant_category == 'relative'"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "affirmation_section",
+              "name": "Affirmation and Signature",
+              "fields": [
+                {
+                  "id": "affirmation_details",
+                  "fieldNumber": "affirmation",
+                  "label": "IN WITNESS WHEREOF, I have hereunto affix my signature this [Date] at [Location], Province of [Province], Philippines.",
+                  "fieldType": "affirmation_group",
+                  "required": true,
+                  "components": [
+                    {
+                      "id": "signature_date",
+                      "label": "Date",
+                      "fieldType": "date_parts",
+                      "required": true,
+                      "components": [
+                        {
+                          "id": "day",
+                          "label": "Day",
+                          "fieldType": "number",
+                          "required": true,
+                          "min": 1,
+                          "max": 31
+                        },
+                        {
+                          "id": "month",
+                          "label": "Month",
+                          "fieldType": "text",
+                          "required": true
+                        },
+                        {
+                          "id": "year",
+                          "label": "Year",
+                          "fieldType": "number",
+                          "required": true,
+                          "min": 2020,
+                          "max": 2030
+                        }
+                      ]
+                    },
+                    {
+                      "id": "location",
+                      "label": "Location",
+                      "fieldType": "text",
+                      "required": true,
+                      "validation": {"maxLength": 50}
+                    },
+                    {
+                      "id": "province",
+                      "label": "Province",
+                      "fieldType": "text",
+                      "required": true,
+                      "validation": {"maxLength": 50}
+                    }
+                  ]
+                },
+                {
+                  "id": "affiant_signature",
+                  "fieldNumber": "affiant_sig",
+                  "label": "Signature above printed name",
+                  "fieldType": "signature",
+                  "required": true
+                }
+              ]
+            },
+            {
+              "id": "eo_subscription",
+              "name": "Election Officer Subscription",
+              "adminOnly": true,
+              "fields": [
+                {
+                  "id": "eo_subscription_statement",
+                  "fieldNumber": "eo_sub",
+                  "label": "SUBSCRIBED AND SWORN to before me on the above date.",
+                  "fieldType": "text",
+                  "required": false,
+                  "adminOnly": true
+                },
+                {
+                  "id": "election_officer_signature",
+                  "fieldNumber": "eo_sig",
+                  "label": "ELECTION OFFICER",
+                  "fieldType": "signature",
+                  "required": true,
+                  "adminOnly": true
+                }
+              ]
+            }
+          ],
+          "validationRules": {
+            "affiantRequirements": [
+              {
+                "rule": "Affiant must be either a registered voter or a relative within 4th civil degree",
+                "condition": "affiant_category IN ['registered_voter', 'relative']"
+              },
+              {
+                "rule": "If registered voter, precinct details must be provided",
+                "condition": "affiant_category == 'registered_voter' AND (precinct_number IS NOT EMPTY AND barangay IS NOT EMPTY AND city_municipality IS NOT EMPTY AND province IS NOT EMPTY)"
+              },
+              {
+                "rule": "If relative, relationship must be specified",
+                "condition": "affiant_category == 'relative' AND relationship IS NOT EMPTY"
+              }
+            ],
+            "knowledgeValidation": [
+              {
+                "rule": "Affiant must confirm knowledge of applicant's qualifications",
+                "condition": "statement_3 == true"
+              }
+            ]
+          },
+          "legalRequirements": {
+            "purpose": "This affidavit serves to verify the identity and qualifications of a voter registration applicant when primary documents are unavailable",
+            "validRelationships": [
+              "Parent (1st degree)",
+              "Son/Daughter (1st degree)", 
+              "Grandparent (2nd degree)",
+              "Sibling (2nd degree)",
+              "Uncle/Aunt (3rd degree)",
+              "Brother-in-law/Sister-in-law (3rd degree by affinity)"
+            ],
+            "affiantQualifications": [
+              "Must be of legal age (18 years or older)",
+              "Must be a Filipino citizen",
+              "Must be a registered voter OR relative within 4th civil degree",
+              "Must have personal knowledge of the applicant"
+            ]
+          },
+          "documentaryRequirements": {
+            "affiant": [
+              "Valid government-issued ID",
+              "Voter's ID or proof of registration (if claiming to be registered voter)"
+            ],
+            "supportingDocuments": [
+              "This affidavit should be accompanied by the main voter registration application"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "lastUpdated": "2024-01-15",
+    "formats": {
+      "date": "MM/DD/YYYY"
+    },
+    "fieldTypes": {
+      "declaration_group": "Grouped declaration with multiple components",
+      "statement_group": "Grouped statement with related fields",
+      "confirmation": "Boolean confirmation field",
+      "affiant_type": "Affiant category selection with conditional fields",
+      "voter_information": "Voter registration details",
+      "relationship_selector": "Family relationship selection",
+      "affirmation_group": "Affirmation details with location and date",
+      "signature": "Digital signature capture"
+    }
+  }
+}
