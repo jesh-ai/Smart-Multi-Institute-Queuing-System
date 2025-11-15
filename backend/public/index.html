@@ -52,9 +52,44 @@
         <div id="services-loading" class="loading">Loading...</div>
         <div id="services-response" class="response-box"></div>
       </div>
-    </div>
 
-    <div class="grid">
+      <!-- Institute Info -->
+      <div class="card institute-card">
+        <h2>Institute Info</h2>
+        <p>Get complete institute information</p>
+        <button onclick="getInstituteInfo()">GET /api/institute/info</button>
+        <div id="institute-info-loading" class="loading">Loading...</div>
+        <div id="institute-info-response" class="response-box"></div>
+      </div>
+
+      <!-- Institute Services -->
+      <div class="card institute-card">
+        <h2>Institute Services</h2>
+        <p>Get list of institute services</p>
+        <button onclick="getInstituteServices()">GET /api/institute/services</button>
+        <div id="institute-services-loading" class="loading">Loading...</div>
+        <div id="institute-services-response" class="response-box"></div>
+      </div>
+
+      <!-- Service Form -->
+      <div class="card institute-card">
+        <h2>Service Form</h2>
+        <p>Get form by service ID</p>
+        <input type="number" id="service-id" placeholder="Service ID (0, 1, 2...)" value="0">
+        <button onclick="getServiceForm()">GET /api/institute/form/:id</button>
+        <div id="service-form-loading" class="loading">Loading...</div>
+        <div id="service-form-response" class="response-box"></div>
+      </div>
+
+      <!-- Privacy Notice -->
+      <div class="card institute-card">
+        <h2>Privacy Notice</h2>
+        <p>Get institute privacy notice</p>
+        <button onclick="getPrivacyNotice()">GET /api/institute/notice</button>
+        <div id="privacy-loading" class="loading">Loading...</div>
+        <div id="privacy-response" class="response-box"></div>
+      </div>
+
       <!-- Chatbot - Ping -->
       <div class="card">
         <h2>Chatbot Ping</h2>
@@ -81,9 +116,7 @@
         <div id="feedback-loading" class="loading">Loading...</div>
         <div id="feedback-response" class="response-box"></div>
       </div>
-    </div>
 
-    <div class="grid">
       <!-- Custom Closed Message -->
       <div class="card">
         <h2>Custom Closed Message</h2>
@@ -113,9 +146,7 @@
         <div id="sessions-loading" class="loading">Loading...</div>
         <div id="sessions-response" class="response-box"></div>
       </div>
-    </div>
 
-    <div class="grid">
       <!-- Queue -->
       <div class="card">
         <h2>Queue Status</h2>
@@ -142,9 +173,7 @@
         <div id="qr-loading" class="loading">Loading...</div>
         <div id="qr-response" class="response-box"></div>
       </div>
-    </div>
 
-    <div class="grid">
       <!-- Session & Devices -->
       <div class="card">
         <h2>Session & Devices</h2>
@@ -176,9 +205,7 @@
         <div id="counter-id-loading" class="loading">Loading...</div>
         <div id="counter-id-response" class="response-box"></div>
       </div>
-    </div>
 
-    <div class="grid">
       <!-- Update Counter -->
       <div class="card">
         <h2>Update Counter</h2>

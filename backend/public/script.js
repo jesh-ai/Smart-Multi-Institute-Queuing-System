@@ -422,3 +422,62 @@ async function updateCounter() {
   }
   setLoading('counter-update-loading', false);
 }
+
+// Institute Info
+async function getInstituteInfo() {
+  setLoading('institute-info-loading', true);
+  try {
+    const response = await fetch(`${API_BASE}/api/institute/info`);
+    const data = await response.json();
+    displayResponse('institute-info-response', data);
+  } catch (error) {
+    displayResponse('institute-info-response', { error: error.message }, true);
+  }
+  setLoading('institute-info-loading', false);
+}
+
+
+// Institute Services
+async function getInstituteServices() {
+  setLoading('institute-services-loading', true);
+  try {
+    const response = await fetch(`${API_BASE}/api/institute/services`);
+    const data = await response.json();
+    displayResponse('institute-services-response', data);
+  } catch (error) {
+    displayResponse('institute-services-response', { error: error.message }, true);
+  }
+  setLoading('institute-services-loading', false);
+}
+
+// Service Form
+async function getServiceForm() {
+  const serviceId = document.getElementById('service-id').value;
+  if (!serviceId && serviceId !== '0') {
+    displayResponse('service-form-response', { error: 'Please enter a service ID' }, true);
+    return;
+  }
+
+  setLoading('service-form-loading', true);
+  try {
+    const response = await fetch(`${API_BASE}/api/institute/form/${serviceId}`);
+    const data = await response.json();
+    displayResponse('service-form-response', data);
+  } catch (error) {
+    displayResponse('service-form-response', { error: error.message }, true);
+  }
+  setLoading('service-form-loading', false);
+}
+
+// Privacy Notice
+async function getPrivacyNotice() {
+  setLoading('privacy-loading', true);
+  try {
+    const response = await fetch(`${API_BASE}/api/institute/notice`);
+    const data = await response.json();
+    displayResponse('privacy-response', data);
+  } catch (error) {
+    displayResponse('privacy-response', { error: error.message }, true);
+  }
+  setLoading('privacy-loading', false);
+}

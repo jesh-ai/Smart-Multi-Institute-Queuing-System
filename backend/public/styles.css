@@ -60,6 +60,9 @@ body {
   background: white;
   border: 1px solid #ddd;
   padding: 20px;
+  height: 400px;
+  display: flex;
+  flex-direction: column;
 }
 
 .card h2 {
@@ -67,12 +70,14 @@ body {
   margin-bottom: 10px;
   padding-bottom: 8px;
   border-bottom: 2px solid #333;
+  flex-shrink: 0;
 }
 
 .card p {
   color: #666;
   font-size: 0.85rem;
   margin-bottom: 12px;
+  flex-shrink: 0;
 }
 
 button {
@@ -104,6 +109,7 @@ input, textarea {
   border: 1px solid #ddd;
   font-size: 0.9rem;
   font-family: inherit;
+  flex-shrink: 0;
 }
 
 .response-box {
@@ -111,10 +117,11 @@ input, textarea {
   border: 1px solid #ddd;
   padding: 12px;
   margin-top: 12px;
-  max-height: 300px;
   overflow-y: auto;
   font-family: 'Courier New', monospace;
   font-size: 0.8rem;
+  flex: 1;
+  min-height: 0;
 }
 
 .response-box pre {
@@ -163,4 +170,12 @@ input, textarea {
   font-size: 0.8rem;
   color: #666;
   margin: 0;
+}
+
+.card.institute-card {
+  background: #d4ffe1;
+}
+
+.card.institute-card h2 {
+  border-bottom-color: #22c55e;
 }
