@@ -1,2 +1,4 @@
 package-lock.json
 data
+convos/*context.json
+convos/*messages.json
