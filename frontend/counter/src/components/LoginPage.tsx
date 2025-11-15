@@ -1,71 +1,50 @@
-"use client";
-import Image from 'next/image';
-import { useState } from 'react';
+'use client';
+
+import React from 'react';
+import { KeyRound } from 'lucide-react';
 
 
 interface LoginPageProps {
-  onLoginSuccess: () => void;
+  onLogin: () => void;
 }
 
-export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
-  const [sessionKey, setSessionKey] = useState('');
-  const [error, setError] = useState('');
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-  // --- MOCK AUTHENTICATION LOGIC ---
-    if (sessionKey === '1234') { 
-      console.log('Login successful!');
-      onLoginSuccess(); 
-    } else {
-      setError('Invalid session key. Please try again.');
-    }
-  };
-    
+const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-[#F6F6E9] p-4">
-      <div className="w-full max-w-sm bg-white p-8 rounded-2xl shadow-lg border border-gray-100 text-center">
+    <div className="flex min-h-screen items-center justify-center bg-amber-50 p-4">
+      
+      {/* Login Card */}
+      <div className="w-full max-w-md rounded-xl bg-white p-8 text-center shadow-lg md:p-12">
         
-        <div className="flex justify-center mb-6">
-          <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center shadow-sm relative">
-            <Image 
-              src="/admin access.png" 
-              alt="Admin Access Key" 
-              width={40} 
-              height={40}
-              className="object-contain"
-            />
-          </div>
+        <div className="mb-6 inline-flex rounded-full bg-blue-600 p-4 text-white">
+          <KeyRound size={40} />
         </div>
-
-        <h1 className="text-xl font-semibold text-gray-800 mb-2">Counter Admin Access</h1>
-        <p className="text-sm text-gray-500 mb-8 px-2 leading-relaxed">
-          Enter your session key to access the <br/> counter management system
+        <h1 className="mb-2 text-2xl font-semibold text-gray-900">
+          Counter Admin Access
+        </h1>
+        <p className="mb-8 text-sm text-gray-500">
+          Enter your session key to access the
+          <br />
+          counter management system
         </p>
-
-        <form onSubmit={handleLogin} className="space-y-4">
-          <div>
-            <input 
-              type="password" 
-              value={sessionKey} 
-              onChange={(e) => setSessionKey(e.target.value)} 
-              placeholder="Enter session key" 
-              required 
-              className="w-full px-4 py-3 bg-gray-100 rounded-lg text-gray-700 placeholder-gray-400 text-center focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all" 
-            />
-          </div>
-
-          {error && (<p className="text-xs text-red-500 mt-2">{error}</p>)}
-
+        
+        <div className="flex flex-col gap-4">
+          <input
+            type="password"
+            placeholder="Enter session key"
+            className="w-full rounded-lg border border-gray-200 bg-gray-100 p-3 text-center text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
           <button
-            type="submit"
-            className="w-full bg-[#FFC847] text-gray-900 py-3 rounded-lg hover:bg-[#fdb828] transition duration-150 font-medium shadow-sm mt-2"
+            type="button"
+            onClick={onLogin}
+            className="w-full rounded-lg bg-yellow-500 p-3 text-sm font-medium text-gray-900 shadow-sm transition-colors hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2"
           >
-            Enter
+            Log-In
           </button>
-        </form>
+        </div>
+        
       </div>
     </div>
   );
-}
+};
+
+export default LoginPage;

@@ -1,7 +1,20 @@
+'use client';
+
 import React from 'react';
 import { LayoutDashboard, User, LogOut } from 'lucide-react';
 
-const Header = () => {
+type View = 'dashboard' | 'applicant';
+
+interface HeaderProps {
+  currentView: View;
+  onViewChange: (view: View) => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
+  
+  const activeClass = "flex items-center gap-2 bg-yellow-500 text-gray-900 font-semibold px-4 py-2 rounded-md hover:bg-yellow-400 transition-colors";
+  const inactiveClass = "flex items-center gap-2 text-white font-semibold px-4 py-2 rounded-md hover:bg-yellow-300 hover:text-black transition-colors";
+
   return (
     <nav className="bg-gray-900 text-white p-4 flex justify-between items-center">
       {/* Logo/Title */}
@@ -11,11 +24,17 @@ const Header = () => {
 
       {/* Navigation Buttons */}
       <div className="flex items-center gap-4">
-        <button className="flex items-center gap-2 bg-yellow-500 text-gray-900 font-semibold px-4 py-2 rounded-md hover:bg-yellow-400 transition-colors">
+        <button
+          className={currentView === 'dashboard' ? activeClass : inactiveClass}
+          onClick={() => onViewChange('dashboard')}
+        >
           <LayoutDashboard size={18} />
           Dashboard
         </button>
-        <button className="flex items-center gap-2 bg-blue-600 text-white font-semibold px-4 py-2 rounded-md hover:bg-blue-500 transition-colors">
+        <button
+          className={currentView === 'applicant' ? activeClass : inactiveClass}
+          onClick={() => onViewChange('applicant')}
+        >
           <User size={18} />
           Applicant
         </button>
