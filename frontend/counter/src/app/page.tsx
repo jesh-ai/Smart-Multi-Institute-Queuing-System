@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from 'react';
-import Header from "@/components/Header";
 import Dashboard from "@/components/Dashboard";
 import Applicant from "@/components/Applicant";
 import LoginPage from '@/components/LoginPage';
