@@ -19,7 +19,8 @@ export default function RequirementsPage() {
       .then((data) => {
         // Check if the form exists in the data
         if (form && data[form]) {
-          setRequirements(data[form].requirements || []);
+          const formData = data[form] as { requirements?: string[] };
+          setRequirements(formData.requirements || []);
         } else if (data.requirements && Array.isArray(data.requirements)) {
           // Fallback to old format if exists
           setRequirements(data.requirements);

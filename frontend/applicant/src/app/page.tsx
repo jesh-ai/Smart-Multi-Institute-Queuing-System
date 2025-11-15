@@ -3,7 +3,44 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import QueueChatUI from "@/components/Status";
-// Desktop flow: StartScreen and ConsentScreen are defined here. MenuScreen lives inside ChatInterface.
+import privacyPolicy from "@/components/data/privacyPolicy.json";
+
+// Component to render privacy policy from JSON
+type Section = {
+  heading?: string;
+  content?: string;
+  list?: string[];
+  additionalContent?: string;
+};
+
+function PrivacyContent() {
+  const sections = privacyPolicy?.sections ?? [];
+  return (
+    <div className="bg-white rounded-lg p-4 overflow-y-auto h-[300px] text-xs sm:text-sm md:text-base text-[#34495E] mb-6">
+      {sections.map((section: Section, idx: number) => (
+        <div key={idx}>
+          <p className="mb-2 text-justify">
+            <strong>{section.heading}</strong>
+            <br />
+            {section.content}
+          </p>
+
+          {Array.isArray(section.list) && section.list.length > 0 && (
+            <ul className="list-disc list-inside ml-4 mb-4 text-[#34495E]">
+              {section.list.map((item: string, i: number) => (
+                <li key={i}>{item}</li>
+              ))}
+            </ul>
+          )}
+
+          {section.additionalContent && (
+            <p className="mb-2 text-justify">{section.additionalContent}</p>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
 
 function DataPrivacyModal({
   onProceed,
@@ -42,26 +79,8 @@ function DataPrivacyModal({
           </h3>
         </div>
 
-        {/* Body */}
-        <div className="p-4 overflow-y-auto text-xs sm:text-sm md:text-base text-[#34495E] flex-1">
-          <p className="mb-2">
-            We value your privacy. This consent explains how we collect,
-            process, and protect your personal data.
-          </p>
-          <p className="mb-2">
-            By proceeding, you acknowledge that you have read and understood our
-            privacy practices, and you consent to the collection and processing
-            of your data in accordance with applicable laws.
-          </p>
-          <p className="mb-2">
-            Your data will only be used for the purpose of this system and will
-            not be shared with third parties without your permission.
-          </p>
-          <p className="mb-2">
-            If you do not agree, you may choose to cancel and discontinue using
-            this service.
-          </p>
-        </div>
+        {/* Body - Now using PrivacyContent component */}
+        <PrivacyContent />
 
         {/* Footer */}
         <div className="p-4 border-t flex flex-col gap-3">
@@ -118,25 +137,23 @@ export default function Home() {
     const update = () => setIsDesktop(mq.matches);
     update();
     mq.addEventListener?.("change", update);
-    // fallback for older browsers
     window.addEventListener("resize", update);
     return () => {
       mq.removeEventListener?.("change", update);
       window.removeEventListener("resize", update);
     };
   }, []);
-  // desktop screen flow state (start -> consent -> menu)
+
   const [desktopScreen, setDesktopScreen] = useState<
     "start" | "consent" | "menu"
   >("start");
   const [consented, setConsented] = useState(false);
   const [showChat] = useState(false);
-  // showStatus controls visibility of the queue status panel.
-  // It should only be shown after the user submits the form.
   const [showStatus] = useState(false);
 
   const handleProceed = () => {
     setConsented(true);
+    router.push("/chat");
   };
 
   const handleDecline = () => {
@@ -147,14 +164,12 @@ export default function Home() {
     router.push("/feedback");
   };
 
-  // Handle navigation to chat when desktop reaches menu screen
   useEffect(() => {
     if (isDesktop && desktopScreen === "menu" && !showStatus) {
       router.push("/chat");
     }
   }, [isDesktop, desktopScreen, showStatus, router]);
 
-  // If desktop viewport, show the desktop start/consent screens here.
   if (isDesktop) {
     if (desktopScreen === "start") {
       return (
@@ -182,21 +197,13 @@ export default function Home() {
     if (desktopScreen === "consent") {
       return (
         <div className="h-full bg-white flex flex-col">
-          {/* Header provided by layout.tsx to avoid duplicate headers */}
           <main className="flex-1 flex items-center justify-center p-8 overflow-auto">
             <div className="bg-gray-400 rounded-lg p-12 w-full max-w-md relative shadow-lg">
-              <div className="absolute top-0 right-0 w-2 h-full bg-gray-600 rounded-r-lg"></div>
-
               <h2 className="text-3xl font-bold text-gray-800 mb-8">
                 Data Privacy <br /> Consent
               </h2>
 
-              <div className="space-y-4 mb-16">
-                <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 bg-white rounded-full"></div>
-                  <div className="h-px bg-gray-500 flex-1"></div>
-                </div>
-              </div>
+              <PrivacyContent />
 
               <button
                 onClick={() => setDesktopScreen("menu")}
@@ -210,13 +217,10 @@ export default function Home() {
       );
     }
 
-    // desktopScreen === 'menu' -> Navigate to chat page
-    // Navigation handled by useEffect to avoid rendering during render
     if (showStatus) {
       return <QueueChatUI onShowFeedback={handleShowFeedback} />;
     }
 
-    // Return loading state while navigation is in progress
     return (
       <div className="h-full flex items-center justify-center">
         <p className="text-gray-600">Loading...</p>
@@ -226,7 +230,6 @@ export default function Home() {
 
   return (
     <>
-      {/* Data Privacy Modal (shown first) */}
       {!consented && (
         <DataPrivacyModal
           key="privacy-modal"
@@ -235,10 +238,8 @@ export default function Home() {
         />
       )}
 
-      {/* Main Content */}
       {showChat ? (
         <div>
-          {/* Status panel should be visible only after form submission */}
           {showStatus && <QueueChatUI />}
           <button
             onClick={() => router.push("/chat")}
@@ -251,7 +252,7 @@ export default function Home() {
         <div className="flex flex-col items-center justify-center flex-1 px-6">
           <div className="h-20 w-20 rounded-full bg-[#34495E] mb-4" />
           <h2 className="text-xl font-bold text-black">Welcome!</h2>
-          <p className="italic text-black mb-8">Let’s get started</p>
+          <p className="italic text-black mb-8">Let&apos;s get started</p>
 
           <div className="w-full max-w-sm space-y-4">
             <div className="h-20 w-full rounded-lg bg-[#34495E]" />
@@ -260,7 +261,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* Footer */}
       {consented && !showChat && (
         <footer className="sticky bottom-0 z-10 flex flex-col gap-2 border-t bg-[#34495E] p-4">
           <div className="flex items-center gap-2">
