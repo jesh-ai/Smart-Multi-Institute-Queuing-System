@@ -63,11 +63,7 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
       const apiResponse = await fetch(
         `/api/get-response?message=${encodeURIComponent(text)}`
       );
-
-      if (!apiResponse.ok) {
-        throw new Error("Failed to fetch response");
-      }
-
+      if (!apiResponse.ok) throw new Error("Failed to fetch response");
       const response = await apiResponse.json();
 
       if (response.error) {

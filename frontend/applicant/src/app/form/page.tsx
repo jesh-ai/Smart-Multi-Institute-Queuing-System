@@ -153,6 +153,7 @@ export default function FormFillingPage() {
     const fetchForm = async () => {
       try {
         const res = await fetch("/api/get-form");
+        if (!res.ok) throw new Error("Failed to fetch form");
         const json = await res.json();
         setFormDef(json);
         // initialize formData with values from json (keeping structure)
@@ -187,7 +188,7 @@ export default function FormFillingPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           data: formData,
-          form: formDef?.formNumber || "unknown",
+          form: String(formDef?.formNumber || "unknown"),
         }),
       });
       if (!res.ok) throw new Error("Save failed");
@@ -209,7 +210,7 @@ export default function FormFillingPage() {
     );
   }
 
-  // Desktop: use the richer card layout inspired by FormPage.tsx but keep dynamic fields
+  // Desktop
   if (isDesktop) {
     return (
       <div className="h-full flex flex-col items-center justify-center bg-white overflow-auto">

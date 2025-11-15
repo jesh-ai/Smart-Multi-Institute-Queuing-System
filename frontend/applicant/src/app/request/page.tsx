@@ -14,10 +14,11 @@ export default function RequestPage() {
 
   useEffect(() => {
     // Fetch the choices from responses.json
-    fetch("/responses.json")
+    fetch("/api/response-choices")
       .then((res) => res.json())
       .then((data) => {
-        const choices = data.inquiry?.Choices || {};
+        const inquiry = data.inquiry as { Choices?: Record<string, unknown> };
+        const choices = inquiry?.Choices || {};
         const requestList: RequestChoice[] = Object.values(choices).map(
           (value) => ({
             title: value as string,
