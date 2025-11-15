@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Dashboard from "@/components/Dashboard";
 import Applicant from "@/components/Applicant";
 import LoginPage from '@/components/LoginPage';
+import Header from "@/components/Header"; // Import Header here
 
 type View = 'dashboard' | 'applicant';
 

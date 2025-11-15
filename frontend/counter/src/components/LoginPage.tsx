@@ -3,6 +3,7 @@
 import React from 'react';
 import { KeyRound } from 'lucide-react';
 
+
 interface LoginPageProps {
   onLogin: () => void;
 }
