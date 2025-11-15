@@ -1,60 +1,68 @@
 "use client";
-
-import Image from "next/image";
+import Image from 'next/image';
 import { useState } from 'react';
 
+
 interface LoginPageProps {
-    onLoginSuccess: () => void;
+  onLoginSuccess: () => void;
 }
 
 export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
-  const [staffId, setStaffId] = useState('');
-  const [password, setPassword] = useState('');
+  const [sessionKey, setSessionKey] = useState('');
   const [error, setError] = useState('');
-
-  const inputClass = "w-full px-4 py-2 border border-gray-400 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white";
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
-    // --- MOCK AUTHENTICATION LOGIC ---
-    if (staffId === 'C001' && password === '1234') {
+  // --- MOCK AUTHENTICATION LOGIC ---
+    if (sessionKey === '1234') { 
       console.log('Login successful!');
-      onLoginSuccess(); // Call the prop function to switch the view in page.tsx
+      onLoginSuccess(); 
     } else {
-      setError('Invalid Staff ID or Password. Please try again.');
+      setError('Invalid session key. Please try again.');
     }
   };
     
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
-      <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-xl border border-gray-200">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-[#F6F6E9] p-4">
+      <div className="w-full max-w-sm bg-white p-8 rounded-2xl shadow-lg border border-gray-100 text-center">
         
-        <div className="flex flex-col items-center mb-6">
-          <Image src="/next.svg" alt="Counter Logo" width={50} height={50} className="mb-3" />
-          <h1 className="text-2xl font-bold text-[#34495E]">Counter Staff Login</h1>
-          <p className="text-sm text-gray-500">Enter your credentials to manage queues</p>
+        <div className="flex justify-center mb-6">
+          <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center shadow-sm relative">
+            <Image 
+              src="/admin access.png" 
+              alt="Admin Access Key" 
+              width={40} 
+              height={40}
+              className="object-contain"
+            />
+          </div>
         </div>
+
+        <h1 className="text-xl font-semibold text-gray-800 mb-2">Counter Admin Access</h1>
+        <p className="text-sm text-gray-500 mb-8 px-2 leading-relaxed">
+          Enter your session key to access the <br/> counter management system
+        </p>
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Staff ID</label>
-            <input type="text" value={staffId} onChange={(e) => setStaffId(e.target.value)} placeholder="e.g., C001" required className={inputClass} />
+            <input 
+              type="password" 
+              value={sessionKey} 
+              onChange={(e) => setSessionKey(e.target.value)} 
+              placeholder="Enter session key" 
+              required 
+              className="w-full px-4 py-3 bg-gray-100 rounded-lg text-gray-700 placeholder-gray-400 text-center focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all" 
+            />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter password" required className={inputClass} />
-          </div>
-          
-          {error && (<p className="text-sm text-red-600 font-medium text-center">{error}</p>)}
+          {error && (<p className="text-xs text-red-500 mt-2">{error}</p>)}
 
           <button
             type="submit"
-            className="w-full bg-[#34495E] text-white py-2 rounded-md hover:bg-[#2e4054] transition duration-150 font-semibold"
+            className="w-full bg-[#FFC847] text-gray-900 py-3 rounded-lg hover:bg-[#fdb828] transition duration-150 font-medium shadow-sm mt-2"
           >
-            Log In
+            Enter
           </button>
         </form>
       </div>
