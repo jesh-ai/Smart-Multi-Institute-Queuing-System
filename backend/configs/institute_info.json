@@ -38,5 +38,6 @@
             "name": "Application for Registration BIR Form No. 1903",
             "form": "bir/forms/BIR_FORM_1903.json"
 		}
-	]
+	],
+	"privacy_notice": "bir/privacy_notice.json"
 }
