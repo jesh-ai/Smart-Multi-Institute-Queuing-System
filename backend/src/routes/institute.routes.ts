@@ -5,7 +5,6 @@ import {
   getFormByServiceId,
   getPrivacyNotice
 } from "../controllers/institute.controller.js";
-const a = "a"
 
 const route = express.Router();
 
