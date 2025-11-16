@@ -27,7 +27,7 @@ router.use(sessionRoutes)
 router.use(serverRoutes)
 router.use(counterRoutes)
 router.use(applicantRoutes)
-router.use("/institute", intituteRoutes)
+router.use(intituteRoutes)
 // Applicant chatbot route
 // router.use("/chatbot", applicantRoutes);
 
