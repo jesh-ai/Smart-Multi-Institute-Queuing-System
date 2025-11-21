@@ -1,0 +1,43 @@
+{
+	"name": "Bureau of Internal Revenue",
+	"welcome_message": "Government agency responsible for tax collection in the Philippines",
+	"service_list": [
+		{
+			"requirements": [
+				"High School Diploma",
+				"Certificate of Good Moral Character",
+				"Birth Certificate (PSA)",
+				"2x2 ID Picture (2 copies)",
+				"Medical Clearance",
+				"Entrance Exam Result"
+			],
+            "name": "Application for Registration BIR Form No. 1901",
+            "form": "bir/forms/BIR_FORM_1901.json"
+		},
+		{
+			"requirements": [
+				"High School Diploma",
+				"Certificate of Good Moral Character",
+				"Birth Certificate (PSA)",
+				"2x2 ID Picture (2 copies)",
+				"Medical Clearance",
+				"Entrance Exam Result"
+			],
+            "name": "Application for Registration BIR Form No. 1902",
+            "form": "bir/forms/BIR_FORM_1902.json"
+		},
+		{
+			"requirements": [
+				"High School Diploma",
+				"Certificate of Good Moral Character",
+				"Birth Certificate (PSA)",
+				"2x2 ID Picture (2 copies)",
+				"Medical Clearance",
+				"Entrance Exam Result"
+			],
+            "name": "Application for Registration BIR Form No. 1903",
+            "form": "bir/forms/BIR_FORM_1903.json"
+		}
+	],
+	"privacy_notice": "bir/privacy_notice.json"
+}

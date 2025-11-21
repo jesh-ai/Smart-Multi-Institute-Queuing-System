@@ -7,6 +7,7 @@ import sessionRoutes from './session.routes.js';
 import serverRoutes from './server.routes.js';
 import counterRoutes from './counter.routes.js';
 import applicantRoutes from './applicant.routes.js'
+import intituteRoutes from "./institute.routes.js"
 
 const router = Router();
 
@@ -26,6 +27,7 @@ router.use(sessionRoutes)
 router.use(serverRoutes)
 router.use(counterRoutes)
 router.use(applicantRoutes)
+router.use("/institute", intituteRoutes)
 // Applicant chatbot route
 // router.use("/chatbot", applicantRoutes);
 
