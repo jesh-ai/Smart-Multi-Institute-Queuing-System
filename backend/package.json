@@ -5,7 +5,7 @@
   "type": "module",
   "main": "dist/server.js",
   "scripts": {
-    "build": "tsc",
+    "build": "rmdir /s /q dist & tsc",
     "dev": "npm run build && nodemon --watch src --ext js,json,ts dist/server.js",
     "start": "npm run build && node dist/server.js",
     "migrate": "echo \"add migrations later\"",
