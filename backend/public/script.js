@@ -17,7 +17,6 @@
  *   textareas: [...],             // Optional: textarea fields
  *   buttons: [...],               // Button configurations
  *   customClass: 'my-class',      // Optional: custom CSS class
- *   customHandler: myFunction     // Optional: use custom function instead of auto-generated
  * }
  * 
  * BUTTON CONFIGURATION:
@@ -28,7 +27,6 @@
  *   method: 'GET',                // HTTP method
  *   useInputs: ['input-id'],      // Optional: which inputs to use for URL params
  *   useBody: ['input-id'],        // Optional: which inputs to send in body
- *   customHandler: myFunction     // Optional: use custom function instead
  * }
  * 
  * EXAMPLES:
@@ -63,143 +61,142 @@
 
 const API_BASE = '';
 
-// ============= CARD TEMPLATE SYSTEM =============
-
 const cardConfigs = [
-  {
-    id: 'stats',
-    title: 'Database Statistics',
-    description: 'View current database state and record counts',
-    buttons: [{ label: 'Get Stats', endpoint: '/api/test/stats', method: 'GET' }]
-  },
-  {
-    id: 'institutes',
-    title: 'Institutes',
-    description: 'View all registered institutes',
-    buttons: [{ label: 'Get All Institutes', endpoint: '/api/test/institutes', method: 'GET' }]
-  },
-  {
-    id: 'services',
-    title: 'Services',
-    description: 'View all available services',
-    buttons: [{ label: 'Get All Services', endpoint: '/api/test/services', method: 'GET' }]
-  },
   {
     id: 'institute-info',
     title: 'Institute Info',
     description: 'Get complete institute information',
-    buttons: [{ label: 'GET /api/institute/info', endpoint: '/api/institute/info', method: 'GET' }],
-    customClass: 'institute-card'
+    buttons: [{ endpoint: '/api/institute/info', method: 'GET' }],
+    customClass: 'done'
   },
   {
     id: 'institute-services',
     title: 'Institute Services',
     description: 'Get list of institute services',
-    buttons: [{ label: 'GET /api/institute/services', endpoint: '/api/institute/services', method: 'GET' }],
-    customClass: 'institute-card'
+    buttons: [{ endpoint: '/api/institute/services', method: 'GET' }],
+    customClass: 'done'
   },
   {
     id: 'service-form',
     title: 'Service Form',
     description: 'Get form by service ID',
-    inputs: [{ id: 'service-id', type: 'number', placeholder: 'Service ID (0, 1, 2...)', defaultValue: '0' }],
-    buttons: [{ label: 'GET /api/institute/form/:id', endpoint: '/api/institute/form/:id', method: 'GET', useInputs: ['service-id'] }],
-    customClass: 'institute-card'
+    inputs: [{ id: 'service-form-service-id', type: 'number', placeholder: 'Service ID (0, 1, 2...)', defaultValue: '0' }],
+    buttons: [{ endpoint: '/api/institute/form/:id', method: 'GET', useInputs: ['service-form-service-id'] }],
+    customClass: 'done'
   },
   {
     id: 'privacy',
     title: 'Privacy Notice',
     description: 'Get institute privacy notice',
-    buttons: [{ label: 'GET /api/institute/notice', endpoint: '/api/institute/notice', method: 'GET' }],
-    customClass: 'institute-card'
+    buttons: [{ endpoint: '/api/institute/notice', method: 'GET' }],
+    customClass: 'done'
+  },
+  {
+    id: 'stats',
+    title: 'Database Statistics',
+    description: 'View current database state and record counts',
+    buttons: [{ endpoint: '/api/test/stats', method: 'GET' }]
   },
   {
     id: 'ping',
     title: 'Chatbot Ping',
     description: 'Test if chatbot endpoint is responding',
-    buttons: [{ label: 'Ping Chatbot', endpoint: '/api/chatbot/ping', method: 'GET' }]
+    buttons: [{ endpoint: '/api/chatbot/ping', method: 'GET' }]
   },
   {
     id: 'start',
     title: 'Start Conversation',
     description: 'Initialize a new chatbot conversation',
-    buttons: [{ label: 'Send "start"', endpoint: '/api/chatbot', method: 'POST', bodyData: { message: 'start', type: 'closed' } }]
+    buttons: [{ endpoint: '/api/chatbot', method: 'POST', bodyData: { message: 'start', type: 'closed' } }]
   },
   {
     id: 'feedback',
     title: 'Request Feedback',
     description: 'Request user feedback options',
-    buttons: [{ label: 'Send "feedback"', endpoint: '/api/chatbot', method: 'POST', bodyData: { message: 'feedback', type: 'closed' } }]
+    buttons: [{ endpoint: '/api/chatbot', method: 'POST', bodyData: { message: 'feedback', type: 'closed' } }]
   },
   {
     id: 'closed',
     title: 'Custom Closed Message',
     description: 'Send a custom closed-ended message',
-    inputs: [{ id: 'closed-message', type: 'text', placeholder: 'Enter message (e.g., \'start\', \'feedback\')' }],
-    buttons: [{ label: 'Send Message', endpoint: '/api/chatbot', method: 'POST', useBody: { message: 'closed-message', type: 'closed' } }]
+    inputs: [{ id: 'closed-closed-message', type: 'text', placeholder: 'Enter message (e.g., \'start\', \'feedback\')' }],
+    buttons: [{ endpoint: '/api/chatbot', method: 'POST', useBody: { message: 'closed-closed-message', type: 'closed' } }]
   },
   {
     id: 'open',
     title: 'Open-ended Message',
     description: 'Send a custom open-ended message',
-    textareas: [{ id: 'open-message', rows: 3, placeholder: 'Type your message here...' }],
-    buttons: [{ label: 'Send Message', endpoint: '/api/chatbot', method: 'POST', useBody: { message: 'open-message', type: 'open' } }]
+    textareas: [{ id: 'open-open-message', rows: 3, placeholder: 'Type your message here...' }],
+    buttons: [{ endpoint: '/api/chatbot', method: 'POST', useBody: { message: 'open-open-message', type: 'open' } }]
   },
   {
     id: 'sessions',
     title: 'Active Sessions',
     description: 'View all active chat sessions',
-    buttons: [
-      { label: 'Get Sessions', endpoint: '/api/test/sessions', method: 'GET' },
-      { label: 'Clear', customHandler: clearSessions }
-    ]
+    buttons: [{ endpoint: '/api/test/sessions', method: 'GET' }]
   },
   {
     id: 'queue',
     title: 'Queue Status',
     description: 'View current waiting queue',
-    buttons: [{ label: 'Get Queue', endpoint: '/api/test/queue', method: 'GET' }]
+    buttons: [{ endpoint: '/api/test/queue', method: 'GET' }]
   },
   {
     id: 'tables',
     title: 'Database Tables',
     description: 'List all database tables',
-    buttons: [{ label: 'Get Tables', endpoint: '/api/test/tables', method: 'GET' }]
+    buttons: [{ endpoint: '/api/test/tables', method: 'GET' }]
   },
   {
     id: 'qr',
     title: 'QR Code Generator',
-    description: 'Generate QR code for test page',
-    buttons: [{ label: 'Generate QR', endpoint: '/api/qr?url=http://localhost:4000/test.html', method: 'GET' }]
+    description: 'Generate QR code for any URL',
+    inputs: [{ id: 'qr-url', type: 'text', placeholder: 'Enter URL', defaultValue: 'http://localhost:4000/test.html' }],
+    buttons: [{ endpoint: '/api/qr', method: 'GET', useInputs: ['qr-url'] }]
   },
   {
     id: 'session',
-    title: 'Session & Devices',
-    description: 'Check session and device information',
-    buttons: [
-      { label: 'GET /session', endpoint: '/api/server/session', method: 'GET' },
-      { label: 'GET /devices', endpoint: '/api/server/devices', method: 'GET' },
-      { label: 'GET /server/check', endpoint: '/api/server/check', method: 'GET' }
-    ]
+    title: 'Session Info',
+    description: 'Check session information',
+    buttons: [{ endpoint: '/api/server/session', method: 'GET' }]
   },
   {
-    id: 'counters',
-    title: 'Counters',
-    description: 'Manage counter operations',
-    buttons: [
-      { label: 'GET /counters', endpoint: '/api/counter', method: 'GET' },
-      { label: 'POST /counters (create)', endpoint: '/api/counter', method: 'POST', bodyData: {} }
-    ]
+    id: 'devices',
+    title: 'Devices Info',
+    description: 'Check registered devices',
+    buttons: [{ endpoint: '/api/server/devices', method: 'GET' }]
   },
   {
-    id: 'counter-id',
-    title: 'Counter by ID',
-    description: 'Get, update, or delete a specific counter',
-    inputs: [{ id: 'counter-sessionId', type: 'text', placeholder: 'Enter session ID' }],
-    buttons: [
-      { label: 'GET /counters/:id', endpoint: '/api/counter/:id', method: 'GET', useInputs: ['counter-sessionId'] },
-      { label: 'DELETE /counters/:id', endpoint: '/api/counter/:id', method: 'DELETE', useInputs: ['counter-sessionId'] }
-    ]
+    id: 'server-check',
+    title: 'Server Check',
+    description: 'Check server status',
+    buttons: [{ endpoint: '/api/server/check', method: 'GET' }]
+  },
+  {
+    id: 'counters-get',
+    title: 'Get Counters',
+    description: 'List all counters',
+    buttons: [{ endpoint: '/api/counter', method: 'GET' }]
+  },
+  {
+    id: 'counters-create',
+    title: 'Create Counter',
+    description: 'Create a new counter',
+    buttons: [{ endpoint: '/api/counter', method: 'POST', bodyData: {} }]
+  },
+  {
+    id: 'counter-get',
+    title: 'Get Counter by ID',
+    description: 'Get a specific counter',
+    inputs: [{ id: 'counter-get-sessionId', type: 'text', placeholder: 'Enter session ID' }],
+    buttons: [{ endpoint: '/api/counter/:id', method: 'GET', useInputs: ['counter-get-sessionId'] }]
+  },
+  {
+    id: 'counter-delete',
+    title: 'Delete Counter by ID',
+    description: 'Delete a specific counter',
+    inputs: [{ id: 'counter-delete-sessionId', type: 'text', placeholder: 'Enter session ID' }],
+    buttons: [{ endpoint: '/api/counter/:id', method: 'DELETE', useInputs: ['counter-delete-sessionId'] }]
   },
   {
     id: 'counter-update',
@@ -207,18 +204,8 @@ const cardConfigs = [
     description: 'Update counter status and properties',
     inputs: [{ id: 'counter-update-sessionId', type: 'text', placeholder: 'Enter session ID' }],
     textareas: [{ id: 'counter-data', rows: 4, placeholder: '{"status": "active", "counterId": "counter-123"}', defaultValue: '{\n  "status": "active"\n}' }],
-    buttons: [{ label: 'PUT /counters/:id', endpoint: '/api/counter/:id', method: 'PUT', useInputs: ['counter-update-sessionId'], useBody: 'counter-data' }]
+    buttons: [{ endpoint: '/api/counter/:id', method: 'PUT', useInputs: ['counter-update-sessionId'], useBody: 'counter-data' }]
   }
-  
-  // ====== ADD YOUR NEW CARDS HERE! ======
-  // Just copy one of the examples above and modify it!
-  // Example:
-  // {
-  //   id: 'my-new-card',
-  //   title: 'My New API Test',
-  //   description: 'Test my awesome endpoint',
-  //   buttons: [{ label: 'Test It', endpoint: '/api/my-endpoint', method: 'GET' }]
-  // }
 ];
 
 /**
@@ -236,27 +223,38 @@ function generateApiFunction(cardId, buttonConfig, buttonIndex) {
       const method = buttonConfig.method || 'GET';
       let body = null;
       
-      // Handle URL parameters from inputs
       if (buttonConfig.useInputs) {
         const inputs = Array.isArray(buttonConfig.useInputs) ? buttonConfig.useInputs : [buttonConfig.useInputs];
-        inputs.forEach(inputId => {
-          const inputElement = document.getElementById(inputId);
-          if (inputElement) {
-            const value = inputElement.value;
-            endpoint = endpoint.replace(':id', value).replace(/:[\w-]+/, value);
+        
+        if (endpoint.includes(':')) {
+          inputs.forEach(inputId => {
+            const inputElement = document.getElementById(inputId);
+            if (inputElement) {
+              const value = inputElement.value;
+              endpoint = endpoint.replace(':id', value).replace(/:[\w-]+/, value);
+            }
+          });
+        } else if (method === 'GET') {
+          const params = new URLSearchParams();
+          inputs.forEach(inputId => {
+            const inputElement = document.getElementById(inputId);
+            if (inputElement && inputElement.value) {
+              const paramName = inputId.split('-').pop();
+              params.append(paramName, inputElement.value);
+            }
+          });
+          const paramString = params.toString();
+          if (paramString) {
+            endpoint += (endpoint.includes('?') ? '&' : '?') + paramString;
           }
-        });
+        }
       }
       
-      // Handle body data
       if (method !== 'GET' && method !== 'DELETE') {
         if (buttonConfig.bodyData) {
-          // Static body data
           body = JSON.stringify(buttonConfig.bodyData);
         } else if (buttonConfig.useBody) {
-          // Dynamic body from inputs/textareas
           if (typeof buttonConfig.useBody === 'string') {
-            // Single field - parse as JSON
             const element = document.getElementById(buttonConfig.useBody);
             if (element) {
               try {
@@ -266,7 +264,6 @@ function generateApiFunction(cardId, buttonConfig, buttonIndex) {
               }
             }
           } else if (typeof buttonConfig.useBody === 'object') {
-            // Object mapping - build body from multiple fields
             const bodyObj = {};
             for (const [key, inputId] of Object.entries(buttonConfig.useBody)) {
               const element = document.getElementById(inputId);
@@ -301,33 +298,65 @@ function generateApiFunction(cardId, buttonConfig, buttonIndex) {
   };
 }
 
-/**
- * Generate a card from configuration
- */
+function generateApiInfo(button) {
+  if (!button.endpoint) return '';
+  
+  const method = button.method || 'GET';
+  let info = `<div class="api-info">
+    <strong>${method}</strong> <code>${button.endpoint}</code>`;
+  
+  if (button.bodyData) {
+    info += `<br><small>Body: <code>${JSON.stringify(button.bodyData)}</code></small>`;
+  } else if (button.useBody) {
+    if (typeof button.useBody === 'string') {
+      info += `<br><small>Body: From <code>${button.useBody}</code> field</small>`;
+    } else if (typeof button.useBody === 'object') {
+      const fields = Object.entries(button.useBody).map(([key, val]) => `${key}: &lt;${val}&gt;`).join(', ');
+      info += `<br><small>Body: { ${fields} }</small>`;
+    }
+  }
+  
+  if (button.useInputs) {
+    const inputs = Array.isArray(button.useInputs) ? button.useInputs : [button.useInputs];
+    info += `<br><small>Params: ${inputs.map(id => `&lt;${id}&gt;`).join(', ')}</small>`;
+  }
+  
+  info += `</div>`;
+  return info;
+}
+
 function createCard(config) {
   const card = document.createElement('div');
   card.className = `card ${config.customClass || ''}`;
   
   let html = `
-    <h2>${config.title}</h2>
+    <div class="card-header">
+      <h2>${config.title}</h2>
+      <button class="go-button" id="${config.id}-go-btn">Go</button>
+    </div>
     <p>${config.description}</p>
   `;
   
-  // Add inputs if specified
+  if (config.buttons) {
+    config.buttons.forEach(button => {
+      if (!button.customHandler) {
+        html += generateApiInfo(button);
+      }
+    });
+  }
+  
   if (config.inputs) {
     config.inputs.forEach(input => {
       html += `<input type="${input.type}" id="${input.id}" placeholder="${input.placeholder}" ${input.defaultValue ? `value="${input.defaultValue}"` : ''}>`;
     });
   }
   
-  // Add textareas if specified
   if (config.textareas) {
     config.textareas.forEach(textarea => {
       html += `<textarea id="${textarea.id}" rows="${textarea.rows}" placeholder="${textarea.placeholder}">${textarea.defaultValue || ''}</textarea>`;
     });
   }
   
-  // Add loading and response containers
   html += `
     <div id="${config.id}-loading" class="loading">Loading...</div>
     <div id="${config.id}-response" class="response-box"></div>
@@ -335,32 +364,20 @@ function createCard(config) {
   
   card.innerHTML = html;
   
-  // Add buttons with generated or custom handlers
-  if (config.buttons) {
-    config.buttons.forEach((button, index) => {
-      const buttonElement = document.createElement('button');
-      buttonElement.textContent = button.label;
-      
-      if (button.customHandler) {
-        // Use custom handler if provided
-        buttonElement.onclick = button.customHandler;
-      } else {
-        // Generate handler from config
-        buttonElement.onclick = generateApiFunction(config.id, button, index);
-      }
-      
-      // Insert button before loading div
-      const loadingDiv = card.querySelector(`#${config.id}-loading`);
-      card.insertBefore(buttonElement, loadingDiv);
-    });
+  if (config.buttons && config.buttons.length > 0) {
+    const goButton = card.querySelector(`#${config.id}-go-btn`);
+    const button = config.buttons[0];
+    
+    if (button.customHandler) {
+      goButton.onclick = button.customHandler;
+    } else {
+      goButton.onclick = generateApiFunction(config.id, button, 0);
+    }
   }
   
   return card;
 }
 
-/**
- * Initialize all cards
- */
 function initializeCards() {
   const container = document.getElementById('api-cards-container');
   cardConfigs.forEach(config => {
@@ -368,40 +385,18 @@ function initializeCards() {
   });
 }
 
-// Initialize cards when DOM is ready
 document.addEventListener('DOMContentLoaded', initializeCards);
 
-// ============= UTILITY FUNCTIONS =============
-
-// Utility: Display response
 function displayResponse(elementId, data, isError = false) {
-  console.log('displayResponse called:', elementId, data, isError);
   const element = document.getElementById(elementId);
-  if (!element) {
-    console.error('Element not found:', elementId);
-    return;
-  }
+  if (!element) return;
   element.className = isError ? 'response-box error-box' : 'response-box success-box';
   element.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
 }
 
-// Utility: Show/hide loading
 function setLoading(elementId, isLoading) {
   const element = document.getElementById(elementId);
   if (element) {
     element.className = isLoading ? 'loading active' : 'loading';
   }
-}
-
-// Utility: Clear response
-function clearResponse(elementId) {
-  const element = document.getElementById(elementId);
-  if (element) {
-    element.innerHTML = '';
-  }
-}
-
-// Clear sessions response
-function clearSessions() {
-  clearResponse('sessions-response');
 }
