@@ -1,0 +1,380 @@
+{
+  "institutions": [
+    {
+      "id": "comelec",
+      "name": "Commission on Elections",
+      "code": "COMELEC",
+      "description": "Constitutional commission responsible for enforcing election laws in the Philippines",
+      "forms": [
+        {
+          "id": "rev_2025_supplementary_data_form",
+          "formNumber": "REV_2025_SUPPLEMENTARY_DATA_FORM",
+          "title": "Supplementary/Updating of Data Form",
+          "officialTitle": "SUPPLEMENTARY/UPDATING OF DATA",
+          "description": "Form for updating supplementary data for existing voters - Person with Disabilities, Senior Citizens with Disabilities, Indigenous People",
+          "category": "Data Update",
+          "version": "2025",
+          "pages": 1,
+          "totalFields": 25,
+          "sections": [
+            {
+              "id": "form_header",
+              "name": "Form Header",
+              "fields": [
+                {
+                  "id": "form_title",
+                  "fieldNumber": "title",
+                  "label": "SUPPLEMENTARY/UPDATING OF DATA",
+                  "fieldType": "header",
+                  "required": false,
+                  "defaultValue": "SUPPLEMENTARY/UPDATING OF DATA"
+                },
+                {
+                  "id": "form_subtitle",
+                  "fieldNumber": "subtitle",
+                  "label": "For old Voter",
+                  "fieldType": "subheader",
+                  "required": false,
+                  "defaultValue": "(For old Voter)"
+                },
+                {
+                  "id": "target_groups",
+                  "fieldNumber": "target_groups",
+                  "label": "Target Groups",
+                  "fieldType": "info_text",
+                  "required": false,
+                  "text": "(Person with Disabilities/Senior Citizens with Disabilities/Indigenous People /Indigenous Cultural)"
+                }
+              ]
+            },
+            {
+              "id": "personal_information",
+              "name": "PERSONAL INFORMATION",
+              "fields": [
+                {
+                  "id": "last_name",
+                  "fieldNumber": "last_name",
+                  "label": "LAST NAME:",
+                  "fieldType": "text",
+                  "required": true,
+                  "validation": {"minLength": 1, "maxLength": 50}
+                },
+                {
+                  "id": "first_name",
+                  "fieldNumber": "first_name",
+                  "label": "FIRST NAME:",
+                  "fieldType": "text",
+                  "required": true,
+                  "validation": {"minLength": 1, "maxLength": 50}
+                },
+                {
+                  "id": "middle_name",
+                  "fieldNumber": "middle_name",
+                  "label": "MIDDLE NAME:",
+                  "fieldType": "text",
+                  "required": false,
+                  "validation": {"maxLength": 50}
+                },
+                {
+                  "id": "precinct_number",
+                  "fieldNumber": "precinct_no",
+                  "label": "PRECINCT NO.:",
+                  "fieldType": "text",
+                  "required": true,
+                  "validation": {"maxLength": 20}
+                },
+                {
+                  "id": "barangay",
+                  "fieldNumber": "barangay",
+                  "label": "BARANGAY:",
+                  "fieldType": "text",
+                  "required": true,
+                  "validation": {"maxLength": 50}
+                },
+                {
+                  "id": "city_municipality_district",
+                  "fieldNumber": "city_municipality",
+                  "label": "CITY/MUNICIPALITY/DIST.:",
+                  "fieldType": "text",
+                  "required": true,
+                  "validation": {"maxLength": 50}
+                },
+                {
+                  "id": "province",
+                  "fieldNumber": "province",
+                  "label": "PROVINCE:",
+                  "fieldType": "text",
+                  "required": true,
+                  "validation": {"maxLength": 50}
+                }
+              ]
+            },
+            {
+              "id": "pwd_section",
+              "name": "PWD - Person with Disabilities",
+              "fields": [
+                {
+                  "id": "disability_type_header",
+                  "fieldNumber": "disability_header",
+                  "label": "TYPE OF DISABILITY (Please check appropriate box/es)",
+                  "fieldType": "section_header",
+                  "required": false
+                },
+                {
+                  "id": "disability_types",
+                  "fieldNumber": "disability_types",
+                  "label": "Disability Types",
+                  "fieldType": "checkbox_group",
+                  "required": false,
+                  "options": [
+                    {"value": "deaf_hard_hearing", "label": "Deaf/Hard of Hearing"},
+                    {"value": "psychosocial", "label": "Psychosocial"},
+                    {"value": "intellectual", "label": "Intellectual"},
+                    {"value": "speech_language", "label": "Speech and Language"},
+                    {"value": "learning", "label": "Learning"},
+                    {"value": "visual", "label": "Visual"},
+                    {"value": "mental", "label": "Mental"},
+                    {"value": "cancer", "label": "Cancer"},
+                    {"value": "physical", "label": "Physical"},
+                    {"value": "rare_disease", "label": "Rare Disease"}
+                  ]
+                },
+                {
+                  "id": "assistance_needed_header",
+                  "fieldNumber": "assistance_header",
+                  "label": "TYPE(S) OF ASSISTANCE NEEDED ON ELECTION DAY",
+                  "fieldType": "section_header",
+                  "required": false
+                },
+                {
+                  "id": "assistance_types",
+                  "fieldNumber": "assistance_types",
+                  "label": "Assistance Types",
+                  "fieldType": "checkbox_group",
+                  "required": false,
+                  "options": [
+                    {"value": "assistor", "label": "Assistor"},
+                    {"value": "communication_assistance", "label": "Communication Assistance"},
+                    {"value": "visual_assistance", "label": "Visual Assistance"},
+                    {"value": "none", "label": "None"}
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "accessible_polling_section",
+              "name": "Accessible Polling Place",
+              "fields": [
+                {
+                  "id": "accessible_polling_question",
+                  "fieldNumber": "app_question",
+                  "label": "PWD/SENIOR CITIZEN - Are you willing to vote in Accessible Polling Place (APP) located on the ground floor of the voting center on the day of the Elections?",
+                  "fieldType": "radio",
+                  "required": false,
+                  "options": [
+                    {"value": "yes", "label": "YES"},
+                    {"value": "no", "label": "NO"}
+                  ]
+                },
+                {
+                  "id": "pwd_sc_precinct",
+                  "fieldNumber": "pwd_precinct",
+                  "label": "PWD/SC Precinct No.",
+                  "fieldType": "text",
+                  "required": false,
+                  "adminOnly": true,
+                  "instructions": "To be filled up by EO"
+                }
+              ]
+            },
+            {
+              "id": "indigenous_people_section",
+              "name": "INDIGENOUS PEOPLE",
+              "fields": [
+                {
+                  "id": "ip_membership_question",
+                  "fieldNumber": "ip_question",
+                  "label": "Are you a member of any Indigenous People (IP) or Indigenous Cultural Communities (ICC)?",
+                  "fieldType": "radio",
+                  "required": false,
+                  "options": [
+                    {"value": "yes", "label": "YES"},
+                    {"value": "no", "label": "NO"}
+                  ]
+                },
+                {
+                  "id": "ip_community_name",
+                  "fieldNumber": "ip_community",
+                  "label": "If yes, please indicate the Name of IP/ICC community",
+                  "fieldType": "text",
+                  "required": false,
+                  "validation": {"maxLength": 100},
+                  "placeholder": "Name of IP/ICC Community",
+                  "conditional": {
+                    "show": "ip_membership_question == 'yes'"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "applicant_signature_section",
+              "name": "Applicant Signature and Thumbmarks",
+              "fields": [
+                {
+                  "id": "applicant_signature",
+                  "fieldNumber": "applicant_sig",
+                  "label": "Applicant's Signature or Customary Marking/Thumbmark over printed name",
+                  "fieldType": "signature",
+                  "required": true
+                },
+                {
+                  "id": "signature_date",
+                  "fieldNumber": "sig_date",
+                  "label": "Date:",
+                  "fieldType": "date",
+                  "required": true,
+                  "format": "MM/DD/YYYY"
+                },
+                {
+                  "id": "thumbmarks_header",
+                  "fieldNumber": "thumbmarks_header",
+                  "label": "Thumbmarks",
+                  "fieldType": "section_header",
+                  "required": false
+                },
+                {
+                  "id": "thumbmarks",
+                  "fieldNumber": "thumbmarks",
+                  "label": "Applicant's Thumbmarks",
+                  "fieldType": "biometric_group",
+                  "required": true,
+                  "components": [
+                    {
+                      "id": "left_thumbmark",
+                      "label": "Applicant's Left Thumbmark",
+                      "fieldType": "fingerprint",
+                      "required": true
+                    },
+                    {
+                      "id": "right_thumbmark",
+                      "label": "Applicant's Right Thumbmark",
+                      "fieldType": "fingerprint",
+                      "required": true
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "validationRules": {
+            "personalInformation": [
+              {
+                "rule": "Last name, first name, and precinct number are required",
+                "condition": "last_name IS NOT EMPTY AND first_name IS NOT EMPTY AND precinct_number IS NOT EMPTY"
+              },
+              {
+                "rule": "Complete address information is required",
+                "condition": "barangay IS NOT EMPTY AND city_municipality_district IS NOT EMPTY AND province IS NOT EMPTY"
+              }
+            ],
+            "conditionalRequirements": [
+              {
+                "rule": "If IP membership is yes, community name must be provided",
+                "condition": "ip_membership_question == 'yes' AND ip_community_name IS NOT EMPTY"
+              },
+              {
+                "rule": "If assistance needed includes specific types, they must be valid",
+                "condition": "assistance_types INCLUDES 'none' AND COUNT(assistance_types) == 1"
+              }
+            ],
+            "biometricRequirements": [
+              {
+                "rule": "Both thumbmarks must be captured",
+                "condition": "left_thumbmark IS NOT EMPTY AND right_thumbmark IS NOT EMPTY"
+              },
+              {
+                "rule": "Signature and date are required",
+                "condition": "applicant_signature IS NOT EMPTY AND signature_date IS NOT EMPTY"
+              }
+            ]
+          },
+          "businessRules": {
+            "purpose": "This form is for existing voters to update their supplementary data related to disabilities, senior citizen status, and indigenous people membership",
+            "targetGroups": [
+              "Person with Disabilities (PWD)",
+              "Senior Citizens with Disabilities", 
+              "Indigenous People (IP)",
+              "Indigenous Cultural Communities (ICC)"
+            ],
+            "accessibilityFeatures": [
+              "Accessible Polling Place (APP) on ground floor",
+              "Various types of assistance for election day",
+              "Special precinct assignments for PWD/Senior Citizens"
+            ],
+            "updateTriggers": [
+              "Change in disability status",
+              "Acquisition of senior citizen status with disabilities",
+              "Identification as Indigenous People member",
+              "Change in assistance requirements"
+            ]
+          },
+          "workflow": {
+            "initiation": [
+              "Existing voter requests data update",
+              "EO identifies need for supplementary data",
+              "Voter completes this form"
+            ],
+            "processing": [
+              "EO verifies existing voter record",
+              "Supplementary data is encoded in system",
+              "Special precinct assignment if applicable"
+            ],
+            "completion": [
+              "Data updated in voter registration system",
+              "APP assignment if requested",
+              "Confirmation provided to voter"
+            ]
+          },
+          "accessibilityOptions": {
+            "disabilityCategories": {
+              "sensory": ["Deaf/Hard of Hearing", "Visual"],
+              "cognitive": ["Intellectual", "Learning", "Mental"],
+              "communication": ["Speech and Language"],
+              "psychosocial": ["Psychosocial"],
+              "physical": ["Physical"],
+              "medical": ["Cancer", "Rare Disease"]
+            },
+            "assistanceTypes": {
+              "personal": "Assistor - personal assistance",
+              "communication": "Communication Assistance - sign language, braille, etc.",
+              "visual": "Visual Assistance - large print, magnifiers, etc.",
+              "none": "No assistance required"
+            },
+            "pollingAccess": {
+              "accessible_polling": "Ground floor location for easy access",
+              "special_precinct": "Dedicated precinct for PWD/Senior Citizens"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "lastUpdated": "2024-01-15",
+    "formats": {
+      "date": "MM/DD/YYYY"
+    },
+    "fieldTypes": {
+      "header": "Main form title",
+      "subheader": "Secondary title",
+      "info_text": "Informational text display",
+      "section_header": "Section title",
+      "checkbox_group": "Multiple selection checkboxes", 
+      "radio": "Single selection option",
+      "signature": "Digital signature capture",
+      "biometric_group": "Grouped biometric data collection",
+      "fingerprint": "Fingerprint/thummark capture"
+    }
+  }
+}

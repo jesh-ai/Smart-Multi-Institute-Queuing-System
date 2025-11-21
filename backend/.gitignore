@@ -1,4 +1,5 @@
 package-lock.json
-data
+data/**
 convos/*context.json
 convos/*messages.json
+dist/**
