@@ -51,6 +51,9 @@ export default function FeedbackPage() {
         selectedRating || "N/A"
       }\nComment: ${feedback}`
     );
+
+    // Navigate to home page after submission
+    router.push("/");
   };
 
   // Desktop: Show full-page feedback form with click-outside to exit

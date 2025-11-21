@@ -2,33 +2,32 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
+import Header from "../../components/Header";
+import Status from "../../components/Status";
 
 export default function ChatInterface() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // Detect if desktop (1024px+)
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const checkDesktop = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+    checkDesktop();
+    window.addEventListener("resize", checkDesktop);
+    return () => window.removeEventListener("resize", checkDesktop);
+  }, []);
+
   // local menu visibility (desktop only).
-  const [showMenu, setShowMenu] = useState<boolean>(true);
+  const [showMenu, setShowMenu] = useState<boolean>(false);
   // MenuScreen moved here for desktop
   const MenuScreen = () => (
     <div className="h-full bg-white flex flex-col">
-      {/* Custom Header */}
-      <div className="bg-[#34495E] text-white px-6 py-4 shadow-lg flex items-center gap-4 sticky top-0 z-50">
-        <button
-          onClick={() => setShowMenu(true)}
-          className="text-2xl hover:opacity-80 transition-opacity"
-        >
-          &lt;
-        </button>
-        <Image
-          src="/ALVin.png"
-          alt="ALVin Logo"
-          width={50}
-          height={50}
-          className="rounded-full"
-        />
-        <h1 className="text-2xl font-bold">ALVin</h1>
-      </div>
+      {/* Use Header component */}
+      <Header />
 
       <main className="flex-1 flex flex-col items-center justify-center p-8 overflow-auto">
         <div className="mb-12 text-center">
@@ -90,44 +89,56 @@ export default function ChatInterface() {
   );
   const [messages, setMessages] = useState<
     Array<{ sender: "user" | "bot"; text: string }>
-  >([
-    { sender: "user", text: "I would like to inquire" },
-    { sender: "bot", text: "What would you like to inquire about?" },
-  ]);
+  >([{ sender: "bot", text: "I am AlVin how may I help you!" }]);
   const [input, setInput] = useState("");
-  const [quickReplies, setQuickReplies] = useState<string[]>([]);
+  const [quickReplies, setQuickReplies] = useState<string[]>([
+    "Inquire",
+    "Request",
+  ]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isInputFocused, setIsInputFocused] = useState(false);
+  const [showStatus, setShowStatus] = useState(false);
+  const [viewportHeight, setViewportHeight] = useState<number>(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Track viewport height changes (keyboard open/close)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const updateHeight = () => {
+      const height = window.visualViewport
+        ? window.visualViewport.height
+        : window.innerHeight;
+      setViewportHeight(height);
+    };
+
+    updateHeight();
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", updateHeight);
+      return () =>
+        window.visualViewport?.removeEventListener("resize", updateHeight);
+    } else {
+      window.addEventListener("resize", updateHeight);
+      return () => window.removeEventListener("resize", updateHeight);
+    }
+  }, []);
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Initialize quick replies from the initial bot response
-  useEffect(() => {
-    const fetchInitialResponse = async () => {
-      try {
-        const apiResponse = await fetch(
-          `/api/get-response?message=${encodeURIComponent(
-            "I would like to inquire"
-          )}`
-        );
-        const response = await apiResponse.json();
-        if (response.choices && response.choices.length > 0) {
-          setQuickReplies(response.choices);
-        }
-      } catch (error) {
-        console.error("Error fetching initial response:", error);
-      }
-    };
-    fetchInitialResponse();
-  }, []);
+  // Initial quick replies are set in state above
 
   // Handle incoming message from URL parameter (e.g., from "Other" request)
   useEffect(() => {
     const message = searchParams.get("message");
-    if (message) {
+    const formCompleted = searchParams.get("formCompleted");
+
+    if (formCompleted === "true") {
+      setShowStatus(true);
+    } else if (message) {
       // Hide menu and send the message
       setShowMenu(false);
       handleSend(message, "closed");
@@ -233,11 +244,28 @@ export default function ChatInterface() {
     }
   };
 
+  // Show menu on initial load for desktop only (but not if formCompleted or message param present)
+  useEffect(() => {
+    if (
+      isDesktop &&
+      !searchParams.get("message") &&
+      !searchParams.get("formCompleted")
+    ) {
+      setShowMenu(true);
+    }
+  }, [isDesktop, searchParams]);
+
   // If desktop menu mode requested and still showing menu, show the menu screen instead of chat
-  if (showMenu) return <MenuScreen />;
+  if (isDesktop && showMenu) return <MenuScreen />;
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 bg-white">
+    <div
+      className="flex flex-col bg-white fixed inset-0"
+      style={{
+        height: viewportHeight > 0 ? `${viewportHeight}px` : "100vh",
+        maxHeight: viewportHeight > 0 ? `${viewportHeight}px` : "100vh",
+      }}
+    >
       {/* Custom Header */}
       <div className="bg-[#34495E] text-white px-6 py-4 shadow-lg flex items-center gap-4 sticky top-0 z-50">
         <button
@@ -255,102 +283,131 @@ export default function ChatInterface() {
         />
         <h1 className="text-2xl font-bold">ALVin</h1>
       </div>
-      {/* Message Area */}
-      {/* Add bottom padding so messages aren't covered by the fixed input area */}
-      <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2 pb-44">
-        {messages.map((msg, idx) => (
-          <div
-            key={idx}
-            className={`px-4 py-2 rounded-2xl max-w-[70%] text-sm leading-snug ${
-              msg.sender === "user"
-                ? "bg-[#34495E] text-white self-end ml-auto"
-                : "bg-gray-200 text-black self-start"
-            }`}
-          >
-            {msg.text}
-          </div>
-        ))}
 
-        {/* Quick Replies */}
-        <div className="flex gap-2 flex-wrap mt-2">
-          {quickReplies.map((reply, idx) => (
-            <button
+      {/* Status Component - shown as sticky chat bubble */}
+      {showStatus && <Status />}
+
+      {/* Message Area - hide on desktop when form is completed */}
+      {!(isDesktop && showStatus) && (
+        <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2">
+          {messages.map((msg, idx) => (
+            <div
               key={idx}
-              onClick={() => handleSend(reply, "closed")}
-              className="px-4 py-1.5 rounded-full text-sm bg-white text-black border-2 border-[#34495E] hover:bg-gray-100"
+              className={`flex items-end gap-2 ${
+                msg.sender === "user" ? "flex-row-reverse" : "flex-row"
+              }`}
             >
-              {reply}
-            </button>
-          ))}
-        </div>
-
-        {/* Scroll anchor */}
-        <div ref={messagesEndRef} />
-      </div>
-
-      {/* Input Section */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white py-4">
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="w-full bg-[#34495E] rounded-2xl border-t border-gray-200 flex items-center px-4 py-3">
-            {/* Mic Button */}
-            <button className="p-2 text-gray-600 hover:text-gray-800 text-lg">
-              <Image
-                src="/Microphone.png"
-                alt="Microphone"
-                width={24}
-                height={24}
-              />
-            </button>
-
-            {/* Input */}
-            <input
-              type="text"
-              placeholder="Message here..."
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              className="flex-1 px-4 py-2 text-sm border bg-white border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-400 mx-1 text-black"
-            />
-
-            {/* Send Button */}
-            <button
-              onClick={() => handleSend(input, "open")}
-              className="p-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 text-lg"
-            >
-              <Image
-                src="/Send (1).png"
-                alt="Send Logo"
-                width={20}
-                height={20}
-                className="object-contain"
-              />
-            </button>
-          </div>
-
-          {/* Quick Replies under input */}
-          <div className="flex gap-2 flex-wrap mt-2">
-            {quickReplies.map((reply, idx) => (
-              <button
-                key={idx}
-                onClick={() => handleSend(reply, "closed")}
-                className="px-4 py-1.5 rounded-full text-sm bg-gray-300 text-black hover:bg-gray-200"
+              {/* Show AlVin profile picture only for the latest bot message */}
+              {msg.sender === "bot" && idx === messages.length - 1 && (
+                <Image
+                  src="/ALVin.png"
+                  alt="ALVin"
+                  width={32}
+                  height={32}
+                  className="rounded-full flex-shrink-0"
+                />
+              )}
+              {/* Add invisible spacer for older bot messages to maintain alignment */}
+              {msg.sender === "bot" && idx !== messages.length - 1 && (
+                <div className="w-8 flex-shrink-0" />
+              )}
+              <div
+                className={`px-4 py-2 rounded-2xl max-w-[70%] text-sm leading-snug ${
+                  msg.sender === "user"
+                    ? "bg-[#34495E] text-white"
+                    : "bg-gray-200 text-black"
+                }`}
               >
-                {reply}
-              </button>
-            ))}
-          </div>
+                {msg.text}
+              </div>
+            </div>
+          ))}
 
-          {/* Form Filling Button */}
-          <div className="mt-2">
-            <button
-              onClick={() => router.push("/form")}
-              className="w-full py-2 rounded-full text-sm bg-white text-[#34495E] font-semibold hover:bg-gray-100 transition-all"
-            >
-              📋 Fill Form
-            </button>
+          {/* Quick Replies */}
+          {(!isInputFocused || isDesktop) && (
+            <div className="flex gap-2 flex-wrap mt-2">
+              {quickReplies.map((reply, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleSend(reply, "closed")}
+                  className="px-4 py-1.5 rounded-full text-sm bg-white text-black border-2 border-[#34495E] hover:bg-gray-100"
+                >
+                  {reply}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Scroll anchor - minimal spacing */}
+          <div ref={messagesEndRef} className="h-4" />
+        </div>
+      )}
+
+      {/* Input Section - positioned at bottom with consistent spacing */}
+      {!(isDesktop && showStatus) && (
+        <div className="sticky bottom-0 left-0 right-0 z-40 bg-white py-4 border-t border-gray-100">
+          <div className="max-w-4xl mx-auto px-4">
+            <div className="w-full bg-[#34495E] rounded-2xl border-t border-gray-200 flex items-center px-4 py-3">
+              {/* Mic Button */}
+              <button className="p-2 text-gray-600 hover:text-gray-800 text-lg">
+                <Image
+                  src="/Microphone.png"
+                  alt="Microphone"
+                  width={24}
+                  height={24}
+                />
+              </button>
+
+              {/* Input */}
+              <input
+                type="text"
+                placeholder="Message here..."
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                onFocus={() => setIsInputFocused(true)}
+                onBlur={() => setTimeout(() => setIsInputFocused(false), 100)}
+                className="flex-1 px-4 py-2 text-sm border bg-white border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-400 mx-1 text-black"
+              />
+
+              {/* Send Button */}
+              <button
+                onClick={() => handleSend(input, "open")}
+                className="p-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 text-lg"
+              >
+                <Image
+                  src="/Send (1).png"
+                  alt="Send Logo"
+                  width={20}
+                  height={20}
+                  className="object-contain"
+                />
+              </button>
+            </div>
+
+            {/* Quick Replies and Form Button - Mobile only */}
+            {!isDesktop && (
+              <div className="flex gap-2 overflow-x-auto mt-2 pb-1 scrollbar-hide">
+                {quickReplies.map((reply, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleSend(reply, "closed")}
+                    className="px-4 py-1.5 rounded-full text-sm bg-gray-300 text-black hover:bg-gray-200 whitespace-nowrap flex-shrink-0"
+                  >
+                    {reply}
+                  </button>
+                ))}
+                <button
+                  onClick={() => router.push("/form")}
+                  className="px-4 py-1.5 rounded-full text-sm bg-white text-[#34495E] font-semibold hover:bg-gray-100 border-2 border-[#34495E] whitespace-nowrap flex-shrink-0"
+                >
+                  📋 Fill Form
+                </button>
+              </div>
+            )}
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
