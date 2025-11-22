@@ -194,7 +194,7 @@ export default function FormFillingPage() {
       if (!res.ok) throw new Error("Save failed");
       await res.json();
       alert("Form saved to form_input.json");
-      router.back();
+      router.push("/chat?formCompleted=true");
     } catch (err) {
       console.error(err);
       alert("Failed to save form input");
