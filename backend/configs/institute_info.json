@@ -12,7 +12,7 @@
 				"Entrance Exam Result"
 			],
             "name": "Application for Registration BIR Form No. 1901",
-            "form": "bir/forms/BIR_FORM_1901.json"
+            "form": "forms/BIR_FORM_1901.json"
 		},
 		{
 			"requirements": [
@@ -24,7 +24,7 @@
 				"Entrance Exam Result"
 			],
             "name": "Application for Registration BIR Form No. 1902",
-            "form": "bir/forms/BIR_FORM_1902.json"
+            "form": "forms/BIR_FORM_1902.json"
 		},
 		{
 			"requirements": [
@@ -36,8 +36,8 @@
 				"Entrance Exam Result"
 			],
             "name": "Application for Registration BIR Form No. 1903",
-            "form": "bir/forms/BIR_FORM_1903.json"
+            "form": "forms/BIR_FORM_1903.json"
 		}
 	],
-	"privacy_notice": "bir/privacy_notice.json"
+	"privacy_notice": "privacy_notice.json"
 }
