@@ -14,7 +14,7 @@ export const createContext = (req, res) => {
     }
 
     // Build file paths
-    const convosDir = path.join(process.cwd(), "convos");
+    const convosDir = path.join(process.cwd(), "data", "convos");
     const contextFilePath = path.join(convosDir, `session_${sessionId}_context.json`);
     const messagesFilePath = path.join(convosDir, `session_${sessionId}_messages.json`);
 
@@ -97,7 +97,7 @@ export const updateMessages = (req, res) => {
     }
 
     // Build file paths
-    const convosDir = path.join(process.cwd(), "convos");
+    const convosDir = path.join(process.cwd(), "data", "convos");
     const contextFilePath = path.join(convosDir, `session_${sessionId}_context.json`);
     const messagesFilePath = path.join(convosDir, `session_${sessionId}_messages.json`);
 
@@ -156,7 +156,7 @@ export const getMessages = (req, res) => {
     }
 
     // Build file path
-    const convosDir = path.join(process.cwd(), "convos");
+    const convosDir = path.join(process.cwd(), "data", "convos");
     const messagesFilePath = path.join(convosDir, `session_${sessionId}_messages.json`);
 
     // Check if file exists
