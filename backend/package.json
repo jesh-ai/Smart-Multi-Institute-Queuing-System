@@ -37,6 +37,7 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
     "@types/connect-sqlite3": "^0.9.6",
     "@types/express": "^5.0.5",
     "@types/express-session": "^1.18.2",
