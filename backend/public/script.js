@@ -102,6 +102,33 @@ const cardConfigs = [
   },
   
   {
+    id: 'queue-status',
+    title: 'Queue Status',
+    description: 'Get complete queue distribution across all counters',
+    buttons: [{ label: 'Get Queue Status', endpoint: '/api/queue/status', method: 'GET' }]
+  },
+  {
+    id: 'applicant-position',
+    title: 'Applicant Position',
+    description: 'Get queue position for current session or specific applicant',
+    inputs: [{ id: 'applicant-session-id', type: 'text', placeholder: 'Session ID (optional, uses current session if empty)' }],
+    buttons: [{ label: 'Get Position', endpoint: '/api/queue/applicant/:id', method: 'GET', useInputs: ['applicant-session-id'] }]
+  },
+  {
+    id: 'counter-next',
+    title: 'Next Applicant',
+    description: 'Get next applicant for current counter session',
+    buttons: [{ label: 'Get Next', endpoint: '/api/queue/counter/next', method: 'GET' }]
+  },
+  {
+    id: 'counter-queue',
+    title: 'Counter Queue',
+    description: 'Get queue for specific counter or current session',
+    inputs: [{ id: 'counter-session-id', type: 'text', placeholder: 'Counter ID (optional, uses current session if empty)' }],
+    buttons: [{ label: 'Get Counter Queue', endpoint: '/api/queue/counter/:id', method: 'GET', useInputs: ['counter-session-id'] }]
+  },
+  
+  {
     id: 'server-shutdown',
     title: 'Server Shutdown',
     description: 'Shutdown the entire server',

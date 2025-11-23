@@ -5,7 +5,6 @@ import SQLiteStoreFactory from "connect-sqlite3";
 import { Request, Response, NextFunction } from "express";
 import { findSessionsByUserAgent } from "../db/sessions.js";
 
-
 declare module "express-session" {
   interface SessionData {
     dateCreated?: string;
@@ -17,6 +16,8 @@ declare module "express-session" {
     lastPath?: string,
 
     applicant?: {
+      name?: string,
+      document?: string,
       isPriority?: boolean;
       dateSubmitted?: string;
       dateServed?: string;
