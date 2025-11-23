@@ -91,6 +91,21 @@ const cardConfigs = [
     buttons: [{ endpoint: '/api/institute/notice', method: 'GET' }],
     customClass: 'done'
   },
+  
+  {
+    id: 'session',
+    title: 'Session Info',
+    description: 'Check session information',
+    buttons: [{ endpoint: '/api/session/self', method: 'GET' }],
+    customClass: 'done'
+  },
+  {
+    id: 'devices',
+    title: 'Devices Info',
+    description: 'Check registered devices',
+    buttons: [{ endpoint: '/api/session/devices', method: 'GET' }],
+    customClass: 'done'
+  },
   {
     id: 'stats',
     title: 'Database Statistics',
@@ -153,18 +168,6 @@ const cardConfigs = [
     description: 'Generate QR code for any URL',
     inputs: [{ id: 'qr-url', type: 'text', placeholder: 'Enter URL', defaultValue: 'http://localhost:4000/test.html' }],
     buttons: [{ endpoint: '/api/qr', method: 'GET', useInputs: ['qr-url'] }]
-  },
-  {
-    id: 'session',
-    title: 'Session Info',
-    description: 'Check session information',
-    buttons: [{ endpoint: '/api/server/session', method: 'GET' }]
-  },
-  {
-    id: 'devices',
-    title: 'Devices Info',
-    description: 'Check registered devices',
-    buttons: [{ endpoint: '/api/server/devices', method: 'GET' }]
   },
   {
     id: 'server-check',

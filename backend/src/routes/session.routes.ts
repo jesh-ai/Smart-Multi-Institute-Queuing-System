@@ -4,6 +4,6 @@ import { getCurrentSession, getSessions } from "../controllers/session.controlle
 const sessionRoutes = express.Router();
 
 sessionRoutes.get("/devices", getSessions);
-sessionRoutes.get("/session", getCurrentSession);
+sessionRoutes.get("/self", getCurrentSession);
 
 export default sessionRoutes;

@@ -11,9 +11,9 @@ import intituteRoutes from "./institute.routes.js"
 
 const router = Router();
 
-router.use(sessionRoutes)
-router.use(counterRoutes)
 router.use(applicantRoutes)
+router.use(counterRoutes)
+router.use("/session", sessionRoutes)
 router.use("/institute", intituteRoutes)
 router.use("/server", serverRoutes)
 
