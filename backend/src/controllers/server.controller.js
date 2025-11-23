@@ -5,5 +5,5 @@ export async function getIsServer(req, res) {
   req.socket.remoteAddress?.replace("::ffff:", "") ||
   "unknown";
   console.warn("Server IP:", serverIp, "Client IP:", clientIp);
-  res.json({ isServer: req.session.h });
+  res.json({ isServer: serverIp == clientIp });
 }

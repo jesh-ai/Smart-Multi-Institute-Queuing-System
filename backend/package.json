@@ -37,7 +37,9 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
+    "@types/connect-sqlite3": "^0.9.6",
     "@types/express": "^5.0.5",
+    "@types/express-session": "^1.18.2",
     "@types/qrcode": "^1.5.6",
     "nodemon": "^3.1.0",
     "typescript": "^5.9.3"
