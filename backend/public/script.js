@@ -66,149 +66,150 @@ const cardConfigs = [
     id: 'institute-info',
     title: 'Institute Info',
     description: 'Get complete institute information',
-    buttons: [{ endpoint: '/api/institute/info', method: 'GET' }],
-    customClass: 'done'
+    buttons: [{ endpoint: '/api/institute/info', method: 'GET' }]
   },
   {
     id: 'institute-services',
     title: 'Institute Services',
     description: 'Get list of institute services',
-    buttons: [{ endpoint: '/api/institute/services', method: 'GET' }],
-    customClass: 'done'
+    buttons: [{ endpoint: '/api/institute/services', method: 'GET' }]
   },
   {
     id: 'service-form',
     title: 'Service Form',
     description: 'Get form by service ID',
     inputs: [{ id: 'service-form-service-id', type: 'number', placeholder: 'Service ID (0, 1, 2...)', defaultValue: '0' }],
-    buttons: [{ endpoint: '/api/institute/form/:id', method: 'GET', useInputs: ['service-form-service-id'] }],
-    customClass: 'done'
+    buttons: [{ endpoint: '/api/institute/form/:id', method: 'GET', useInputs: ['service-form-service-id'] }]
   },
   {
     id: 'privacy',
     title: 'Privacy Notice',
     description: 'Get institute privacy notice',
-    buttons: [{ endpoint: '/api/institute/notice', method: 'GET' }],
-    customClass: 'done'
+    buttons: [{ endpoint: '/api/institute/notice', method: 'GET' }]
   },
   
   {
     id: 'session',
     title: 'Session Info',
     description: 'Check session information',
-    buttons: [{ endpoint: '/api/session/self', method: 'GET' }],
-    customClass: 'done'
+    buttons: [{ endpoint: '/api/session/self', method: 'GET' }]
   },
   {
     id: 'devices',
     title: 'Devices Info',
     description: 'Check registered devices',
-    buttons: [{ endpoint: '/api/session/devices', method: 'GET' }],
-    customClass: 'done'
+    buttons: [{ endpoint: '/api/session/devices', method: 'GET' }]
   },
+  
   {
-    id: 'stats',
-    title: 'Database Statistics',
-    description: 'View current database state and record counts',
-    buttons: [{ endpoint: '/api/test/stats', method: 'GET' }]
+    id: 'server-shutdown',
+    title: 'Server Shutdown',
+    description: 'Shutdown the entire server',
+    buttons: [{ label: 'Shutdown Server', endpoint: '/api/server/shutdown', method: 'POST' }]
   },
-  {
-    id: 'ping',
-    title: 'Chatbot Ping',
-    description: 'Test if chatbot endpoint is responding',
-    buttons: [{ endpoint: '/api/chatbot/ping', method: 'GET' }]
-  },
-  {
-    id: 'start',
-    title: 'Start Conversation',
-    description: 'Initialize a new chatbot conversation',
-    buttons: [{ endpoint: '/api/chatbot', method: 'POST', bodyData: { message: 'start', type: 'closed' } }]
-  },
-  {
-    id: 'feedback',
-    title: 'Request Feedback',
-    description: 'Request user feedback options',
-    buttons: [{ endpoint: '/api/chatbot', method: 'POST', bodyData: { message: 'feedback', type: 'closed' } }]
-  },
-  {
-    id: 'closed',
-    title: 'Custom Closed Message',
-    description: 'Send a custom closed-ended message',
-    inputs: [{ id: 'closed-closed-message', type: 'text', placeholder: 'Enter message (e.g., \'start\', \'feedback\')' }],
-    buttons: [{ endpoint: '/api/chatbot', method: 'POST', useBody: { message: 'closed-closed-message', type: 'closed' } }]
-  },
-  {
-    id: 'open',
-    title: 'Open-ended Message',
-    description: 'Send a custom open-ended message',
-    textareas: [{ id: 'open-open-message', rows: 3, placeholder: 'Type your message here...' }],
-    buttons: [{ endpoint: '/api/chatbot', method: 'POST', useBody: { message: 'open-open-message', type: 'open' } }]
-  },
-  {
-    id: 'sessions',
-    title: 'Active Sessions',
-    description: 'View all active chat sessions',
-    buttons: [{ endpoint: '/api/test/sessions', method: 'GET' }]
-  },
-  {
-    id: 'queue',
-    title: 'Queue Status',
-    description: 'View current waiting queue',
-    buttons: [{ endpoint: '/api/test/queue', method: 'GET' }]
-  },
-  {
-    id: 'tables',
-    title: 'Database Tables',
-    description: 'List all database tables',
-    buttons: [{ endpoint: '/api/test/tables', method: 'GET' }]
-  },
-  {
-    id: 'qr',
-    title: 'QR Code Generator',
-    description: 'Generate QR code for any URL',
-    inputs: [{ id: 'qr-url', type: 'text', placeholder: 'Enter URL', defaultValue: 'http://localhost:4000/test.html' }],
-    buttons: [{ endpoint: '/api/qr', method: 'GET', useInputs: ['qr-url'] }]
-  },
-  {
-    id: 'server-check',
-    title: 'Server Check',
-    description: 'Check server status',
-    buttons: [{ endpoint: '/api/server/check', method: 'GET' }]
-  },
-  {
-    id: 'counters-get',
-    title: 'Get Counters',
-    description: 'List all counters',
-    buttons: [{ endpoint: '/api/counter', method: 'GET' }]
-  },
-  {
-    id: 'counters-create',
-    title: 'Create Counter',
-    description: 'Create a new counter',
-    buttons: [{ endpoint: '/api/counter', method: 'POST', bodyData: {} }]
-  },
-  {
-    id: 'counter-get',
-    title: 'Get Counter by ID',
-    description: 'Get a specific counter',
-    inputs: [{ id: 'counter-get-sessionId', type: 'text', placeholder: 'Enter session ID' }],
-    buttons: [{ endpoint: '/api/counter/:id', method: 'GET', useInputs: ['counter-get-sessionId'] }]
-  },
-  {
-    id: 'counter-delete',
-    title: 'Delete Counter by ID',
-    description: 'Delete a specific counter',
-    inputs: [{ id: 'counter-delete-sessionId', type: 'text', placeholder: 'Enter session ID' }],
-    buttons: [{ endpoint: '/api/counter/:id', method: 'DELETE', useInputs: ['counter-delete-sessionId'] }]
-  },
-  {
-    id: 'counter-update',
-    title: 'Update Counter',
-    description: 'Update counter status and properties',
-    inputs: [{ id: 'counter-update-sessionId', type: 'text', placeholder: 'Enter session ID' }],
-    textareas: [{ id: 'counter-data', rows: 4, placeholder: '{"status": "active", "counterId": "counter-123"}', defaultValue: '{\n  "status": "active"\n}' }],
-    buttons: [{ endpoint: '/api/counter/:id', method: 'PUT', useInputs: ['counter-update-sessionId'], useBody: 'counter-data' }]
-  }
+  // {
+  //   id: 'stats',
+  //   title: 'Database Statistics',
+  //   description: 'View current database state and record counts',
+  //   buttons: [{ endpoint: '/api/test/stats', method: 'GET' }]
+  // },
+  // {
+  //   id: 'ping',
+  //   title: 'Chatbot Ping',
+  //   description: 'Test if chatbot endpoint is responding',
+  //   buttons: [{ endpoint: '/api/chatbot/ping', method: 'GET' }]
+  // },
+  // {
+  //   id: 'start',
+  //   title: 'Start Conversation',
+  //   description: 'Initialize a new chatbot conversation',
+  //   buttons: [{ endpoint: '/api/chatbot', method: 'POST', bodyData: { message: 'start', type: 'closed' } }]
+  // },
+  // {
+  //   id: 'feedback',
+  //   title: 'Request Feedback',
+  //   description: 'Request user feedback options',
+  //   buttons: [{ endpoint: '/api/chatbot', method: 'POST', bodyData: { message: 'feedback', type: 'closed' } }]
+  // },
+  // {
+  //   id: 'closed',
+  //   title: 'Custom Closed Message',
+  //   description: 'Send a custom closed-ended message',
+  //   inputs: [{ id: 'closed-closed-message', type: 'text', placeholder: 'Enter message (e.g., \'start\', \'feedback\')' }],
+  //   buttons: [{ endpoint: '/api/chatbot', method: 'POST', useBody: { message: 'closed-closed-message', type: 'closed' } }]
+  // },
+  // {
+  //   id: 'open',
+  //   title: 'Open-ended Message',
+  //   description: 'Send a custom open-ended message',
+  //   textareas: [{ id: 'open-open-message', rows: 3, placeholder: 'Type your message here...' }],
+  //   buttons: [{ endpoint: '/api/chatbot', method: 'POST', useBody: { message: 'open-open-message', type: 'open' } }]
+  // },
+  // {
+  //   id: 'sessions',
+  //   title: 'Active Sessions',
+  //   description: 'View all active chat sessions',
+  //   buttons: [{ endpoint: '/api/test/sessions', method: 'GET' }]
+  // },
+  // {
+  //   id: 'queue',
+  //   title: 'Queue Status',
+  //   description: 'View current waiting queue',
+  //   buttons: [{ endpoint: '/api/test/queue', method: 'GET' }]
+  // },
+  // {
+  //   id: 'tables',
+  //   title: 'Database Tables',
+  //   description: 'List all database tables',
+  //   buttons: [{ endpoint: '/api/test/tables', method: 'GET' }]
+  // },
+  // {
+  //   id: 'qr',
+  //   title: 'QR Code Generator',
+  //   description: 'Generate QR code for any URL',
+  //   inputs: [{ id: 'qr-url', type: 'text', placeholder: 'Enter URL', defaultValue: 'http://localhost:4000/test.html' }],
+  //   buttons: [{ endpoint: '/api/qr', method: 'GET', useInputs: ['qr-url'] }]
+  // },
+  // {
+  //   id: 'server-check',
+  //   title: 'Server Check',
+  //   description: 'Check server status',
+  //   buttons: [{ endpoint: '/api/server/check', method: 'GET' }]
+  // },
+  // {
+  //   id: 'counters-get',
+  //   title: 'Get Counters',
+  //   description: 'List all counters',
+  //   buttons: [{ endpoint: '/api/counter', method: 'GET' }]
+  // },
+  // {
+  //   id: 'counters-create',
+  //   title: 'Create Counter',
+  //   description: 'Create a new counter',
+  //   buttons: [{ endpoint: '/api/counter', method: 'POST', bodyData: {} }]
+  // },
+  // {
+  //   id: 'counter-get',
+  //   title: 'Get Counter by ID',
+  //   description: 'Get a specific counter',
+  //   inputs: [{ id: 'counter-get-sessionId', type: 'text', placeholder: 'Enter session ID' }],
+  //   buttons: [{ endpoint: '/api/counter/:id', method: 'GET', useInputs: ['counter-get-sessionId'] }]
+  // },
+  // {
+  //   id: 'counter-delete',
+  //   title: 'Delete Counter by ID',
+  //   description: 'Delete a specific counter',
+  //   inputs: [{ id: 'counter-delete-sessionId', type: 'text', placeholder: 'Enter session ID' }],
+  //   buttons: [{ endpoint: '/api/counter/:id', method: 'DELETE', useInputs: ['counter-delete-sessionId'] }]
+  // },
+  // {
+  //   id: 'counter-update',
+  //   title: 'Update Counter',
+  //   description: 'Update counter status and properties',
+  //   inputs: [{ id: 'counter-update-sessionId', type: 'text', placeholder: 'Enter session ID' }],
+  //   textareas: [{ id: 'counter-data', rows: 4, placeholder: '{"status": "active", "counterId": "counter-123"}', defaultValue: '{\n  "status": "active"\n}' }],
+  //   buttons: [{ endpoint: '/api/counter/:id', method: 'PUT', useInputs: ['counter-update-sessionId'], useBody: 'counter-data' }]
+  // }
 ];
 
 /**

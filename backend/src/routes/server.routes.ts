@@ -1,5 +1,5 @@
 import express from "express";
-import { getIsServer } from "../controllers/server.controller.js";
+import { getIsServer, shutdownServer } from "../controllers/server.controller.js";
 import { getQR } from "../controllers/qr.controller.js";
 
 const routes = express.Router();
@@ -10,7 +10,7 @@ routes.get("/check", getIsServer);
 // routes.get("/session");
 // routes.get("/queue")
 routes.get("/qr", getQR)
-// routes.post("/shutdown")
+routes.post("/shutdown", shutdownServer);
 
 const serverRoutes = routes;
 export default serverRoutes;

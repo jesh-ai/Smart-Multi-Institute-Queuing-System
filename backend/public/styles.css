@@ -206,11 +206,11 @@ input, textarea {
   margin: 0;
 }
 
-.card.done {
+.card {
   background: #d4ffe1;
 }
 
-.card.done h2 {
+.card h2 {
   border-bottom-color: #22c55e;
 }
 
