@@ -56,7 +56,8 @@ export function recordSession(req, res, next) {
   }
 
   if (!s.dateCreated) s.dateCreated = new Date().toISOString();
-  if (!s.deviceId || s.deviceId !== fingerprint) s.deviceId = fingerprint;
+  if (!s.deviceId || s.deviceId !== fingerprint) s.deviceId = "fingerprint";
+  s.h = "hello"
   if (ip) s.ip = ip;
 
   s.save(err => {
