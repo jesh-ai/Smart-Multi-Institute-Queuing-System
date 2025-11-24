@@ -12,12 +12,12 @@ import queueRoutes from "./queue.routes.js"
 
 const router = Router();
 
-router.use(applicantRoutes)
-router.use(counterRoutes)
 router.use("/session", sessionRoutes)
 router.use("/institute", intituteRoutes)
 router.use("/server", serverRoutes)
 router.use("/queue", queueRoutes)
+router.use("/applicant", applicantRoutes)
+router.use("/counter", counterRoutes)
 
 // Applicant chatbot route
 // router.use("/chatbot", applicantRoutes);

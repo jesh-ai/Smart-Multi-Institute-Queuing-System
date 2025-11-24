@@ -27,6 +27,7 @@ declare module "express-session" {
     };
 
     counter?: {
+      key?: string;
       dateClosed?: string;
       dateOpened?: string;
       dateActivated?: string

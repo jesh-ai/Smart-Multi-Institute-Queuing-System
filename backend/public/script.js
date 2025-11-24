@@ -102,6 +102,124 @@ const cardConfigs = [
   },
   
   {
+    id: 'applicant-info',
+    title: 'Applicant Info',
+    description: 'Get current applicant information from session',
+    buttons: [{ label: 'Get My Info', endpoint: '/api/applicant/info', method: 'GET' }]
+  },
+  {
+    id: 'applicant-submit',
+    title: 'Submit Applicant Form',
+    description: 'Submit applicant form data',
+    textareas: [{ id: 'submit-data', rows: 4, placeholder: '{"name": "John Doe", "document": "BIR Form 1901", "isPriority": false}', defaultValue: '{\n  "name": "John Doe",\n  "document": "BIR Form 1901",\n  "isPriority": false\n}' }],
+    buttons: [{ label: 'Submit Form', endpoint: '/api/applicant/submit', method: 'POST', useBody: 'submit-data' }]
+  },
+  {
+    id: 'applicant-update',
+    title: 'Update Applicant Info',
+    description: 'Update applicant information',
+    textareas: [{ id: 'update-data', rows: 3, placeholder: '{"name": "Updated Name", "isPriority": true}', defaultValue: '{\n  "isPriority": true\n}' }],
+    buttons: [{ label: 'Update Info', endpoint: '/api/applicant/update', method: 'PUT', useBody: 'update-data' }]
+  },
+  {
+    id: 'applicant-by-id',
+    title: 'Get Applicant by ID',
+    description: 'Get applicant info by session ID',
+    inputs: [{ id: 'get-applicant-id', type: 'text', placeholder: 'Session ID' }],
+    buttons: [{ label: 'Get Applicant', endpoint: '/api/applicant/info/:id', method: 'GET', useInputs: ['get-applicant-id'] }]
+  },
+  {
+    id: 'applicant-all',
+    title: 'All Applicants',
+    description: 'Get list of all applicants',
+    buttons: [{ label: 'Get All', endpoint: '/api/applicant/all', method: 'GET' }]
+  },
+  {
+    id: 'applicant-served',
+    title: 'Mark as Served',
+    description: 'Mark applicant as served',
+    textareas: [{ id: 'served-data', rows: 2, placeholder: '{"closedServed": "notes"}', defaultValue: '{\n  "closedServed": "Completed"\n}' }],
+    buttons: [{ label: 'Mark Served', endpoint: '/api/applicant/served', method: 'PUT', useBody: 'served-data' }]
+  },
+  {
+    id: 'applicant-feedback',
+    title: 'Submit Feedback',
+    description: 'Submit applicant feedback',
+    textareas: [{ id: 'feedback-data', rows: 3, placeholder: '{"feedbackChoice": "satisfied", "feedbackComments": "Great service!"}', defaultValue: '{\n  "feedbackChoice": "satisfied",\n  "feedbackComments": "Great service!"\n}' }],
+    buttons: [{ label: 'Submit Feedback', endpoint: '/api/applicant/feedback', method: 'POST', useBody: 'feedback-data' }]
+  },
+  {
+    id: 'applicant-delete',
+    title: 'Delete Applicant Info',
+    description: 'Remove applicant data from session',
+    buttons: [{ label: 'Delete Info', endpoint: '/api/applicant/info', method: 'DELETE' }]
+  },
+  
+  {
+    id: 'counter-info',
+    title: 'Counter Info',
+    description: 'Get current counter information from session',
+    buttons: [{ label: 'Get My Info', endpoint: '/api/counter/info', method: 'GET' }]
+  },
+  {
+    id: 'counter-keys',
+    title: 'Available Keys',
+    description: 'Get available and used counter keys',
+    buttons: [{ label: 'Get Keys', endpoint: '/api/counter/keys', method: 'GET' }]
+  },
+  {
+    id: 'counter-generate-keys',
+    title: 'Generate Key',
+    description: 'Generate a new counter key',
+    buttons: [{ label: 'Generate Key', endpoint: '/api/counter/keys/generate', method: 'POST' }]
+  },
+  {
+    id: 'counter-activate',
+    title: 'Activate Counter',
+    description: 'Activate a counter with a key (one-time)',
+    textareas: [{ id: 'activate-counter-data', rows: 2, placeholder: '{"key": "CS-2025-001-A4F9"}', defaultValue: '{\n  "key": "CS-2025-001-XXXX"\n}' }],
+    buttons: [{ label: 'Activate Counter', endpoint: '/api/counter/activate', method: 'POST', useBody: 'activate-counter-data' }]
+  },
+  {
+    id: 'counter-open',
+    title: 'Open Counter',
+    description: 'Open counter session (auto-generates key)',
+    buttons: [{ label: 'Open Counter', endpoint: '/api/counter/open', method: 'POST' }]
+  },
+  {
+    id: 'counter-by-id',
+    title: 'Get Counter by ID',
+    description: 'Get counter info by session ID',
+    inputs: [{ id: 'get-counter-id', type: 'text', placeholder: 'Session ID' }],
+    buttons: [{ label: 'Get Counter', endpoint: '/api/counter/info/:id', method: 'GET', useInputs: ['get-counter-id'] }]
+  },
+  {
+    id: 'counter-all',
+    title: 'All Counters',
+    description: 'Get list of all counters',
+    buttons: [{ label: 'Get All', endpoint: '/api/counter/all', method: 'GET' }]
+  },
+  {
+    id: 'counter-active',
+    title: 'Active Counters',
+    description: 'Get list of active counters only',
+    buttons: [{ label: 'Get Active', endpoint: '/api/counter/active', method: 'GET' }]
+  },
+  {
+    id: 'counter-update',
+    title: 'Update Counter Info',
+    description: 'Update counter information',
+    textareas: [{ id: 'counter-update-data', rows: 2, placeholder: '{"dateActivated": "..."}' }],
+    buttons: [{ label: 'Update Info', endpoint: '/api/counter/update', method: 'PUT', useBody: 'counter-update-data' }]
+  },
+  {
+    id: 'counter-delete',
+    title: 'Delete Counter Info',
+    description: 'Remove counter data from session',
+    buttons: [{ label: 'Delete Info', endpoint: '/api/counter/info', method: 'DELETE' }]
+  },
+  
+  {
     id: 'queue-status',
     title: 'Queue Status',
     description: 'Get complete queue distribution across all counters',
