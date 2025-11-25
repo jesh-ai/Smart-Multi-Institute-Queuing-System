@@ -181,12 +181,6 @@ const cardConfigs = [
     buttons: [{ label: 'Activate Counter', endpoint: '/api/counter/activate', method: 'POST', useBody: 'activate-counter-data' }]
   },
   {
-    id: 'counter-open',
-    title: 'Open Counter',
-    description: 'Open counter session (auto-generates key)',
-    buttons: [{ label: 'Open Counter', endpoint: '/api/counter/open', method: 'POST' }]
-  },
-  {
     id: 'counter-by-id',
     title: 'Get Counter by ID',
     description: 'Get counter info by session ID',

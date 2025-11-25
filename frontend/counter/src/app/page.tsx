@@ -12,7 +12,7 @@ export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false); 
   const [currentView, setCurrentView] = useState<View>('dashboard');
 
-const handleLogin = () => {
+const handleLogin = (key: string) => {
     setIsLoggedIn(true);
   };
 

@@ -30,7 +30,6 @@ declare module "express-session" {
       key?: string;
       dateClosed?: string;
       dateOpened?: string;
-      dateActivated?: string
     }
   }
 }

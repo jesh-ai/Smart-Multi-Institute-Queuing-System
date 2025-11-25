@@ -26,7 +26,6 @@ export async function getCounterInfo(req: Request, res: Response): Promise<void>
         key: counter.key,
         dateOpened: counter.dateOpened,
         dateClosed: counter.dateClosed,
-        dateActivated: counter.dateActivated,
         status: isOpen ? "open" : "closed",
         isOpen,
       },
@@ -74,7 +73,6 @@ export async function getCounterBySessionId(req: Request, res: Response): Promis
         key: session.counter.key,
         dateOpened: session.counter.dateOpened,
         dateClosed: session.counter.dateClosed,
-        dateActivated: session.counter.dateActivated,
         status: isOpen ? "open" : "closed",
         isOpen,
       },
@@ -88,27 +86,53 @@ export async function getCounterBySessionId(req: Request, res: Response): Promis
   }
 }
 
-export async function openCounter(req: Request, res: Response): Promise<void> {
+
+export async function closeCounter(req: Request, res: Response): Promise<void> {
   try {
     if (!req.session.counter) {
-      req.session.counter = {};
-    }
-
-    if (req.session.counter.dateOpened && !req.session.counter.dateClosed) {
-      res.status(400).json({
+      res.status(404).json({
         success: false,
-        error: "Counter is already open",
-        message: "Close the counter before opening it again",
+        error: "No counter information found in session",
+        message: "This session does not have counter data",
       });
       return;
     }
 
-    req.session.counter.dateOpened = new Date().toISOString();
-    req.session.counter.dateClosed = undefined;
-
-    if (!req.session.counter.key) {
-      req.session.counter.key = addAvailableKey();
+    if (!req.session.counter.dateOpened) {
+      res.status(400).json({
+        success: false,
+        error: "Counter was never opened",
+        message: "Cannot close a counter that was never opened",
+      });
+      return;
     }
+
+    if (req.session.counter.dateClosed) {
+      res.status(400).json({
+        success: false,
+        error: "Counter is already closed",
+        message: "This counter has already been closed",
+      });
+      return;
+    }
+
+    // Check if there are any applicants assigned to this counter
+    const sessions = fetchSessions();
+    let hasActiveApplicants = false;
+
+    sessions.forEach((session, sessionId) => {
+      if (session.applicant && 
+          session.applicant.dateSubmitted && 
+          !session.applicant.dateServed &&
+          session.counter?.key === req.session.counter?.key) {
+        hasActiveApplicants = true;
+      }
+    });
+
+    req.session.counter.dateClosed = new Date().toISOString();
+    
+    // Set status as "closing" if there are still active applicants, otherwise "closed"
+    const status = hasActiveApplicants ? "closing" : "closed";
 
     req.session.save((err) => {
       if (err) {
@@ -122,21 +146,24 @@ export async function openCounter(req: Request, res: Response): Promise<void> {
 
       res.json({
         success: true,
-        message: "Counter opened successfully",
+        message: hasActiveApplicants 
+          ? "Counter is closing - waiting for active applicants to be served"
+          : "Counter closed successfully",
         data: {
           sessionId: req.sessionID,
           deviceId: req.session.deviceId,
           key: req.session.counter?.key,
           dateOpened: req.session.counter?.dateOpened,
-          dateActivated: req.session.counter?.dateActivated,
-          status: "open",
+          dateClosed: req.session.counter?.dateClosed,
+          status,
+          activeApplicants: hasActiveApplicants,
         },
       });
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: "Failed to open counter",
+      error: "Failed to close counter",
       message: error instanceof Error ? error.message : "Unknown error",
     });
   }
@@ -168,7 +195,7 @@ export async function activateCounter(req: Request, res: Response): Promise<void
       req.session.counter = {};
     }
 
-    if (req.session.counter.dateActivated) {
+    if (req.session.counter.dateOpened) {
       res.status(400).json({
         success: false,
         error: "Counter is already activated",
@@ -187,11 +214,15 @@ export async function activateCounter(req: Request, res: Response): Promise<void
       return;
     }
 
+    
     req.session.counter.key = key;
-    req.session.counter.dateActivated = new Date().toISOString();
+    const dateOpenedValue = new Date().toISOString();
+    req.session.counter.dateOpened = dateOpenedValue;
+    req.session.counter.dateClosed = undefined;
 
     req.session.save((err) => {
       if (err) {
+        console.error('Failed to save session after activation:', err);
         res.status(500).json({
           success: false,
           error: "Failed to save session",
@@ -207,8 +238,8 @@ export async function activateCounter(req: Request, res: Response): Promise<void
           sessionId: req.sessionID,
           deviceId: req.session.deviceId,
           key: req.session.counter?.key,
-          dateActivated: req.session.counter?.dateActivated,
-          status: "activated",
+          dateOpened: req.session.counter?.dateOpened,
+          status: "open",
         },
       });
     });
@@ -229,7 +260,7 @@ export async function updateCounterInfo(req: Request, res: Response): Promise<vo
       req.session.counter = {};
     }
 
-    const allowedFields = ["dateOpened", "dateClosed", "dateActivated"];
+        const allowedFields = ["dateOpened", "dateClosed"];
 
     Object.keys(updates).forEach((key) => {
       if (allowedFields.includes(key)) {
@@ -271,7 +302,6 @@ export async function getAllCounters(req: Request, res: Response): Promise<void>
       key?: string;
       dateOpened?: string;
       dateClosed?: string;
-      dateActivated?: string;
       status: string;
       isOpen: boolean;
     }> = [];
@@ -285,7 +315,6 @@ export async function getAllCounters(req: Request, res: Response): Promise<void>
           key: session.counter.key,
           dateOpened: session.counter.dateOpened,
           dateClosed: session.counter.dateClosed,
-          dateActivated: session.counter.dateActivated,
           status: isOpen ? "open" : "closed",
           isOpen,
         });
@@ -293,8 +322,8 @@ export async function getAllCounters(req: Request, res: Response): Promise<void>
     });
 
     counters.sort((a, b) => {
-      const dateA = new Date(a.dateActivated || 0).getTime();
-      const dateB = new Date(b.dateActivated || 0).getTime();
+      const dateA = new Date(a.dateOpened || 0).getTime();
+      const dateB = new Date(b.dateOpened || 0).getTime();
       return dateB - dateA;
     });
 
@@ -323,8 +352,8 @@ export async function getActiveCounters(req: Request, res: Response): Promise<vo
       sessionId: string;
       deviceId?: string;
       key?: string;
-      dateOpened: string;
-      dateActivated?: string;
+      dateOpened?: string;
+      status: string;
     }> = [];
 
     sessions.forEach((session, sessionId) => {
@@ -334,14 +363,14 @@ export async function getActiveCounters(req: Request, res: Response): Promise<vo
           deviceId: session.deviceId,
           key: session.counter.key,
           dateOpened: session.counter.dateOpened,
-          dateActivated: session.counter.dateActivated,
+          status: "open",
         });
       }
     });
 
     activeCounters.sort((a, b) => {
-      const dateA = new Date(a.dateOpened).getTime();
-      const dateB = new Date(b.dateOpened).getTime();
+      const dateA = new Date(a.dateOpened || 0).getTime();
+      const dateB = new Date(b.dateOpened || 0).getTime();
       return dateA - dateB;
     });
 

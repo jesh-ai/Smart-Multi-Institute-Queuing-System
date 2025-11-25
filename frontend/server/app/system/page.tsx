@@ -70,6 +70,42 @@ export default function SystemPage() {
     }
   };
 
+  const handleEndSession = async (sessionId: string) => {
+    if (!confirm('Are you sure you want to end this counter session?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:4000/api/counter/close`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        alert(result.message);
+        
+        // Refresh sessions list
+        const sessionsResponse = await fetch('http://localhost:4000/api/session/all', {
+          credentials: 'include'
+        });
+        if (sessionsResponse.ok) {
+          const data = await sessionsResponse.json();
+          setSessions(data);
+        }
+      } else {
+        const error = await response.json();
+        alert(`Failed to end session: ${error.message || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error ending session:', error);
+      alert('Error ending counter session');
+    }
+  };
+
   // Fetch devices data from API
   useEffect(() => {
     const fetchDevices = async () => {
@@ -249,7 +285,10 @@ export default function SystemPage() {
                     <td>{session.endedAt}</td>
                     <td className="text-center">
                       {session.status === 'Active' ? (
-                        <button className="action-end-session">
+                        <button 
+                          onClick={() => handleEndSession(session.id.toString())}
+                          className="action-end-session"
+                        >
                           End Session
                         </button>
                       ) : session.status === 'Online' ? (

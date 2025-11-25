@@ -2,7 +2,7 @@ import { Router } from "express";
 import {
   getCounterInfo,
   getCounterBySessionId,
-  openCounter,
+  closeCounter,
   activateCounter,
   updateCounterInfo,
   getAllCounters,
@@ -21,7 +21,7 @@ router.get("/active", getActiveCounters);
 router.get("/keys", getAvailableKeysHandler);
 router.post("/keys/generate", generateKeysHandler);
 router.post("/activate", activateCounter);
-router.post("/open", openCounter);
+router.post("/close", closeCounter);
 router.put("/update", updateCounterInfo);
 router.delete("/info", deleteCounterInfo);
 

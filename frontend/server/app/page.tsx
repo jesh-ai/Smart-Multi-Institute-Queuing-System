@@ -105,15 +105,15 @@ export default function DashboardPage() {
           icon={<img src="/icons/currentQueueStatus.svg" alt="Users" className="dashboard-icon" />}
         />
         <DashboardCard
-          title="Active Users"
-          subtitle="Currently Active"
-          value={`${activeUsers} Users`}
+          title="Active Applicants"
+          subtitle="Submitted Forms"
+          value={`${activeUsers} Applicants`}
           icon={<img src="/icons/activeUsers.svg" alt="Users" className="dashboard-icon" />}
         />
         <DashboardCard
-          title="Connected Devices"
-          subtitle="Currently Active"
-          value={`${connectedDevices} Devices`}
+          title="Total Sessions"
+          subtitle="All Active Sessions"
+          value={`${connectedDevices} Sessions`}
           icon={<img src="/icons/activeUsers.svg" alt="Devices" className="dashboard-icon" />}
         />
         <DashboardCard

@@ -54,6 +54,14 @@ export async function getSessionsList(req: Request, res: Response): Promise<void
     sessions.forEach((session, sessionId) => {
       if (!session.counter) return;
       
+      console.log('Counter session found:', {
+        sessionId,
+        counter: session.counter,
+        hasKey: !!session.counter.key,
+        hasDateOpened: !!session.counter.dateOpened,
+        dateOpened: session.counter.dateOpened
+      });
+      
       const timestamp = session.counter.dateOpened 
         ? new Date(session.counter.dateOpened).getTime()
         : Date.now();
