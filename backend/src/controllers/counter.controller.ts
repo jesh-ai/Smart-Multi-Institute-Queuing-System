@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { fetchSessions } from "../db/sessions.js";
+import { fetchSessions, storeSession } from "../db/sessions.js";
 import { SessionData } from "express-session";
 import { useKey, isKeyAvailable, addAvailableKey, getAvailableKeys, getUsedKeys, generateMultipleKeys } from "../utils/counterKeys.js";
 
@@ -466,6 +466,148 @@ export async function generateKeysHandler(req: Request, res: Response): Promise<
     res.status(500).json({
       success: false,
       error: "Failed to generate key",
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+}
+
+export async function serveApplicant(req: Request, res: Response): Promise<void> {
+  try {
+    const { sessionId } = req.body;
+
+    if (!sessionId) {
+      res.status(400).json({
+        success: false,
+        error: "Session ID is required",
+      });
+      return;
+    }
+
+    const sessions = fetchSessions();
+    const applicantSession = sessions.get(sessionId);
+
+    if (!applicantSession || !applicantSession.applicant) {
+      res.status(404).json({
+        success: false,
+        error: "Applicant not found",
+      });
+      return;
+    }
+
+    // Update the session data
+    applicantSession.applicant.dateServed = new Date().toISOString();
+    applicantSession.applicant.closedServed = "completed";
+
+    // Save to database
+    storeSession(sessionId, applicantSession);
+
+    res.json({
+      success: true,
+      message: "Applicant marked as served",
+      data: {
+        sessionId,
+        name: applicantSession.applicant.name,
+        dateServed: applicantSession.applicant.dateServed,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: "Failed to serve applicant",
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+}
+
+export async function markApplicantMissing(req: Request, res: Response): Promise<void> {
+  try {
+    const { sessionId } = req.body;
+
+    if (!sessionId) {
+      res.status(400).json({
+        success: false,
+        error: "Session ID is required",
+      });
+      return;
+    }
+
+    const sessions = fetchSessions();
+    const applicantSession = sessions.get(sessionId);
+
+    if (!applicantSession || !applicantSession.applicant) {
+      res.status(404).json({
+        success: false,
+        error: "Applicant not found",
+      });
+      return;
+    }
+
+    // Update the session data
+    applicantSession.applicant.closedServed = "missing";
+    applicantSession.applicant.dateServed = new Date().toISOString();
+
+    // Save to database
+    storeSession(sessionId, applicantSession);
+
+    res.json({
+      success: true,
+      message: "Applicant marked as missing",
+      data: {
+        sessionId,
+        name: applicantSession.applicant.name,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: "Failed to mark applicant as missing",
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+}
+
+export async function closeApplicantRequest(req: Request, res: Response): Promise<void> {
+  try {
+    const { sessionId } = req.body;
+
+    if (!sessionId) {
+      res.status(400).json({
+        success: false,
+        error: "Session ID is required",
+      });
+      return;
+    }
+
+    const sessions = fetchSessions();
+    const applicantSession = sessions.get(sessionId);
+
+    if (!applicantSession || !applicantSession.applicant) {
+      res.status(404).json({
+        success: false,
+        error: "Applicant not found",
+      });
+      return;
+    }
+
+    // Update the session data
+    applicantSession.applicant.closedServed = "closed";
+    applicantSession.applicant.dateServed = new Date().toISOString();
+
+    // Save to database
+    storeSession(sessionId, applicantSession);
+
+    res.json({
+      success: true,
+      message: "Applicant request closed",
+      data: {
+        sessionId,
+        name: applicantSession.applicant.name,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: "Failed to close applicant request",
       message: error instanceof Error ? error.message : "Unknown error",
     });
   }
