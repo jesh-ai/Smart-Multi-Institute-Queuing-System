@@ -22,36 +22,88 @@ export default function SystemPage() {
   const [devices, setDevices] = useState<Device[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
 
+  const handleDisconnect = async (deviceId: string) => {
+    if (!confirm('Are you sure you want to disconnect this device?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:4000/api/session/${deviceId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        // Refresh devices list
+        const devicesResponse = await fetch('http://localhost:4000/api/server/devices', {
+          credentials: 'include'
+        });
+        if (devicesResponse.ok) {
+          const data = await devicesResponse.json();
+          setDevices(data);
+        }
+      } else {
+        alert('Failed to disconnect device');
+      }
+    } catch (error) {
+      console.error('Error disconnecting device:', error);
+      alert('Error disconnecting device');
+    }
+  };
+
+  const handleAddCounter = async () => {
+    try {
+      const response = await fetch('http://localhost:4000/api/counter/keys/generate', {
+        method: 'POST',
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        alert(`Counter key generated successfully: ${result.data.key}`);
+      } else {
+        alert('Failed to generate counter key');
+      }
+    } catch (error) {
+      console.error('Error generating counter key:', error);
+      alert('Error generating counter key');
+    }
+  };
+
   // Fetch devices data from API
   useEffect(() => {
     const fetchDevices = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/templates/devices');
+        const response = await fetch('http://localhost:4000/api/server/devices', {
+          credentials: 'include'
+        });
         if (response.ok) {
           const data = await response.json();
           setDevices(data);
         } else {
-          console.log('Missing API for /api/templates/devices - using fallback data');
+          console.log('Failed to fetch devices from /api/server/devices');
           setDevices([]);
         }
       } catch (error) {
-        console.log('Missing API for /api/templates/devices - fetch failed:', error);
+        console.log('Failed to fetch devices:', error);
         setDevices([]);
       }
     };
 
     const fetchSessions = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/templates/sessions');
+        const response = await fetch('http://localhost:4000/api/session/all', {
+          credentials: 'include'
+        });
         if (response.ok) {
           const data = await response.json();
           setSessions(data);
         } else {
-          console.log('Missing API for /api/templates/sessions - using fallback data');
+          console.log('Failed to fetch sessions from /api/session/all');
           setSessions([]);
         }
       } catch (error) {
-        console.log('Missing API for /api/templates/sessions - fetch failed:', error);
+        console.log('Failed to fetch sessions:', error);
         setSessions([]);
       }
     };
@@ -132,9 +184,12 @@ export default function SystemPage() {
                       </div>
                     </td>
                     <td className="text-center">
-                      <a href="#" className="action-disconnect">
+                      <button 
+                        onClick={() => handleDisconnect(device.id.toString())}
+                        className="action-disconnect"
+                      >
                         Disconnect
-                      </a>
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -146,17 +201,22 @@ export default function SystemPage() {
         // --- COUNTER SESSION ---//
         <div className="system-content-card">
           <div className="system-card-header">
-            <h2 className="system-card-title">Counter Session Management</h2>
-            <p className="system-card-subtitle">
-              Monitor and manage counter sessions
-            </p>
+            <div>
+              <h2 className="system-card-title">Counter Session Management</h2>
+              <p className="system-card-subtitle">
+                Monitor and manage counter sessions
+              </p>
+            </div>
+            <button onClick={handleAddCounter} className="add-counter-button">
+              Add
+            </button>
           </div>
           <div className="table-wrapper">
             <table className="devices-table">
               <thead>
                 <tr>
                   <th>Counter Name</th>
-                  <th>Session Key</th>
+                  <th>Counter Key</th>
                   <th>Started At</th>
                   <th>Status</th>
                   <th>Ended At</th>
@@ -171,7 +231,7 @@ export default function SystemPage() {
                       <div className="session-key-wrapper">
                         <img 
                           src="/icons/session key.svg" 
-                          alt="Session Key" 
+                          alt="Counter Key" 
                           className="session-key-icon" 
                         />
                         <span>{session.sessionKey}</span>
@@ -188,10 +248,12 @@ export default function SystemPage() {
                     </td>
                     <td>{session.endedAt}</td>
                     <td className="text-center">
-                      {session.status === 'Online' ? (
-                        <a href="#" className="action-end-session">
+                      {session.status === 'Active' ? (
+                        <button className="action-end-session">
                           End Session
-                        </a>
+                        </button>
+                      ) : session.status === 'Online' ? (
+                        <span className="text-muted">-</span>
                       ) : (
                         <span>-</span>
                       )}

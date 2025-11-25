@@ -181,3 +181,113 @@ export async function getSummary(req: Request, res: Response): Promise<void> {
     });
   }
 }
+
+export async function getDevices(req: Request, res: Response): Promise<void> {
+  try {
+    const sessions = fetchSessions();
+    
+    // Separate counters and applicants
+    const counterDevices: Array<{
+      sessionId: string;
+      session: any;
+      timestamp: number;
+      isActive: boolean;
+    }> = [];
+    
+    const applicantDevices: Array<{
+      sessionId: string;
+      session: any;
+    }> = [];
+
+    sessions.forEach((session, sessionId) => {
+      if (!session.deviceId) return;
+
+      if (session.counter) {
+        // Counter device
+        const timestamp = session.counter.dateOpened 
+          ? new Date(session.counter.dateOpened).getTime()
+          : Date.now();
+        
+        const isActive = !session.counter.dateClosed;
+        
+        counterDevices.push({
+          sessionId,
+          session,
+          timestamp,
+          isActive
+        });
+      } else {
+        // Applicant device
+        applicantDevices.push({
+          sessionId,
+          session
+        });
+      }
+    });
+
+    // Sort counters by active status first, then by timestamp
+    counterDevices.sort((a, b) => {
+      if (a.isActive !== b.isActive) {
+        return a.isActive ? -1 : 1;
+      }
+      return a.timestamp - b.timestamp;
+    });
+
+    const devices: Array<{
+      id: string;
+      name: string;
+      type: string;
+      status: string;
+    }> = [];
+
+    // Add counter devices with incremental names
+    counterDevices.forEach((item, index) => {
+      const counterNumber = index + 1;
+      const deviceName = `Counter ${counterNumber}`;
+      
+      let status = "Online";
+      if (item.session.counter.dateClosed) {
+        status = "Ended";
+      } else if (item.session.cookie?.expires) {
+        const expiryDate = new Date(item.session.cookie.expires);
+        if (expiryDate < new Date()) {
+          status = "Idle";
+        }
+      }
+
+      devices.push({
+        id: item.sessionId,
+        name: deviceName,
+        type: "Counter",
+        status: status,
+      });
+    });
+
+    // Add applicant devices
+    applicantDevices.forEach((item) => {
+      const deviceName = item.session.deviceId || "Unknown Device";
+      
+      let status = "Online";
+      if (item.session.cookie?.expires) {
+        const expiryDate = new Date(item.session.cookie.expires);
+        if (expiryDate < new Date()) {
+          status = "Idle";
+        }
+      }
+
+      devices.push({
+        id: item.sessionId,
+        name: deviceName,
+        type: "Applicant",
+        status: status,
+      });
+    });
+
+    res.json(devices);
+  } catch (error) {
+    res.status(500).json({
+      error: "Failed to retrieve devices",
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+}

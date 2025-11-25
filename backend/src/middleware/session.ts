@@ -79,6 +79,19 @@ export function recordSession(req: Request, res: Response, next: NextFunction): 
   const ip = getIp();
   const ua = req.headers['user-agent'] || 'unknown';
   const normalizedIp = /^(localhost|192\.168\.|10\.|172\.16\.)/.test(ip || '') ? 'local-machine' : ip;
+  
+  // Extract device name from user agent
+  let deviceName = 'Unknown Device';
+  if (ua.includes('iPhone')) deviceName = 'iPhone';
+  else if (ua.includes('iPad')) deviceName = 'iPad';
+  else if (ua.includes('Android')) deviceName = 'Android Device';
+  else if (ua.includes('Macintosh')) deviceName = 'Mac';
+  else if (ua.includes('Windows')) deviceName = 'Windows PC';
+  else if (ua.includes('Linux')) deviceName = 'Linux PC';
+  else if (ua.includes('Chrome')) deviceName = 'Chrome Browser';
+  else if (ua.includes('Firefox')) deviceName = 'Firefox Browser';
+  else if (ua.includes('Safari')) deviceName = 'Safari Browser';
+  
   const fingerprint = `${normalizedIp}-${ua}`;
 
   if (!hasCookie) {
@@ -87,7 +100,7 @@ export function recordSession(req: Request, res: Response, next: NextFunction): 
   }
 
   if (!s.dateCreated) s.dateCreated = new Date().toISOString();
-  if (!s.deviceId || s.deviceId !== fingerprint) s.deviceId = "fingerprint";
+  if (!s.deviceId || s.deviceId !== fingerprint) s.deviceId = deviceName;
   if (ip) s.ip = ip;
 
   s.save((err?: Error) => {

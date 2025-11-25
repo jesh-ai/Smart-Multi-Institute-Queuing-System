@@ -234,6 +234,26 @@ body {
 .system-card-header {
     padding: 1.5rem;
     border-bottom: 1px solid white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.add-counter-button {
+    padding: 0.5rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.2s ease-in-out;
+    border: none;
+    cursor: pointer;
+    background-color: #0A1931;
+    color: #FFC947;
+}
+
+.add-counter-button:hover {
+    background-color: #1a2942;
+    transform: translateY(-1px);
 }
 
 .system-card-title {
@@ -350,6 +370,20 @@ body {
 }
 .status-online .status-dot {
     background-color: #10b981;
+}
+
+.status-active {
+    color: #FFC947;
+}
+.status-active .status-dot {
+    background-color: #FFC947;
+}
+
+.status-ending {
+    color: #FF6B00;
+}
+.status-ending .status-dot {
+    background-color: #FF6B00;
 }
 
 .status-idle {
