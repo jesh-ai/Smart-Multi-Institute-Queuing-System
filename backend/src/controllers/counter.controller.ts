@@ -195,13 +195,19 @@ export async function activateCounter(req: Request, res: Response): Promise<void
       req.session.counter = {};
     }
 
-    if (req.session.counter.dateOpened) {
+    // Check if this session already has an active counter (not closed)
+    if (req.session.counter.dateOpened && !req.session.counter.dateClosed) {
       res.status(400).json({
         success: false,
         error: "Counter is already activated",
-        message: "This counter has already been activated",
+        message: "This counter has already been activated. Please logout first.",
       });
       return;
+    }
+
+    // If counter was previously closed, allow re-activation by resetting
+    if (req.session.counter.dateClosed) {
+      req.session.counter = {};
     }
 
     const keyUsed = useKey(key);
@@ -608,6 +614,48 @@ export async function closeApplicantRequest(req: Request, res: Response): Promis
     res.status(500).json({
       success: false,
       error: "Failed to close applicant request",
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+}
+
+export async function logoutCounter(req: Request, res: Response): Promise<void> {
+  try {
+    if (!req.session.counter) {
+      res.status(404).json({
+        success: false,
+        error: "No counter session found",
+      });
+      return;
+    }
+
+    // Close the counter if it's still open
+    if (req.session.counter.dateOpened && !req.session.counter.dateClosed) {
+      req.session.counter.dateClosed = new Date().toISOString();
+    }
+
+    // Clear the counter data to allow re-login
+    delete req.session.counter;
+
+    req.session.save((err) => {
+      if (err) {
+        res.status(500).json({
+          success: false,
+          error: "Failed to logout",
+          message: err.message,
+        });
+        return;
+      }
+
+      res.json({
+        success: true,
+        message: "Logged out successfully. Counter session ended.",
+      });
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: "Failed to logout",
       message: error instanceof Error ? error.message : "Unknown error",
     });
   }

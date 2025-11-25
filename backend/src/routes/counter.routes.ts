@@ -13,6 +13,7 @@ import {
   serveApplicant,
   markApplicantMissing,
   closeApplicantRequest,
+  logoutCounter,
 } from "../controllers/counter.controller.js";
 
 const router = Router();
@@ -28,6 +29,7 @@ router.post("/close", closeCounter);
 router.post("/serve", serveApplicant);
 router.post("/missing", markApplicantMissing);
 router.post("/close-request", closeApplicantRequest);
+router.post("/logout", logoutCounter);
 router.put("/update", updateCounterInfo);
 router.delete("/info", deleteCounterInfo);
 
