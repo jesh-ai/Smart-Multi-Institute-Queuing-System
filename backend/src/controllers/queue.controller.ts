@@ -266,3 +266,62 @@ export async function getCounterQueue(req: Request, res: Response): Promise<void
     });
   }
 }
+
+export async function getAllQueueItems(req: Request, res: Response): Promise<void> {
+  try {
+    const sessions = fetchSessions();
+    const queueItems: Array<{
+      id: number;
+      name: string;
+      request: string;
+      counter: string;
+      status: string;
+    }> = [];
+
+    let queueNumber = 1;
+
+    // Get all applicants (both waiting and served)
+    sessions.forEach((session, sessionId) => {
+      if (session.applicant && session.applicant.dateSubmitted) {
+        let status = 'Waiting';
+        let counter = '-';
+
+        if (session.applicant.dateServed) {
+          status = 'Ended';
+          // Try to find which counter served them (would need to be tracked)
+          counter = 'Completed';
+        } else {
+          // Check if currently being processed
+          const queueData = QueueManager.manageQueue();
+          for (const counterQueue of queueData.queueDistribution) {
+            const applicantInQueue = counterQueue.applicants.find(a => a.sessionId === sessionId);
+            if (applicantInQueue) {
+              counter = counterQueue.counterName || '-';
+              if (applicantInQueue.position === 1) {
+                status = 'Processing';
+              }
+              break;
+            }
+          }
+        }
+
+        queueItems.push({
+          id: queueNumber,
+          name: session.applicant.name || 'Anonymous',
+          request: session.applicant.document || 'N/A',
+          counter: counter,
+          status: status,
+        });
+
+        queueNumber++;
+      }
+    });
+
+    res.json(queueItems);
+  } catch (error) {
+    res.status(500).json({
+      error: "Failed to retrieve queue items",
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+}

@@ -22,21 +22,27 @@ export default function QueuePage() {
   useEffect(() => {
     const fetchQueueData = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/templates/queue');
+        const response = await fetch('http://localhost:4000/api/queue/all', {
+          credentials: 'include'
+        });
         if (response.ok) {
           const data = await response.json();
           setQueueData(data);
         } else {
-          console.log('Missing API for /api/templates/queue - using fallback data');
+          console.log('Failed to fetch queue data from /api/queue/all');
           setQueueData([]);
         }
       } catch (error) {
-        console.log('Missing API for /api/templates/queue - fetch failed:', error);
+        console.log('Failed to fetch queue data:', error);
         setQueueData([]);
       }
     };
 
     fetchQueueData();
+    
+    // Refresh every 5 seconds
+    const interval = setInterval(fetchQueueData, 5000);
+    return () => clearInterval(interval);
   }, []);
   
   const filteredData = queueData.filter(item => {
