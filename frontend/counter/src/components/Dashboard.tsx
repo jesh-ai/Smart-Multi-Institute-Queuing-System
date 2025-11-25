@@ -1,16 +1,92 @@
-import React from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import { Search, UserCheck, Users, Ticket, List } from 'lucide-react';
 
-// Mock data for the queue list
-const queueData = [
-  { queueNo: 'A001', name: 'John Smith', request: 'Document Request', status: 'In Progress' },
-  { queueNo: 'A002', name: 'Sarah Johnson', request: 'Inquiry', status: 'Waiting' },
-  { queueNo: 'A003', name: 'Michael Brown', request: 'Payment Processing', status: 'Waiting' },
-  { queueNo: 'A004', name: 'Emily Davis', request: 'Document Request', status: 'Waiting' },
-  { queueNo: 'A005', name: 'David Wilson', request: 'Application Submission', status: 'Waiting' },
-];
+interface QueueApplicant {
+  position: number;
+  sessionId: string;
+  name: string;
+  document: string;
+  isPriority: boolean;
+  dateSubmitted: string;
+}
+
+interface CounterQueue {
+  counterId: string;
+  counterName: string;
+  applicants: QueueApplicant[];
+}
+
+interface QueueData {
+  queueDistribution: CounterQueue[];
+  statistics: {
+    totalActiveCounters: number;
+    totalWaitingApplicants: number;
+    priorityApplicants: number;
+    regularApplicants: number;
+  };
+}
 
 const Dashboard = () => {
+  const [queueData, setQueueData] = useState<QueueData | null>(null);
+  const [currentQueue, setCurrentQueue] = useState<CounterQueue | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchQueueData();
+    const interval = setInterval(fetchQueueData, 5000); // Refresh every 5 seconds
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchQueueData = async () => {
+    try {
+      const response = await fetch('http://localhost:4000/api/queue/counter/next', {
+        credentials: 'include'
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        // Get full queue status
+        const statusResponse = await fetch('http://localhost:4000/api/queue/status', {
+          credentials: 'include'
+        });
+        
+        if (statusResponse.ok) {
+          const statusData = await statusResponse.json();
+          setQueueData(statusData.data);
+          
+          // Find current counter's queue
+          const counterQueue = statusData.data.queueDistribution.find(
+            (q: CounterQueue) => q.counterId === result.data?.sessionId
+          );
+          setCurrentQueue(counterQueue || null);
+        }
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching queue data:', error);
+      setLoading(false);
+    }
+  };
+
+  const inProgressApplicant = currentQueue?.applicants[0] || null;
+  const nextInLine = currentQueue?.applicants[1] || null;
+  const inQueueCount = currentQueue ? currentQueue.applicants.length - 1 : 0;
+
+  const filteredQueue = currentQueue?.applicants.filter(applicant =>
+    applicant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    applicant.document.toLowerCase().includes(searchQuery.toLowerCase())
+  ) || [];
+
+  if (loading) {
+    return (
+      <div className="p-8 bg-[#F6F6E9] min-h-screen flex items-center justify-center">
+        <p className="text-gray-600">Loading queue data...</p>
+      </div>
+    );
+  }
   return (
     <div className="p-8 bg-[#F6F6E9] min-h-screen">
       
@@ -20,7 +96,9 @@ const Dashboard = () => {
           <input
             type="text"
             placeholder="Search queue..."
-            className="pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500 bg-white" // <-- Add bg-white here
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500 bg-white"
           />
           <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
         </div>
@@ -34,7 +112,9 @@ const Dashboard = () => {
             <UserCheck size={20} />
             <h3 className="text-lg font-medium">In Progress</h3>
           </div>
-          <p className="text-5xl font-bold text-blue-600 mt-4">A001</p>
+          <p className="text-5xl font-bold text-blue-600 mt-4">
+            {inProgressApplicant ? `#${inProgressApplicant.position}` : '-'}
+          </p>
         </div>
 
         {/* Next in Line Card */}
@@ -43,7 +123,9 @@ const Dashboard = () => {
             <Users size={20} />
             <h3 className="text-lg font-medium">Next in Line</h3>
           </div>
-          <p className="text-5xl font-bold text-green-600 mt-4">A002</p>
+          <p className="text-5xl font-bold text-green-600 mt-4">
+            {nextInLine ? `#${nextInLine.position}` : '-'}
+          </p>
         </div>
 
         {/* In Queue Card */}
@@ -52,7 +134,7 @@ const Dashboard = () => {
             <Ticket size={20} />
             <h3 className="text-lg font-medium">In Queue</h3>
           </div>
-          <p className="text-5xl font-bold text-gray-800 mt-4">4</p>
+          <p className="text-5xl font-bold text-gray-800 mt-4">{inQueueCount}</p>
         </div>
       </div>
 
@@ -62,15 +144,21 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <p className="text-sm text-gray-500">Name of Person Being Processed</p>
-            <p className="text-2xl font-semibold text-green-600">John Smith</p>
+            <p className="text-2xl font-semibold text-green-600">
+              {inProgressApplicant ? inProgressApplicant.name : 'No one in progress'}
+            </p>
           </div>
           <div>
             <p className="text-sm text-gray-500">Queue No. Being Processed</p>
-            <p className="text-2xl font-semibold text-blue-600">A001</p>
+            <p className="text-2xl font-semibold text-blue-600">
+              {inProgressApplicant ? `#${inProgressApplicant.position}` : '-'}
+            </p>
           </div>
           <div>
             <p className="text-sm text-gray-500">Next in Line Queue No.</p>
-            <p className="text-2xl font-semibold text-gray-700">A002</p>
+            <p className="text-2xl font-semibold text-gray-700">
+              {nextInLine ? `#${nextInLine.position}` : '-'}
+            </p>
           </div>
         </div>
       </div>
@@ -88,22 +176,30 @@ const Dashboard = () => {
             </tr>
           </thead>
           <tbody>
-            {queueData.map((item, index) => (
-              <tr key={item.queueNo} className="even:bg-yellow-50/50 border-b border-gray-100">
-                <td className="p-4 text-gray-700 font-medium">{item.queueNo}</td>
-                <td className="p-4 text-gray-700">{item.name}</td>
-                <td className="p-4 text-gray-700">{item.request}</td>
-                <td className="p-4">
-                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                    item.status === 'In Progress'
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-yellow-100 text-yellow-800'
-                  }`}>
-                    {item.status}
-                  </span>
+            {filteredQueue.length > 0 ? (
+              filteredQueue.map((item, index) => (
+                <tr key={item.sessionId} className="even:bg-yellow-50/50 border-b border-gray-100">
+                  <td className="p-4 text-gray-700 font-medium">#{item.position}</td>
+                  <td className="p-4 text-gray-700">{item.name}</td>
+                  <td className="p-4 text-gray-700">{item.document}</td>
+                  <td className="p-4">
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      item.position === 1
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {item.position === 1 ? 'In Progress' : 'Waiting'}
+                    </span>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={4} className="p-4 text-center text-gray-500">
+                  No applicants in queue
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
