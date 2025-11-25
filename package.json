@@ -9,6 +9,8 @@
   ],
   "scripts": {
     "install-all": "npm install && npm install --prefix frontend/server && npm install --prefix frontend/applicant && npm install --prefix frontend/counter && npm install --prefix backend",
+    "update-all": "npm update && npm update --prefix frontend/server && npm update --prefix frontend/applicant && npm update --prefix frontend/counter && npm update --prefix backend",
+    "audit-all": "npm audit fix && npm audit fix --prefix frontend/server && npm audit fix --prefix frontend/applicant && npm audit fix --prefix frontend/counter && npm audit fix --prefix backend",
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:frontend": "cd frontend && npm run dev:server",
     "dev:backend": "cd backend && npm run dev",
@@ -16,7 +18,9 @@
     "start:frontend": "cd frontend && npm run start:server",
     "start:backend": "cd backend && npm start",
     "build": "cd frontend && npm run build && cd ../backend && npm run build",
+    "build-all": "npm run build && echo ✅ All applications built successfully!",
     "server:start": "node scripts/server-start.js",
+    "server:start:prod": "node scripts/server-start.js --production",
     "server:stop": "node scripts/server-stop.js"
   },
   "devDependencies": {

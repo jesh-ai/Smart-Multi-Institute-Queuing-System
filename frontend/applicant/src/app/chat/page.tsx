@@ -1,11 +1,11 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import Header from "../../components/Header";
 import Status from "../../components/Status";
 
-export default function ChatInterface() {
+function ChatInterface() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -409,5 +409,13 @@ export default function ChatInterface() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function ChatPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ChatInterface />
+    </Suspense>
   );
 }

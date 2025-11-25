@@ -1,0 +1,221 @@
+{
+  "institute": {
+    "id": "dfa",
+    "name": "Department of Foreign Affairs",
+    "description": "Government agency responsible for foreign relations and passport issuance in the Philippines",
+    "services": [
+      "Passport Application",
+      "Passport Certifications (True Copy, Issuance, No Passport)"
+    ],
+    "intro": "I am the DFA assistant. I can help you with passport applications and record certifications."
+  },
+  "forms": [
+    {
+      "formId": "cert_adult",
+      "title": "Passport Record Certification Request Form (Adult)",
+      "purpose": "Request certified true copy, issuance, or no passport certificate",
+      "applicantTypes": [
+        "Adult Requestor"
+      ],
+      "requiredFields": [
+        "Request Details",
+        "Personal Info",
+        "Purpose",
+        "Signature",
+        "Contact Info"
+      ],
+      "conditionalLogic": [
+        "If 'true copy'/'issuance': Need Passport Details",
+        "If 'no passport': No Passport Details"
+      ],
+      "legalReferences": [
+        "Data Privacy Act of 2012"
+      ],
+      "filingRules": [
+        "3-5 working days",
+        "Fee: PHP 100",
+        "Valid ID required"
+      ],
+      "signatureRequirements": "Requestor signature required"
+    },
+    {
+      "formId": "passport_app",
+      "title": "Passport Application Form (DFA-OCA-PDO-02)",
+      "purpose": "Official passport application",
+      "applicantTypes": [
+        "Adult",
+        "Minor (<18)"
+      ],
+      "requiredFields": [
+        "App Type",
+        "Payment",
+        "Personal/Citizenship/Family Info",
+        "Address",
+        "Contact",
+        "Declaration"
+      ],
+      "conditionalLogic": [
+        "Married: Spouse Info",
+        "Minor: Companion Info",
+        "Foreign Cit: Acquisition Info",
+        "Renewal: Old Passport Info"
+      ],
+      "legalReferences": [
+        "R.A. 11983",
+        "R.A. 9225",
+        "Data Privacy Act"
+      ],
+      "filingRules": [
+        "No blank spaces (use N/A)",
+        "Personal appearance required",
+        "Fees: PHP 950-1300"
+      ],
+      "signatureRequirements": "Applicant/Parent Sig; DFA Staff Sigs"
+    },
+    {
+      "formId": "cert_minor",
+      "title": "Passport Record Certification Request Form for Minors",
+      "purpose": "Passport certifications for applicants <18",
+      "applicantTypes": [
+        "Parent",
+        "Legal Guardian",
+        "Auth. Relative"
+      ],
+      "requiredFields": [
+        "Request/Minor Info",
+        "Cert Type",
+        "Purpose",
+        "Guardian Sig",
+        "Relationship",
+        "Contact"
+      ],
+      "conditionalLogic": [
+        "'true copy'/'issuance': Need Passport Details",
+        "'no passport': 'NA' in details",
+        "Other relation: Specify",
+        "DOB <= Today-18y"
+      ],
+      "legalReferences": [
+        "New Passport Law",
+        "Family Code"
+      ],
+      "filingRules": [
+        "PSA Birth Cert required",
+        "Guardian ID required",
+        "Guardianship papers if applicable"
+      ],
+      "signatureRequirements": "Parent/Guardian signature required"
+    }
+  ],
+  "faq": {
+    "appointment_booking": {
+      "q": "First step for passport application?",
+      "a": "Secure online appointment via DFA website."
+    },
+    "form_availability": {
+      "q": "Where to get application form?",
+      "a": "Emailed after booking and payment."
+    },
+    "personal_appearance": {
+      "q": "Physical appearance required?",
+      "a": "Yes, must appear personally at Consular Office."
+    },
+    "new_adult_requirements": {
+      "q": "New applicant requirements?",
+      "a": "PSA Birth Certificate + 1 Valid Govt ID."
+    },
+    "data_correction": {
+      "q": "Incorrect info on form?",
+      "a": "Inform processor on appointment day with docs."
+    },
+    "minor_appearance": {
+      "q": "Can minor appear alone?",
+      "a": "No, must be with parent/guardian."
+    },
+    "cert_types": {
+      "q": "Types of certifications?",
+      "a": "True Copy, Issuance, or No Passport."
+    },
+    "cert_application_process": {
+      "q": "How to apply for cert?",
+      "a": "Email filled form + docs to DFA."
+    },
+    "cert_fee": {
+      "q": "Certification fee?",
+      "a": "PHP 100 at Consular Office."
+    },
+    "cert_timeline": {
+      "q": "Release time?",
+      "a": "Approx 5 working days."
+    },
+    "cert_no_passport_box": {
+      "q": "Box for no passport?",
+      "a": "Check 'Certificate of No Passport'."
+    },
+    "cert_form_fields": {
+      "q": "Required personal info?",
+      "a": "Name, DOB, POB, Sex, Purpose."
+    },
+    "cert_true_copy_reqs": {
+      "q": "Reqs for True Copy?",
+      "a": "Passport No, Issue Date/Place + Scanned Data Page."
+    },
+    "cert_minor_no_passport_reqs": {
+      "q": "Reqs for Minor No Passport?",
+      "a": "Birth Cert + Parent/Guardian ID."
+    },
+    "claiming_family": {
+      "q": "Family claim allowed?",
+      "a": "Yes, with auth letter + IDs."
+    },
+    "claiming_representative": {
+      "q": "Non-family claim?",
+      "a": "Yes, with notarized SPA + IDs."
+    },
+    "status_check": {
+      "q": "Check status?",
+      "a": "DFA Tracker or contact Consular Office."
+    },
+    "unclaimed_policy": {
+      "q": "Unclaimed docs?",
+      "a": "Disposed after 3 months."
+    }
+  },
+  "faqLinks": {
+    "cert_adult": [
+      "cert_types",
+      "cert_application_process",
+      "cert_fee",
+      "cert_timeline",
+      "cert_no_passport_box",
+      "cert_form_fields",
+      "cert_true_copy_reqs",
+      "claiming_family",
+      "claiming_representative",
+      "unclaimed_policy"
+    ],
+    "passport_app": [
+      "appointment_booking",
+      "form_availability",
+      "personal_appearance",
+      "new_adult_requirements",
+      "data_correction",
+      "minor_appearance",
+      "status_check",
+      "unclaimed_policy"
+    ],
+    "cert_minor": [
+      "cert_types",
+      "cert_application_process",
+      "cert_fee",
+      "cert_timeline",
+      "cert_no_passport_box",
+      "cert_form_fields",
+      "cert_minor_no_passport_reqs",
+      "claiming_family",
+      "claiming_representative",
+      "unclaimed_policy"
+    ]
+  }
+}
+
