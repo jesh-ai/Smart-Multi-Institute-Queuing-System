@@ -31,7 +31,9 @@ export default function DashboardPage() {
         
 
         // Current Queue Status
-        const sessionRes = await fetch(`${BASE_URL}/queue`); // TODO: Fetch queue data
+        const sessionRes = await fetch(`${BASE_URL}/server/dashboard/queue`, {
+          credentials: 'include'
+        });
         const sessionText = await sessionRes.text();
         const sessionData = sessionText ? JSON.parse(sessionText) : {};
         setQueueData({
@@ -40,29 +42,37 @@ export default function DashboardPage() {
         });
 
         // Active users
-        const devicesRes = await fetch(`${BASE_URL}/users`); // TODO: Fetch active USERS data
+        const devicesRes = await fetch(`${BASE_URL}/server/dashboard/users`, {
+          credentials: 'include'
+        });
         const devicesText = await devicesRes.text();
         const devicesData = devicesText ? JSON.parse(devicesText) : [];
         setActiveUsers(Array.isArray(devicesData) ? devicesData.length : 0);
 
         // Connected devices
-        const connectedRes = await fetch(`${BASE_URL}/devices`); // DONE: fetch connected devices data
+        const connectedRes = await fetch(`${BASE_URL}/session/devices`, {
+          credentials: 'include'
+        });
         const connectedText = await connectedRes.text();
-        const connectedData = connectedText ? JSON.parse(connectedText) : [];
-        setConnectedDevices(Array.isArray(connectedData) ? connectedData.length : 0);
+        const connectedData = connectedText ? JSON.parse(connectedText) : {};
+        setConnectedDevices(Object.keys(connectedData).length);
 
         // Active counters
-        const countersRes = await fetch(`${BASE_URL}/counters`); // TODO: Fetch COUNTERS data
+        const countersRes = await fetch(`${BASE_URL}/counter/active`, {
+          credentials: 'include'
+        });
         const countersText = await countersRes.text();
         const countersData = countersText ? JSON.parse(countersText) : [];
         setActiveCounters(
           Array.isArray(countersData)
-            ? countersData.filter((c: { status: string }) => c.status?.toLowerCase() === "online").length
+            ? countersData.filter((c: { status: string }) => c.status?.toLowerCase() === "open").length
             : 0
         );
 
         // Summary Table
-        const summaryRes = await fetch(`${BASE_URL}/summary`); // TODO: Fetch summary data
+        const summaryRes = await fetch(`${BASE_URL}/server/dashboard/summary`, {
+          credentials: 'include'
+        });
         const summaryText = await summaryRes.text();
         const summaryData = summaryText ? JSON.parse(summaryText) : {};
         setSummary({

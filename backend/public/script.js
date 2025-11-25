@@ -250,7 +250,31 @@ const cardConfigs = [
     id: 'server-shutdown',
     title: 'Server Shutdown',
     description: 'Shutdown the entire server',
-    buttons: [{ label: 'Shutdown Server', endpoint: '/api/server/shutdown', method: 'POST' }]
+    buttons: [{ label: 'Shutdown Server', endpoint: '/api/server/shutdown', method: 'POST' }],
+    customClass: 'danger-card'
+  },
+  
+  // Dashboard Routes
+  {
+    id: 'dashboard-queue',
+    title: 'Dashboard - Queue Status',
+    description: 'Get queue data for dashboard (users in queue, next in line)',
+    buttons: [{ label: 'Get Queue Data', endpoint: '/api/server/dashboard/queue', method: 'GET' }],
+    customClass: 'dashboard-card'
+  },
+  {
+    id: 'dashboard-users',
+    title: 'Dashboard - Active Users',
+    description: 'Get list of active users for dashboard',
+    buttons: [{ label: 'Get Active Users', endpoint: '/api/server/dashboard/users', method: 'GET' }],
+    customClass: 'dashboard-card'
+  },
+  {
+    id: 'dashboard-summary',
+    title: 'Dashboard - Summary',
+    description: 'Get summary statistics (requests today, avg wait time, uptime)',
+    buttons: [{ label: 'Get Summary', endpoint: '/api/server/dashboard/summary', method: 'GET' }],
+    customClass: 'dashboard-card'
   },
   // {
   //   id: 'stats',

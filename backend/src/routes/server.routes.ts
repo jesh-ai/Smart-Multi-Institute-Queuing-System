@@ -1,15 +1,14 @@
 import express from "express";
-import { getIsServer, shutdownServer } from "../controllers/server.controller.js";
+import { getIsServer, shutdownServer, getDashboardQueue, getActiveUsers, getSummary } from "../controllers/server.controller.js";
 import { getQR } from "../controllers/qr.controller.js";
 
 const routes = express.Router();
 
 routes.get("/check", getIsServer);
-// routes.get("/dashboard")
-// routes.get("/devices");
-// routes.get("/session");
-// routes.get("/queue")
-routes.get("/qr", getQR)
+routes.get("/dashboard/queue", getDashboardQueue);
+routes.get("/dashboard/users", getActiveUsers);
+routes.get("/dashboard/summary", getSummary);
+routes.get("/qr", getQR);
 routes.post("/shutdown", shutdownServer);
 
 const serverRoutes = routes;

@@ -243,3 +243,53 @@ input, textarea {
   display: inline-block;
   margin-top: 4px;
 }
+
+/* Dashboard cards styling */
+.dashboard-card {
+  background: #ffcccb !important;
+  border-color: #ff9999 !important;
+}
+
+.dashboard-card h2 {
+  color: #8b0000 !important;
+  border-bottom-color: #ff9999 !important;
+}
+
+.dashboard-card .go-button {
+  background: #ff6b6b !important;
+  border-color: #ff6b6b !important;
+}
+
+.dashboard-card .go-button:hover {
+  background: #ee5a5a !important;
+  border-color: #ee5a5a !important;
+}
+
+.dashboard-card .api-info {
+  background: #fff5f5 !important;
+  border-color: #ffb3b3 !important;
+}
+
+.dashboard-card .response {
+  background: #fff5f5 !important;
+  border-color: #ffb3b3 !important;
+}
+
+/* Danger card for server shutdown */
+.danger-card {
+  background: #ffe5e5 !important;
+  border: 2px solid #dc2626 !important;
+}
+
+.danger-card h2 {
+  color: #dc2626 !important;
+}
+
+.danger-card .go-button {
+  background: #dc2626 !important;
+  border-color: #dc2626 !important;
+}
+
+.danger-card .go-button:hover {
+  background: #b91c1c !important;
+}
