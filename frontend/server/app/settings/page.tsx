@@ -6,9 +6,14 @@ import { Power } from "lucide-react";
 export default function SettingsPage() {
   
   const handleShutdown = async () => {
+    if (!confirm('Are you sure you want to shut down the server? This will disconnect all users.')) {
+      return;
+    }
+
     try {
-      const response = await fetch('http://localhost:4000/api/shutdown', {
+      const response = await fetch('http://localhost:4000/api/server/shutdown', {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -18,12 +23,12 @@ export default function SettingsPage() {
         console.log("Server shutdown initiated successfully");
         alert("Server shutdown initiated. The page will become unavailable shortly.");
       } else {
-        console.log('Missing API for /api/shutdown - shutdown button clicked');
-        alert("Shutdown API not available");
+        console.error('Failed to shutdown server');
+        alert("Failed to shutdown server");
       }
     } catch (error) {
-      console.log('Missing API for /api/shutdown - fetch failed:', error);
-      alert("Failed to contact shutdown API");
+      console.error('Error shutting down server:', error);
+      alert("Error shutting down server");
     }
   };
 
