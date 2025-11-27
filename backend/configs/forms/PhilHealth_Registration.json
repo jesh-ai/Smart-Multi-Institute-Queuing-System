@@ -1,0 +1,263 @@
+{
+  "institution": {
+    "id": "philhealth",
+    "name": "Philippine Health Insurance Corporation",
+    "code": "PhilHealth",
+    "description": "National health insurance program of the Philippines"
+  },
+  "form": {
+    "id": "philhealth_registration",
+    "formNumber": "PMRF",
+    "title": "PhilHealth Member Registration Form",
+    "officialTitle": "PhilHealth Member Registration Form (PMRF)",
+    "description": "For registration as PhilHealth member",
+    "category": "Membership",
+    "version": "2024",
+    "sections": [
+      {
+        "id": "member_type",
+        "name": "Member Type",
+        "fields": [
+          {
+            "id": "membership_type",
+            "label": "Membership Type",
+            "fieldType": "radio",
+            "required": true,
+            "options": [
+              {"value": "direct_contributor", "label": "Direct Contributor (Employed/Self-Employed)"},
+              {"value": "indirect_contributor", "label": "Indirect Contributor (Dependent)"},
+              {"value": "sponsored", "label": "Sponsored Member (Indigent)"}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "personal_information",
+        "name": "Personal Information",
+        "fields": [
+          {
+            "id": "last_name",
+            "label": "Last Name",
+            "fieldType": "text",
+            "required": true,
+            "validation": {"pattern": "^[A-Za-z\\s\\-]+$", "maxLength": 50}
+          },
+          {
+            "id": "first_name",
+            "label": "First Name",
+            "fieldType": "text",
+            "required": true,
+            "validation": {"pattern": "^[A-Za-z\\s\\-]+$", "maxLength": 50}
+          },
+          {
+            "id": "middle_name",
+            "label": "Middle Name",
+            "fieldType": "text",
+            "required": false,
+            "validation": {"pattern": "^[A-Za-z\\s\\-]+$", "maxLength": 50}
+          },
+          {
+            "id": "suffix",
+            "label": "Suffix",
+            "fieldType": "text",
+            "required": false,
+            "validation": {"maxLength": 10}
+          },
+          {
+            "id": "birth_date",
+            "label": "Date of Birth",
+            "fieldType": "date",
+            "required": true,
+            "format": "MM/DD/YYYY"
+          },
+          {
+            "id": "gender",
+            "label": "Gender",
+            "fieldType": "radio",
+            "required": true,
+            "options": [
+              {"value": "male", "label": "Male"},
+              {"value": "female", "label": "Female"}
+            ]
+          },
+          {
+            "id": "civil_status",
+            "label": "Civil Status",
+            "fieldType": "select",
+            "required": true,
+            "options": [
+              {"value": "single", "label": "Single"},
+              {"value": "married", "label": "Married"},
+              {"value": "widowed", "label": "Widowed"},
+              {"value": "separated", "label": "Separated"}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "contact_information",
+        "name": "Contact Information",
+        "fields": [
+          {
+            "id": "mobile_number",
+            "label": "Mobile Number",
+            "fieldType": "tel",
+            "required": true,
+            "pattern": "09[0-9]{9}",
+            "placeholder": "09171234567"
+          },
+          {
+            "id": "email",
+            "label": "Email Address",
+            "fieldType": "email",
+            "required": false,
+            "validation": {"maxLength": 100}
+          },
+          {
+            "id": "permanent_address_line1",
+            "label": "Permanent Address - House/Unit No., Building, Street",
+            "fieldType": "text",
+            "required": true,
+            "validation": {"maxLength": 150}
+          },
+          {
+            "id": "permanent_address_barangay",
+            "label": "Barangay",
+            "fieldType": "text",
+            "required": true,
+            "validation": {"maxLength": 100}
+          },
+          {
+            "id": "permanent_address_city",
+            "label": "City/Municipality",
+            "fieldType": "text",
+            "required": true,
+            "validation": {"maxLength": 100}
+          },
+          {
+            "id": "permanent_address_province",
+            "label": "Province",
+            "fieldType": "text",
+            "required": true,
+            "validation": {"maxLength": 100}
+          },
+          {
+            "id": "permanent_address_zipcode",
+            "label": "ZIP Code",
+            "fieldType": "text",
+            "required": true,
+            "pattern": "[0-9]{4}"
+          }
+        ]
+      },
+      {
+        "id": "employment_information",
+        "name": "Employment Information (for Direct Contributors)",
+        "fields": [
+          {
+            "id": "employment_status",
+            "label": "Employment Status",
+            "fieldType": "select",
+            "required": false,
+            "options": [
+              {"value": "employed_private", "label": "Employed - Private"},
+              {"value": "employed_government", "label": "Employed - Government"},
+              {"value": "self_employed", "label": "Self-Employed"},
+              {"value": "ofw", "label": "Overseas Filipino Worker (OFW)"},
+              {"value": "professional", "label": "Professional Practitioner"}
+            ]
+          },
+          {
+            "id": "employer_name",
+            "label": "Employer Name",
+            "fieldType": "text",
+            "required": false,
+            "validation": {"maxLength": 150}
+          },
+          {
+            "id": "employer_address",
+            "label": "Employer Address",
+            "fieldType": "text",
+            "required": false,
+            "validation": {"maxLength": 200}
+          },
+          {
+            "id": "monthly_salary",
+            "label": "Monthly Salary/Income",
+            "fieldType": "number",
+            "required": false,
+            "validation": {"min": 0}
+          }
+        ]
+      },
+      {
+        "id": "dependent_information",
+        "name": "Dependent Information (for Indirect Contributors)",
+        "fields": [
+          {
+            "id": "principal_member_pin",
+            "label": "Principal Member's PhilHealth Identification Number (PIN)",
+            "fieldType": "text",
+            "required": false,
+            "pattern": "[0-9]{12}",
+            "placeholder": "123456789012"
+          },
+          {
+            "id": "relationship_to_principal",
+            "label": "Relationship to Principal Member",
+            "fieldType": "select",
+            "required": false,
+            "options": [
+              {"value": "spouse", "label": "Spouse"},
+              {"value": "child", "label": "Child"},
+              {"value": "parent", "label": "Parent"}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "priority_information",
+        "name": "Priority Lane Eligibility",
+        "fields": [
+          {
+            "id": "is_senior_citizen",
+            "label": "Senior Citizen (60 years old and above)",
+            "fieldType": "checkbox",
+            "required": false
+          },
+          {
+            "id": "is_pwd",
+            "label": "Person with Disability (PWD)",
+            "fieldType": "checkbox",
+            "required": false
+          },
+          {
+            "id": "is_pregnant",
+            "label": "Pregnant",
+            "fieldType": "checkbox",
+            "required": false
+          }
+        ]
+      }
+    ],
+    "documentaryRequirements": [
+      "Original and photocopy of PSA Birth Certificate",
+      "Valid government-issued ID with photo and signature",
+      "Marriage Certificate (for married members)",
+      "Certificate of Employment or Business Permit (for employed/self-employed)",
+      "Accomplished PMRF"
+    ],
+    "fees": [
+      {
+        "item": "Individual Membership",
+        "amount": "Varies based on income bracket",
+        "currency": "PHP"
+      }
+    ]
+  },
+  "metadata": {
+    "version": "1.0",
+    "lastUpdated": "2024-11-27",
+    "coverage": "Universal Health Care"
+  }
+}

@@ -1,42 +1,47 @@
 {
-  "name": "Bureau of Internal Revenue",
-  "welcome_message": "Government agency responsible for tax collection in the Philippines",
+  "name": "Multi-Institute Service Center",
+  "welcome_message": "Unified service center for Department of Foreign Affairs (DFA) and Philippine Health Insurance Corporation (PhilHealth)",
   "service_list": [
     {
       "requirements": [
-        "High School Diploma",
-        "Certificate of Good Moral Character",
-        "Birth Certificate (PSA)",
-        "2x2 ID Picture (2 copies)",
-        "Medical Clearance",
-        "Entrance Exam Result"
+        "Original and photocopy of PSA Birth Certificate",
+        "Valid government-issued ID",
+        "Marriage Certificate (if applicable)",
+        "Passport appointment confirmation"
       ],
-      "name": "Application for Registration BIR Form No. 1901",
-      "form": "forms/BIR_Form_1901.json"
+      "name": "DFA - New Passport Application",
+      "form": "forms/DFA_Passport_New.json"
     },
     {
       "requirements": [
-        "High School Diploma",
-        "Certificate of Good Moral Character",
-        "Birth Certificate (PSA)",
-        "2x2 ID Picture (2 copies)",
-        "Medical Clearance",
-        "Entrance Exam Result"
+        "Current/expired passport",
+        "Valid government-issued ID",
+        "Marriage Certificate (if there's a change in civil status)",
+        "Passport appointment confirmation"
       ],
-      "name": "Application for Registration BIR Form No. 1902",
-      "form": "forms/BIR_Form_1902.json"
+      "name": "DFA - Passport Renewal",
+      "form": "forms/DFA_Passport_Renewal.json"
     },
     {
       "requirements": [
-        "High School Diploma",
-        "Certificate of Good Moral Character",
-        "Birth Certificate (PSA)",
-        "2x2 ID Picture (2 copies)",
-        "Medical Clearance",
-        "Entrance Exam Result"
+        "Original and photocopy of PSA Birth Certificate",
+        "Valid government-issued ID with photo and signature",
+        "Marriage Certificate (for married members)",
+        "Certificate of Employment or Business Permit (for employed/self-employed)",
+        "Accomplished PMRF"
       ],
-      "name": "Application for Registration BIR Form No. 1903",
-      "form": "forms/BIR_Form_1903.json"
+      "name": "PhilHealth - Member Registration",
+      "form": "forms/PhilHealth_Registration.json"
+    },
+    {
+      "requirements": [
+        "Original PhilHealth ID or MDR",
+        "Valid government-issued ID",
+        "Supporting documents for the update (Birth Certificate, Marriage Certificate, etc.)",
+        "Accomplished MDR Update Form"
+      ],
+      "name": "PhilHealth - Member Data Record Update",
+      "form": "forms/PhilHealth_MDR_Update.json"
     }
   ],
   "privacy_notice": "privacy_notice.json"

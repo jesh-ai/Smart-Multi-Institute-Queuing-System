@@ -13,33 +13,41 @@ export default function RequestPage() {
   const [requests, setRequests] = useState<RequestChoice[]>([]);
 
   useEffect(() => {
-    // Fetch the choices from responses.json
-    fetch("/api/response-choices")
+    // Fetch the services from the backend
+    fetch("http://localhost:4000/api/institute/services")
       .then((res) => res.json())
-      .then((data) => {
-        const inquiry = data.inquiry as { Choices?: Record<string, unknown> };
-        const choices = inquiry?.Choices || {};
-        const requestList: RequestChoice[] = Object.values(choices).map(
-          (value) => ({
-            title: value as string,
-            desc: `Request for ${value}`,
-          })
-        );
+      .then((services) => {
+        const requestList: RequestChoice[] = services.map((service: { name: string; requirements: string[] }) => ({
+          title: service.name,
+          desc: `Request for ${service.name}`,
+        }));
+        // Add "Other" option at the end
+        requestList.push({
+          title: "Other",
+          desc: "Request for Other",
+        });
         setRequests(requestList);
       })
       .catch((err) => {
-        console.error("Failed to load responses.json", err);
+        console.error("Failed to load services", err);
         // Fallback to hardcoded values
         setRequests([
           {
-            title: "Passport Application Form",
-            desc: "Request for Passport Application Form",
+            title: "DFA - New Passport Application",
+            desc: "Request for DFA - New Passport Application",
           },
           {
-            title: "Passport Record Certification Request Form",
-            desc: "Request for Passport Record Certification Request Form",
+            title: "DFA - Passport Renewal",
+            desc: "Request for DFA - Passport Renewal",
           },
-          { title: "Clearance", desc: "Request for Clearance" },
+          {
+            title: "PhilHealth - Member Registration",
+            desc: "Request for PhilHealth - Member Registration",
+          },
+          {
+            title: "PhilHealth - Member Data Record Update",
+            desc: "Request for PhilHealth - Member Data Record Update",
+          },
           { title: "Other", desc: "Request for Other" },
         ]);
       });
@@ -68,7 +76,6 @@ export default function RequestPage() {
       router.push("/chat?message=Other");
     } else {
       // For other requests, navigate to requirements page with form parameter
-      console.log("Selected request:", request.title);
       router.push(`/requirements?form=${encodeURIComponent(request.title)}`);
     }
   };

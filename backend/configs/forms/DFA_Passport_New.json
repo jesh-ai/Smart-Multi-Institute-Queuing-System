@@ -1,0 +1,256 @@
+{
+  "institution": {
+    "id": "dfa",
+    "name": "Department of Foreign Affairs",
+    "code": "DFA",
+    "description": "Government agency responsible for foreign relations and consular services"
+  },
+  "form": {
+    "id": "dfa_passport_new",
+    "formNumber": "PASSPORT-NEW",
+    "title": "New Passport Application",
+    "officialTitle": "Application for New Philippine Passport",
+    "description": "For first-time passport applicants",
+    "category": "Passport Services",
+    "version": "2024",
+    "sections": [
+      {
+        "id": "personal_information",
+        "name": "Personal Information",
+        "fields": [
+          {
+            "id": "last_name",
+            "label": "Last Name",
+            "fieldType": "text",
+            "required": true,
+            "validation": {"pattern": "^[A-Za-z\\s\\-]+$", "maxLength": 50}
+          },
+          {
+            "id": "first_name",
+            "label": "First Name",
+            "fieldType": "text",
+            "required": true,
+            "validation": {"pattern": "^[A-Za-z\\s\\-]+$", "maxLength": 50}
+          },
+          {
+            "id": "middle_name",
+            "label": "Middle Name",
+            "fieldType": "text",
+            "required": false,
+            "validation": {"pattern": "^[A-Za-z\\s\\-]+$", "maxLength": 50}
+          },
+          {
+            "id": "suffix",
+            "label": "Suffix (Jr., Sr., III, etc.)",
+            "fieldType": "text",
+            "required": false,
+            "validation": {"maxLength": 10}
+          },
+          {
+            "id": "gender",
+            "label": "Gender",
+            "fieldType": "radio",
+            "required": true,
+            "options": [
+              {"value": "male", "label": "Male"},
+              {"value": "female", "label": "Female"}
+            ]
+          },
+          {
+            "id": "civil_status",
+            "label": "Civil Status",
+            "fieldType": "select",
+            "required": true,
+            "options": [
+              {"value": "single", "label": "Single"},
+              {"value": "married", "label": "Married"},
+              {"value": "widowed", "label": "Widowed"},
+              {"value": "divorced", "label": "Divorced/Annulled"},
+              {"value": "separated", "label": "Legally Separated"}
+            ]
+          },
+          {
+            "id": "birth_date",
+            "label": "Date of Birth",
+            "fieldType": "date",
+            "required": true,
+            "format": "MM/DD/YYYY"
+          },
+          {
+            "id": "birth_place_city",
+            "label": "Place of Birth - City/Municipality",
+            "fieldType": "text",
+            "required": true,
+            "validation": {"maxLength": 100}
+          },
+          {
+            "id": "birth_place_province",
+            "label": "Place of Birth - Province/State",
+            "fieldType": "text",
+            "required": true,
+            "validation": {"maxLength": 100}
+          },
+          {
+            "id": "birth_place_country",
+            "label": "Place of Birth - Country",
+            "fieldType": "text",
+            "required": true,
+            "validation": {"maxLength": 100}
+          }
+        ]
+      },
+      {
+        "id": "contact_information",
+        "name": "Contact Information",
+        "fields": [
+          {
+            "id": "mobile_number",
+            "label": "Mobile Number",
+            "fieldType": "tel",
+            "required": true,
+            "pattern": "09[0-9]{9}",
+            "placeholder": "09171234567"
+          },
+          {
+            "id": "email",
+            "label": "Email Address",
+            "fieldType": "email",
+            "required": true,
+            "validation": {"maxLength": 100}
+          },
+          {
+            "id": "home_address_line1",
+            "label": "Home Address - House/Unit No., Building, Street",
+            "fieldType": "text",
+            "required": true,
+            "validation": {"maxLength": 150}
+          },
+          {
+            "id": "home_address_barangay",
+            "label": "Barangay",
+            "fieldType": "text",
+            "required": true,
+            "validation": {"maxLength": 100}
+          },
+          {
+            "id": "home_address_city",
+            "label": "City/Municipality",
+            "fieldType": "text",
+            "required": true,
+            "validation": {"maxLength": 100}
+          },
+          {
+            "id": "home_address_province",
+            "label": "Province",
+            "fieldType": "text",
+            "required": true,
+            "validation": {"maxLength": 100}
+          },
+          {
+            "id": "home_address_zipcode",
+            "label": "ZIP Code",
+            "fieldType": "text",
+            "required": true,
+            "pattern": "[0-9]{4}",
+            "validation": {"maxLength": 4}
+          }
+        ]
+      },
+      {
+        "id": "parent_information",
+        "name": "Parent Information",
+        "fields": [
+          {
+            "id": "father_last_name",
+            "label": "Father's Last Name",
+            "fieldType": "text",
+            "required": true,
+            "validation": {"pattern": "^[A-Za-z\\s\\-]+$", "maxLength": 50}
+          },
+          {
+            "id": "father_first_name",
+            "label": "Father's First Name",
+            "fieldType": "text",
+            "required": true,
+            "validation": {"pattern": "^[A-Za-z\\s\\-]+$", "maxLength": 50}
+          },
+          {
+            "id": "father_middle_name",
+            "label": "Father's Middle Name",
+            "fieldType": "text",
+            "required": false,
+            "validation": {"pattern": "^[A-Za-z\\s\\-]+$", "maxLength": 50}
+          },
+          {
+            "id": "mother_maiden_last_name",
+            "label": "Mother's Maiden Last Name",
+            "fieldType": "text",
+            "required": true,
+            "validation": {"pattern": "^[A-Za-z\\s\\-]+$", "maxLength": 50}
+          },
+          {
+            "id": "mother_first_name",
+            "label": "Mother's First Name",
+            "fieldType": "text",
+            "required": true,
+            "validation": {"pattern": "^[A-Za-z\\s\\-]+$", "maxLength": 50}
+          },
+          {
+            "id": "mother_middle_name",
+            "label": "Mother's Middle Name",
+            "fieldType": "text",
+            "required": false,
+            "validation": {"pattern": "^[A-Za-z\\s\\-]+$", "maxLength": 50}
+          }
+        ]
+      },
+      {
+        "id": "priority_information",
+        "name": "Priority Lane Eligibility",
+        "fields": [
+          {
+            "id": "is_senior_citizen",
+            "label": "Senior Citizen (60 years old and above)",
+            "fieldType": "checkbox",
+            "required": false
+          },
+          {
+            "id": "is_pwd",
+            "label": "Person with Disability (PWD)",
+            "fieldType": "checkbox",
+            "required": false
+          },
+          {
+            "id": "is_pregnant",
+            "label": "Pregnant",
+            "fieldType": "checkbox",
+            "required": false
+          }
+        ]
+      }
+    ],
+    "documentaryRequirements": [
+      "Original and photocopy of PSA Birth Certificate",
+      "Valid government-issued ID",
+      "Marriage Certificate (if applicable)",
+      "Passport appointment confirmation"
+    ],
+    "fees": [
+      {
+        "item": "Regular Processing (20-25 working days)",
+        "amount": 950.00,
+        "currency": "PHP"
+      },
+      {
+        "item": "Express Processing (10-12 working days)",
+        "amount": 1200.00,
+        "currency": "PHP"
+      }
+    ]
+  },
+  "metadata": {
+    "version": "1.0",
+    "lastUpdated": "2024-11-27",
+    "validityPeriod": "10 years"
+  }
+}
