@@ -15,6 +15,11 @@ declare module "express-session" {
     lastSeen?: string;
     lastPath?: string,
 
+    currentForm?: {
+      formReference: string;
+      startedAt: string;
+    };
+
     applicant?: {
       name?: string,
       document?: string,
@@ -23,7 +28,10 @@ declare module "express-session" {
       dateServed?: string;
       closedServed?: string;
       feedbackChoice?: string;
-      feedbackComments?: string
+      feedbackComments?: string;
+      formResponses?: {
+        [fieldId: string]: any;
+      };
     };
 
     counter?: {

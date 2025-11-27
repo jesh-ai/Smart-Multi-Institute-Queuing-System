@@ -27,13 +27,11 @@ export default function QueuePage() {
         });
         if (response.ok) {
           const data = await response.json();
-          setQueueData(data);
+          setQueueData(Array.isArray(data) ? data : []);
         } else {
-          console.log('Failed to fetch queue data from /api/queue/all');
           setQueueData([]);
         }
       } catch (error) {
-        console.log('Failed to fetch queue data:', error);
         setQueueData([]);
       }
     };
@@ -120,7 +118,6 @@ export default function QueuePage() {
                 <th>Name</th>
                 <th>Request</th>
                 <th>Assigned Counter</th>
-                {/* --- THIS LINE IS UPDATED --- */}
                 <th className="text-center">Status</th>
               </tr>
             </thead>
@@ -131,7 +128,6 @@ export default function QueuePage() {
                   <td>{item.name}</td>
                   <td>{item.request}</td>
                   <td>{item.counter}</td>
-                  {/* --- THIS LINE IS UPDATED --- */}
                   <td className="text-center">
                     <QueueStatusBadge status={item.status} />
                   </td>

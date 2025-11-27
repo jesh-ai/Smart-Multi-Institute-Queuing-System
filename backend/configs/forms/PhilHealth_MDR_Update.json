@@ -1,0 +1,192 @@
+{
+  "institution": {
+    "id": "philhealth",
+    "name": "Philippine Health Insurance Corporation",
+    "code": "PhilHealth",
+    "description": "National health insurance program of the Philippines"
+  },
+  "form": {
+    "id": "philhealth_mdr",
+    "formNumber": "MDR",
+    "title": "PhilHealth Member Data Record",
+    "officialTitle": "Member Data Record (MDR) Update Form",
+    "description": "For updating member information",
+    "category": "Membership Update",
+    "version": "2024",
+    "sections": [
+      {
+        "id": "member_information",
+        "name": "Member Information",
+        "fields": [
+          {
+            "id": "pin",
+            "label": "PhilHealth Identification Number (PIN)",
+            "fieldType": "text",
+            "required": true,
+            "pattern": "[0-9]{12}",
+            "placeholder": "123456789012"
+          },
+          {
+            "id": "update_reason",
+            "label": "Reason for Update",
+            "fieldType": "select",
+            "required": true,
+            "options": [
+              {"value": "change_name", "label": "Change of Name"},
+              {"value": "change_address", "label": "Change of Address"},
+              {"value": "change_status", "label": "Change of Civil Status"},
+              {"value": "change_employer", "label": "Change of Employer"},
+              {"value": "change_membership", "label": "Change of Membership Type"},
+              {"value": "correct_info", "label": "Correction of Information"}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "personal_information",
+        "name": "Personal Information",
+        "fields": [
+          {
+            "id": "last_name",
+            "label": "Last Name",
+            "fieldType": "text",
+            "required": true,
+            "validation": {"pattern": "^[A-Za-z\\s\\-]+$", "maxLength": 50}
+          },
+          {
+            "id": "first_name",
+            "label": "First Name",
+            "fieldType": "text",
+            "required": true,
+            "validation": {"pattern": "^[A-Za-z\\s\\-]+$", "maxLength": 50}
+          },
+          {
+            "id": "middle_name",
+            "label": "Middle Name",
+            "fieldType": "text",
+            "required": false,
+            "validation": {"pattern": "^[A-Za-z\\s\\-]+$", "maxLength": 50}
+          },
+          {
+            "id": "birth_date",
+            "label": "Date of Birth",
+            "fieldType": "date",
+            "required": true,
+            "format": "MM/DD/YYYY"
+          },
+          {
+            "id": "civil_status",
+            "label": "Civil Status",
+            "fieldType": "select",
+            "required": true,
+            "options": [
+              {"value": "single", "label": "Single"},
+              {"value": "married", "label": "Married"},
+              {"value": "widowed", "label": "Widowed"},
+              {"value": "separated", "label": "Separated"}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "contact_information",
+        "name": "Updated Contact Information",
+        "fields": [
+          {
+            "id": "mobile_number",
+            "label": "Mobile Number",
+            "fieldType": "tel",
+            "required": true,
+            "pattern": "09[0-9]{9}",
+            "placeholder": "09171234567"
+          },
+          {
+            "id": "email",
+            "label": "Email Address",
+            "fieldType": "email",
+            "required": false,
+            "validation": {"maxLength": 100}
+          },
+          {
+            "id": "address_line1",
+            "label": "Address - House/Unit No., Building, Street",
+            "fieldType": "text",
+            "required": true,
+            "validation": {"maxLength": 150}
+          },
+          {
+            "id": "address_barangay",
+            "label": "Barangay",
+            "fieldType": "text",
+            "required": true,
+            "validation": {"maxLength": 100}
+          },
+          {
+            "id": "address_city",
+            "label": "City/Municipality",
+            "fieldType": "text",
+            "required": true,
+            "validation": {"maxLength": 100}
+          },
+          {
+            "id": "address_province",
+            "label": "Province",
+            "fieldType": "text",
+            "required": true,
+            "validation": {"maxLength": 100}
+          },
+          {
+            "id": "address_zipcode",
+            "label": "ZIP Code",
+            "fieldType": "text",
+            "required": true,
+            "pattern": "[0-9]{4}"
+          }
+        ]
+      },
+      {
+        "id": "priority_information",
+        "name": "Priority Lane Eligibility",
+        "fields": [
+          {
+            "id": "is_senior_citizen",
+            "label": "Senior Citizen (60 years old and above)",
+            "fieldType": "checkbox",
+            "required": false
+          },
+          {
+            "id": "is_pwd",
+            "label": "Person with Disability (PWD)",
+            "fieldType": "checkbox",
+            "required": false
+          },
+          {
+            "id": "is_pregnant",
+            "label": "Pregnant",
+            "fieldType": "checkbox",
+            "required": false
+          }
+        ]
+      }
+    ],
+    "documentaryRequirements": [
+      "Original PhilHealth ID or MDR",
+      "Valid government-issued ID",
+      "Supporting documents for the update (Birth Certificate, Marriage Certificate, etc.)",
+      "Accomplished MDR Update Form"
+    ],
+    "fees": [
+      {
+        "item": "MDR Update",
+        "amount": 0,
+        "currency": "PHP",
+        "description": "Free of charge"
+      }
+    ]
+  },
+  "metadata": {
+    "version": "1.0",
+    "lastUpdated": "2024-11-27",
+    "processingTime": "5-10 working days"
+  }
+}

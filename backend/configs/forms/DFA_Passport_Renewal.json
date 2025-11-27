@@ -1,0 +1,180 @@
+{
+  "institution": {
+    "id": "dfa",
+    "name": "Department of Foreign Affairs",
+    "code": "DFA",
+    "description": "Government agency responsible for foreign relations and consular services"
+  },
+  "form": {
+    "id": "dfa_passport_renewal",
+    "formNumber": "PASSPORT-RENEWAL",
+    "title": "Passport Renewal",
+    "officialTitle": "Application for Passport Renewal",
+    "description": "For renewal of existing Philippine passport",
+    "category": "Passport Services",
+    "version": "2024",
+    "sections": [
+      {
+        "id": "personal_information",
+        "name": "Personal Information",
+        "fields": [
+          {
+            "id": "passport_number",
+            "label": "Current Passport Number",
+            "fieldType": "text",
+            "required": true,
+            "pattern": "^[A-Z]{2}[0-9]{7}$",
+            "placeholder": "XX1234567"
+          },
+          {
+            "id": "last_name",
+            "label": "Last Name",
+            "fieldType": "text",
+            "required": true,
+            "validation": {"pattern": "^[A-Za-z\\s\\-]+$", "maxLength": 50}
+          },
+          {
+            "id": "first_name",
+            "label": "First Name",
+            "fieldType": "text",
+            "required": true,
+            "validation": {"pattern": "^[A-Za-z\\s\\-]+$", "maxLength": 50}
+          },
+          {
+            "id": "middle_name",
+            "label": "Middle Name",
+            "fieldType": "text",
+            "required": false,
+            "validation": {"pattern": "^[A-Za-z\\s\\-]+$", "maxLength": 50}
+          },
+          {
+            "id": "birth_date",
+            "label": "Date of Birth",
+            "fieldType": "date",
+            "required": true,
+            "format": "MM/DD/YYYY"
+          },
+          {
+            "id": "passport_expiry_date",
+            "label": "Current Passport Expiry Date",
+            "fieldType": "date",
+            "required": true,
+            "format": "MM/DD/YYYY"
+          }
+        ]
+      },
+      {
+        "id": "contact_information",
+        "name": "Contact Information",
+        "fields": [
+          {
+            "id": "mobile_number",
+            "label": "Mobile Number",
+            "fieldType": "tel",
+            "required": true,
+            "pattern": "09[0-9]{9}",
+            "placeholder": "09171234567"
+          },
+          {
+            "id": "email",
+            "label": "Email Address",
+            "fieldType": "email",
+            "required": true,
+            "validation": {"maxLength": 100}
+          },
+          {
+            "id": "home_address_line1",
+            "label": "Home Address - House/Unit No., Building, Street",
+            "fieldType": "text",
+            "required": true,
+            "validation": {"maxLength": 150}
+          },
+          {
+            "id": "home_address_city",
+            "label": "City/Municipality",
+            "fieldType": "text",
+            "required": true,
+            "validation": {"maxLength": 100}
+          },
+          {
+            "id": "home_address_province",
+            "label": "Province",
+            "fieldType": "text",
+            "required": true,
+            "validation": {"maxLength": 100}
+          },
+          {
+            "id": "home_address_zipcode",
+            "label": "ZIP Code",
+            "fieldType": "text",
+            "required": true,
+            "pattern": "[0-9]{4}"
+          }
+        ]
+      },
+      {
+        "id": "renewal_type",
+        "name": "Renewal Type",
+        "fields": [
+          {
+            "id": "processing_type",
+            "label": "Processing Type",
+            "fieldType": "radio",
+            "required": true,
+            "options": [
+              {"value": "regular", "label": "Regular (20-25 working days) - PHP 950"},
+              {"value": "express", "label": "Express (10-12 working days) - PHP 1,200"}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "priority_information",
+        "name": "Priority Lane Eligibility",
+        "fields": [
+          {
+            "id": "is_senior_citizen",
+            "label": "Senior Citizen (60 years old and above)",
+            "fieldType": "checkbox",
+            "required": false
+          },
+          {
+            "id": "is_pwd",
+            "label": "Person with Disability (PWD)",
+            "fieldType": "checkbox",
+            "required": false
+          },
+          {
+            "id": "is_pregnant",
+            "label": "Pregnant",
+            "fieldType": "checkbox",
+            "required": false
+          }
+        ]
+      }
+    ],
+    "documentaryRequirements": [
+      "Current/expired passport",
+      "Valid government-issued ID",
+      "Marriage Certificate (if there's a change in civil status)",
+      "Passport appointment confirmation"
+    ],
+    "fees": [
+      {
+        "item": "Regular Processing (20-25 working days)",
+        "amount": 950.00,
+        "currency": "PHP"
+      },
+      {
+        "item": "Express Processing (10-12 working days)",
+        "amount": 1200.00,
+        "currency": "PHP"
+      }
+    ]
+  },
+  "metadata": {
+    "version": "1.0",
+    "lastUpdated": "2024-11-27",
+    "validityPeriod": "10 years"
+  }
+}
