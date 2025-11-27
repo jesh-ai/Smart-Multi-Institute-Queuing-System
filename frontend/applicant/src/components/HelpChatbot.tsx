@@ -20,7 +20,30 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
   const [input, setInput] = useState("");
   const [quickReplies, setQuickReplies] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+  const [sessionId] = useState(() => {
+    // Generate or retrieve session ID
+    if (typeof window !== "undefined") {
+      let id = sessionStorage.getItem("helpChatSessionId");
+      if (!id) {
+        id = `help_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        sessionStorage.setItem("helpChatSessionId", id);
+      }
+      return id;
+    }
+    return `help_${Date.now()}`;
+  });
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Detect if desktop
+  useEffect(() => {
+    const checkDesktop = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+    checkDesktop();
+    window.addEventListener("resize", checkDesktop);
+    return () => window.removeEventListener("resize", checkDesktop);
+  }, []);
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -32,20 +55,31 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
     const fetchInitialResponse = async () => {
       try {
         const apiResponse = await fetch(
-          `/api/get-response?message=${encodeURIComponent(
-            "I would like to inquire"
-          )}`
+          `http://localhost:4000/api/sendMessage/${sessionId}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ message: "I would like to inquire" }),
+          }
         );
         const response = await apiResponse.json();
-        if (response.choices && response.choices.length > 0) {
-          setQuickReplies(response.choices);
+        if (response.success && response.botResponse.Choices) {
+          const choices: string[] = [];
+          Object.keys(response.botResponse.Choices).forEach((key) => {
+            if (response.botResponse.Choices[key]) {
+              choices.push(response.botResponse.Choices[key]);
+            }
+          });
+          setQuickReplies(choices);
         }
       } catch (error) {
         console.error("Error fetching initial response:", error);
       }
     };
     fetchInitialResponse();
-  }, []);
+  }, [sessionId]);
 
   const handleSend = async (
     text: string,
@@ -59,47 +93,55 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
     setIsLoading(true);
 
     try {
-      // Fetch response from API
+      // Fetch response from backend AI
       const apiResponse = await fetch(
-        `/api/get-response?message=${encodeURIComponent(text)}`
+        `http://localhost:4000/api/sendMessage/${sessionId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ message: text }),
+        }
       );
       if (!apiResponse.ok) throw new Error("Failed to fetch response");
       const response = await apiResponse.json();
 
-      if (response.error) {
+      if (!response.success) {
         // Handle error
         setMessages((prev) => [
           ...prev,
           {
             sender: "bot",
-            text: response.error || "Sorry, something went wrong.",
+            text: "Sorry, something went wrong.",
           },
         ]);
       } else {
+        const botResponse = response.botResponse;
+
         // Add bot response
         setMessages((prev) => [
           ...prev,
-          { sender: "bot", text: response.message || "No response." },
+          { sender: "bot", text: botResponse.Message || "No response." },
         ]);
 
         // Update quick replies if available
-        if (response.choices && response.choices.length > 0) {
-          setQuickReplies(response.choices);
+        if (botResponse.Choices) {
+          const choices: string[] = [];
+          Object.keys(botResponse.Choices).forEach((key) => {
+            if (botResponse.Choices[key]) {
+              choices.push(botResponse.Choices[key]);
+            }
+          });
+          if (choices.length > 0) {
+            setQuickReplies(choices);
+          } else {
+            setQuickReplies([]);
+          }
         } else {
           setQuickReplies([]);
         }
       }
-
-      // Save interaction to backend
-      await fetch("/api/save-interaction", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userMessage: text,
-          botResponse: response.message || "No response.",
-          interactionType: messageType,
-        }),
-      });
     } catch (error) {
       console.error("Error sending message:", error);
       setMessages((prev) => [
@@ -145,7 +187,11 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
             {messages.map((msg, index) => (
               <div
                 key={index}
-                className={`px-4 py-2 rounded-2xl max-w-[70%] text-sm leading-snug ${
+                className={`px-4 py-2 rounded-2xl ${
+                  isDesktop
+                    ? "max-w-[60%] text-xl leading-relaxed"
+                    : "max-w-[70%] text-sm leading-snug"
+                } ${
                   msg.sender === "user"
                     ? "bg-[#34495E] text-white ml-auto"
                     : "bg-gray-200 text-black"
@@ -155,7 +201,13 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
               </div>
             ))}
             {isLoading && (
-              <div className="px-4 py-2 rounded-2xl max-w-[70%] text-sm leading-snug bg-gray-200 text-black">
+              <div
+                className={`px-4 py-2 rounded-2xl ${
+                  isDesktop
+                    ? "max-w-[60%] text-xl leading-relaxed"
+                    : "max-w-[70%] text-sm leading-snug"
+                } bg-gray-200 text-black`}
+              >
                 <div className="flex space-x-2">
                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100"></div>
@@ -174,7 +226,9 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
                   <button
                     key={index}
                     onClick={() => handleSend(reply, "closed")}
-                    className="px-4 py-1.5 rounded-full text-sm bg-white text-black border-2 border-[#34495E] hover:bg-gray-100"
+                    className={`px-4 py-1.5 rounded-full ${
+                      isDesktop ? "text-lg" : "text-sm"
+                    } bg-white text-black border-2 border-[#34495E] hover:bg-gray-100`}
                   >
                     {reply}
                   </button>
