@@ -10,9 +10,11 @@ function ChatInterface() {
   const searchParams = useSearchParams();
 
   // Detect if desktop (1024px+)
-  const [isDesktop, setIsDesktop] = useState(false);
+  const [isDesktop, setIsDesktop] = useState<boolean | undefined>(undefined);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const checkDesktop = () => {
       setIsDesktop(window.innerWidth >= 1024);
     };
@@ -98,20 +100,20 @@ function ChatInterface() {
   const [isLoading, setIsLoading] = useState(false);
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [showStatus, setShowStatus] = useState(false);
+  const [applicantInfo, setApplicantInfo] = useState(null);
   const [viewportHeight, setViewportHeight] = useState<number>(0);
-  const [sessionId] = useState(() => {
-    // Generate or retrieve session ID
-    if (typeof window !== "undefined") {
-      let id = sessionStorage.getItem("chatSessionId");
-      if (!id) {
-        id = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        sessionStorage.setItem("chatSessionId", id);
-      }
-      return id;
-    }
-    return `session_${Date.now()}`;
-  });
+  const [sessionId, setSessionId] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Initialize session ID on client side only
+  useEffect(() => {
+    let id = sessionStorage.getItem("chatSessionId");
+    if (!id) {
+      id = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      sessionStorage.setItem("chatSessionId", id);
+    }
+    setSessionId(id);
+  }, []);
 
   // Track viewport height changes (keyboard open/close)
   useEffect(() => {
@@ -147,9 +149,22 @@ function ChatInterface() {
   useEffect(() => {
     const message = searchParams.get("message");
     const formCompleted = searchParams.get("formCompleted");
+    const urlSessionId = searchParams.get("sessionId");
 
     if (formCompleted === "true") {
       setShowStatus(true);
+
+      // Fetch applicant info if sessionId is provided
+      if (urlSessionId) {
+        fetch(`http://localhost:4000/api/applicant/info/${urlSessionId}`)
+          .then((res) => res.json())
+          .then((data) => {
+            setApplicantInfo(data);
+          })
+          .catch((err) => {
+            console.error("Failed to fetch applicant info:", err);
+          });
+      }
     } else if (message) {
       // Hide menu and send the message
       setShowMenu(false);
@@ -254,6 +269,15 @@ function ChatInterface() {
     }
   }, [isDesktop, searchParams]);
 
+  // Show loading state until mounted to prevent hydration mismatch
+  if (!mounted) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-white">
+        <div className="text-gray-600">Loading...</div>
+      </div>
+    );
+  }
+
   // If desktop menu mode requested and still showing menu, show the menu screen instead of chat
   if (isDesktop && showMenu) return <MenuScreen />;
 
@@ -284,7 +308,15 @@ function ChatInterface() {
       </div>
 
       {/* Status Component - shown as sticky chat bubble */}
-      {showStatus && <Status />}
+      {showStatus && (
+        <Status
+          queueNumber={applicantInfo?.queueNumber}
+          status={applicantInfo?.status}
+          counter={applicantInfo?.counter}
+          waitTime={applicantInfo?.waitTime}
+          message={applicantInfo?.message}
+        />
+      )}
 
       {/* Message Area - hide on desktop when form is completed */}
       {!(isDesktop && showStatus) && (

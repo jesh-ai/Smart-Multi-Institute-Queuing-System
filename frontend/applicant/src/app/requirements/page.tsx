@@ -7,23 +7,25 @@ function RequirementsPage() {
   const searchParams = useSearchParams();
   const [requirements, setRequirements] = useState<string[]>([]);
   const [formName, setFormName] = useState<string>("");
+  const [serviceId, setServiceId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const form = searchParams.get("form") || "";
     setFormName(form);
 
-    // Fetch requirements from the backend JSON file
-    fetch("/api/requirements")
+    // Fetch services from the backend
+    fetch("http://localhost:4000/api/institute/services")
       .then((res) => res.json())
-      .then((data) => {
-        // Check if the form exists in the data
-        if (form && data[form]) {
-          const formData = data[form] as { requirements?: string[] };
-          setRequirements(formData.requirements || []);
-        } else if (data.requirements && Array.isArray(data.requirements)) {
-          // Fallback to old format if exists
-          setRequirements(data.requirements);
+      .then((services) => {
+        // Find the service that matches the form name and get its index
+        const serviceIndex = services.findIndex(
+          (s: { name: string; requirements: string[] }) => s.name === form
+        );
+
+        if (serviceIndex !== -1) {
+          setServiceId(serviceIndex);
+          setRequirements(services[serviceIndex].requirements);
         } else {
           // Default fallback
           setRequirements([
@@ -53,8 +55,12 @@ function RequirementsPage() {
   }, [searchParams]);
 
   const handleYes = () => {
-    // Navigate to form filling page
-    router.push("/form");
+    // Navigate to form filling page with service ID
+    if (serviceId !== null) {
+      router.push(`/form?serviceId=${serviceId}`);
+    } else {
+      router.push("/form");
+    }
   };
 
   return (

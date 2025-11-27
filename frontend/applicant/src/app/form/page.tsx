@@ -1,6 +1,6 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useCallback, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { NeedHelp } from "../../components/NeedHelp";
 import HelpChatbot from "../../components/HelpChatbot";
 
@@ -44,9 +44,11 @@ function isObjectEmptyValues(obj: JsonValue): boolean {
   return false;
 }
 
-export default function FormFillingPage() {
+function FormFillingPage() {
   const router = useRouter();
-  const [isDesktop, setIsDesktop] = useState(false);
+  const searchParams = useSearchParams();
+  const [isDesktop, setIsDesktop] = useState<boolean | undefined>(undefined);
+  const [mounted, setMounted] = useState(false);
 
   // 🧠 Manage chatbot visibility
   const [showChat, setShowChat] = useState(false);
@@ -59,7 +61,7 @@ export default function FormFillingPage() {
   }, []);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    setMounted(true);
     const mq = window.matchMedia("(min-width: 1024px)");
     const update = () => setIsDesktop(mq.matches);
     update();
@@ -72,12 +74,14 @@ export default function FormFillingPage() {
   }, []);
   const [formDef, setFormDef] = useState<JsonObject | null>(null);
   const [formData, setFormData] = useState<JsonObject>({});
+  const [serviceName, setServiceName] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [leafFields, setLeafFields] = useState<
     { path: string; schema: JsonValue }[]
   >([]);
   const [pageIndex, setPageIndex] = useState(0);
   const [fieldsPerPage, setFieldsPerPage] = useState(4);
+  const [confirmationChecked, setConfirmationChecked] = useState(false);
 
   // Calculate responsive fields per page based on viewport height
   useEffect(() => {
@@ -130,6 +134,11 @@ export default function FormFillingPage() {
     return res;
   };
 
+  // Reset confirmation checkbox when page changes
+  useEffect(() => {
+    setConfirmationChecked(false);
+  }, [pageIndex]);
+
   const handleChange = (path: string, value: JsonValue) => {
     // update nested formData by path (dot separated)
     setFormData((prev) => {
@@ -152,9 +161,28 @@ export default function FormFillingPage() {
     // fetch form definition from API
     const fetchForm = async () => {
       try {
-        const res = await fetch("/api/get-form");
-        if (!res.ok) throw new Error("Failed to fetch form");
-        const json = await res.json();
+        const serviceId = new URLSearchParams(window.location.search).get(
+          "serviceId"
+        );
+        let json;
+
+        if (serviceId !== null) {
+          // Fetch form from backend API based on serviceId
+          const res = await fetch(
+            `http://localhost:4000/api/institute/form/${serviceId}`
+          );
+          if (!res.ok) throw new Error("Failed to fetch form");
+          const data = await res.json();
+          // Extract the form structure and service name from the response
+          json = data.form;
+          setServiceName(data.service?.name || "Unknown Service");
+        } else {
+          // Fallback to local API
+          const res = await fetch("/api/get-form");
+          if (!res.ok) throw new Error("Failed to fetch form");
+          json = await res.json();
+        }
+
         setFormDef(json);
         // initialize formData with values from json (keeping structure)
         const initData = deepCloneAndEmpty(json) as JsonObject;
@@ -183,18 +211,48 @@ export default function FormFillingPage() {
     }
 
     try {
-      const res = await fetch("/api/save-form-input", {
+      // Extract name from form data (try different field combinations)
+      const data = formData as JsonObject;
+      let name = "";
+
+      if (data.first_name || data.last_name) {
+        name = `${data.first_name || ""} ${data.last_name || ""}`.trim();
+      } else if (data.name) {
+        name = String(data.name);
+      } else if (data.fullName) {
+        name = String(data.fullName);
+      }
+
+      // Check if applicant has priority status
+      const isPriority = Boolean(
+        data.is_senior_citizen ||
+          data.is_pwd ||
+          data.is_pregnant ||
+          data.isSeniorCitizen ||
+          data.isPwd ||
+          data.isPregnant
+      );
+
+      const res = await fetch("http://localhost:4000/api/applicant/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          data: formData,
-          form: String(formDef?.formNumber || "unknown"),
+          name: name || "Applicant",
+          document: serviceName || "Unknown Document",
+          isPriority: isPriority,
         }),
       });
       if (!res.ok) throw new Error("Save failed");
-      await res.json();
-      alert("Form saved to form_input.json");
-      router.push("/chat?formCompleted=true");
+      const result = await res.json();
+
+      // Get sessionId from response data object
+      const sessionId = result.data?.sessionId;
+      if (!sessionId) {
+        throw new Error("No session ID returned from server");
+      }
+
+      alert("Form submitted successfully!");
+      router.push(`/chat?formCompleted=true&sessionId=${sessionId}`);
     } catch (err) {
       console.error(err);
       alert("Failed to save form input");
@@ -202,7 +260,7 @@ export default function FormFillingPage() {
   };
   // use the helper defined above
 
-  if (loading) {
+  if (loading || !mounted) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         Loading form...
@@ -258,6 +316,26 @@ export default function FormFillingPage() {
                       <div className="space-y-4">
                         {current.map((f) => renderLeafField(f))}
                       </div>
+
+                      {/* Confirmation Checkbox */}
+                      <div className="mt-6 flex items-start gap-3 bg-white p-4 rounded-lg border-2 border-gray-300">
+                        <input
+                          type="checkbox"
+                          id="confirmation-checkbox"
+                          checked={confirmationChecked}
+                          onChange={(e) =>
+                            setConfirmationChecked(e.target.checked)
+                          }
+                          className="mt-1 w-5 h-5 cursor-pointer"
+                        />
+                        <label
+                          htmlFor="confirmation-checkbox"
+                          className="text-sm font-medium text-gray-800 cursor-pointer"
+                        >
+                          Please confirm if the following information is
+                          correct.
+                        </label>
+                      </div>
                     </>
                   );
                 })()}
@@ -289,14 +367,24 @@ export default function FormFillingPage() {
                     <button
                       type="button"
                       onClick={() => setPageIndex((p) => p + 1)}
-                      className="px-8 py-2 rounded-full bg-[#132437] text-white hover:bg-[#0f1a29]"
+                      disabled={!confirmationChecked}
+                      className={`px-8 py-2 rounded-full transition-all ${
+                        confirmationChecked
+                          ? "bg-[#132437] text-white hover:bg-[#0f1a29]"
+                          : "bg-gray-400 text-gray-200 cursor-not-allowed"
+                      }`}
                     >
                       Next
                     </button>
                   ) : (
                     <button
                       type="submit"
-                      className="px-8 py-2 rounded-full bg-[#132437] text-white hover:bg-[#0f1a29]"
+                      disabled={!confirmationChecked}
+                      className={`px-8 py-2 rounded-full transition-all ${
+                        confirmationChecked
+                          ? "bg-[#132437] text-white hover:bg-[#0f1a29]"
+                          : "bg-gray-400 text-gray-200 cursor-not-allowed"
+                      }`}
                     >
                       Submit
                     </button>
@@ -356,6 +444,26 @@ export default function FormFillingPage() {
                       <div className="space-y-4">
                         {current.map((f) => renderLeafField(f))}
                       </div>
+
+                      {/* Confirmation Checkbox */}
+                      <div className="mt-6 flex items-start gap-3 bg-white p-4 rounded-lg border-2 border-gray-300">
+                        <input
+                          type="checkbox"
+                          id="confirmation-checkbox-desktop"
+                          checked={confirmationChecked}
+                          onChange={(e) =>
+                            setConfirmationChecked(e.target.checked)
+                          }
+                          className="mt-1 w-5 h-5 cursor-pointer"
+                        />
+                        <label
+                          htmlFor="confirmation-checkbox-desktop"
+                          className="text-sm font-medium text-gray-800 cursor-pointer"
+                        >
+                          Please confirm if the following information is
+                          correct.
+                        </label>
+                      </div>
                     </>
                   );
                 })()}
@@ -383,14 +491,24 @@ export default function FormFillingPage() {
                       <button
                         type="button"
                         onClick={() => setPageIndex((p) => p + 1)}
-                        className="w-full sm:w-auto bg-[#1c2b39] text-white font-semibold py-2 px-6 rounded-full hover:bg-[#243647] transition-all"
+                        disabled={!confirmationChecked}
+                        className={`w-full sm:w-auto font-semibold py-2 px-6 rounded-full transition-all ${
+                          confirmationChecked
+                            ? "bg-[#1c2b39] text-white hover:bg-[#243647]"
+                            : "bg-gray-400 text-gray-200 cursor-not-allowed"
+                        }`}
                       >
                         Next
                       </button>
                     ) : (
                       <button
                         type="submit"
-                        className="w-full sm:w-auto bg-[#1c2b39] text-white font-semibold py-2 px-6 rounded-full hover:bg-[#243647] transition-all"
+                        disabled={!confirmationChecked}
+                        className={`w-full sm:w-auto font-semibold py-2 px-6 rounded-full transition-all ${
+                          confirmationChecked
+                            ? "bg-[#1c2b39] text-white hover:bg-[#243647]"
+                            : "bg-gray-400 text-gray-200 cursor-not-allowed"
+                        }`}
                       >
                         Submit
                       </button>
@@ -628,4 +746,18 @@ export default function FormFillingPage() {
   // keep reference to avoid linter "defined but never used" in some toolchains
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const _keep_renderObjectFields = renderObjectFields;
+}
+
+export default function FormFillingPageWrapper() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          Loading form...
+        </div>
+      }
+    >
+      <FormFillingPage />
+    </Suspense>
+  );
 }

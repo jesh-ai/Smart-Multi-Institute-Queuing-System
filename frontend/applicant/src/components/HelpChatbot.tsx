@@ -14,7 +14,7 @@ interface HelpChatbotProps {
 
 export default function HelpChatbot({ onClose }: HelpChatbotProps) {
   const [messages, setMessages] = useState<Message[]>([
-    { sender: "user", text: "I would like to inquire" },
+    { sender: "user", text: "I need help with filling the form" },
     { sender: "bot", text: "What would you like to inquire about?" },
   ]);
   const [input, setInput] = useState("");
@@ -61,18 +61,33 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ message: "I would like to inquire" }),
+            body: JSON.stringify({
+              message: "I need help with filling the form",
+            }),
           }
         );
         const response = await apiResponse.json();
-        if (response.success && response.botResponse.Choices) {
-          const choices: string[] = [];
-          Object.keys(response.botResponse.Choices).forEach((key) => {
-            if (response.botResponse.Choices[key]) {
-              choices.push(response.botResponse.Choices[key]);
+
+        if (response.success) {
+          // Update the bot's response message
+          setMessages((prev) => {
+            const updated = [...prev];
+            if (updated.length > 1 && updated[1].sender === "bot") {
+              updated[1].text = response.botResponse.Message;
             }
+            return updated;
           });
-          setQuickReplies(choices);
+
+          // Set quick replies if available
+          if (response.botResponse.Choices) {
+            const choices: string[] = [];
+            Object.keys(response.botResponse.Choices).forEach((key) => {
+              if (response.botResponse.Choices[key]) {
+                choices.push(response.botResponse.Choices[key]);
+              }
+            });
+            setQuickReplies(choices);
+          }
         }
       } catch (error) {
         console.error("Error fetching initial response:", error);

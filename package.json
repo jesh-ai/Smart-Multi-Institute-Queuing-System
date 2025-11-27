@@ -29,6 +29,7 @@
     "open": "^10.1.0"
   },
   "dependencies": {
+    "@google/genai": "^1.30.0",
     "lucide-react": "^0.553.0",
     "qrcode": "^1.5.4"
   }
