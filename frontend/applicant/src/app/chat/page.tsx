@@ -171,6 +171,10 @@ function ChatInterface() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
+  // Map form flag names to service indices (0-indexed array positions)
+  // Based on backend's institute_info.json service_list array:
+  // [0] = DFA_Passport_New, [1] = DFA_Passport_Renewal,
+  // [2] = PhilHealth_Registration, [3] = PhilHealth_MDR_Update
   const formFlagToServiceId = (formFlag: string): string => {
     const mapping: Record<string, string> = {
       DFA_Passport_New: "0",
@@ -181,15 +185,21 @@ function ChatInterface() {
     return mapping[formFlag] || formFlag;
   };
 
+  // Helper function to check form flags from conversation messages
   const checkFormFlags = async (sessionId: string): Promise<void> => {
     try {
       const response = await fetch(`${API_URL}/api/messages/${sessionId}`);
+
       if (!response.ok) return;
+
       const data = await response.json();
       const messages = data.messages || [];
+
+      // Get the latest message with form_flag
       for (let i = messages.length - 1; i >= 0; i--) {
         const msg = messages[i];
         if (msg.botResponse?.form_flag) {
+          // Find which form flag is set to 1
           const formFlags = msg.botResponse.form_flag;
           for (const [formId, value] of Object.entries(formFlags)) {
             if (value === 1) {
@@ -199,6 +209,8 @@ function ChatInterface() {
           }
         }
       }
+
+      // No form flag set to 1
       setActiveFormId(null);
     } catch (error) {
       console.error("Error checking form flags:", error);
@@ -206,25 +218,38 @@ function ChatInterface() {
     }
   };
 
+  // Helper function to extract session ID from connect.sid cookie
   const getSessionIdFromCookie = (): string | null => {
     if (typeof document === "undefined") return null;
+
     const cookies = document.cookie.split("; ");
     const connectSidCookie = cookies.find((cookie) =>
       cookie.startsWith("connect.sid=")
     );
+
     if (!connectSidCookie) return null;
+
+    // Extract the value after "connect.sid="
     const cookieValue = connectSidCookie.split("=")[1];
+
+    // Decode the URL-encoded value
     const decodedValue = decodeURIComponent(cookieValue);
+
+    // Extract session ID from pattern: s%3A{sessionId}.{signature} or s:{sessionId}.{signature}
     const match = decodedValue.match(/^s(?:%3A|:)([^.]+)\./);
+
     return match ? match[1] : null;
   };
 
+  // Initialize session ID from cookie
   useEffect(() => {
     const cookieSessionId = getSessionIdFromCookie();
     if (cookieSessionId) {
       setSessionId(cookieSessionId);
+      // Check form flags on initial load
       checkFormFlags(cookieSessionId);
     } else {
+      // Fallback to generating a session ID if cookie doesn't exist yet
       let id = sessionStorage.getItem("chatSessionId");
       if (!id) {
         id = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -262,27 +287,12 @@ function ChatInterface() {
   useEffect(() => {
     const message = searchParams.get("message");
     const formCompleted = searchParams.get("formCompleted");
-    
-    // Define urlSessionId properly
-    const urlSessionId = searchParams.get("sessionId");
 
     if (formCompleted === "true") {
       setShowStatus(true);
-      setShowLanding(false); // Ensure landing is hidden if returning from form
-
-      if (urlSessionId) {
-        fetch(`${API_URL}/api/applicant/info/${urlSessionId}`)
-          .then((res) => res.json())
-          .then((data) => {
-            setApplicantInfo(data); // Now defined!
-          })
-          .catch((err) => {
-            console.error("Failed to fetch applicant info:", err);
-          });
-      }
+      // Applicant info will be fetched by Status component using session cookie
     } else if (message) {
-      setShowMenu(false); // Now defined!
-      setShowLanding(false);
+      setShowMenu(false);
       handleSend(message, "closed");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -294,6 +304,7 @@ function ChatInterface() {
   ) => {
     if (!text.trim() || isLoading) return;
 
+    // Check if sessionId is available
     if (!sessionId) {
       console.error("No session ID available");
       setMessages((prev) => [
@@ -306,6 +317,7 @@ function ChatInterface() {
       return;
     }
 
+    // Add user message
     setMessages((prev) => [...prev, { sender: "user", text }]);
     setInput("");
     setIsLoading(true);
@@ -340,7 +352,7 @@ function ChatInterface() {
       console.log("API Response:", response);
 
       if (!response.success) {
-        console.error("Error response:", response);
+        console.error("Error response:", response); // Debug log
         const errorMsg =
           response.botResponse?.Message ||
           response.error ||
@@ -361,6 +373,7 @@ function ChatInterface() {
 
         setMessages((prev) => [...prev, { sender: "bot", text: cleanMessage }]);
 
+        // Check for form flags in the response
         if (botResponse.form_flag) {
           for (const [formId, value] of Object.entries(botResponse.form_flag)) {
             if (value === 1) {
@@ -485,16 +498,8 @@ function ChatInterface() {
         <h1 className="text-2xl font-bold">AIVin</h1>
       </div>
 
-      {/* FIXED: Passing props to Status correctly */}
-      {showStatus && applicantInfo && (
-        <Status
-          queueNumber={applicantInfo.queueNumber}
-          status={applicantInfo.status}
-          counter={applicantInfo.counter}
-          waitTime={applicantInfo.waitTime}
-          message={applicantInfo.message}
-        />
-      )}
+      {/* Status Component - shown as sticky chat bubble */}
+      {showStatus && <Status />}
 
       {!(isDesktop && showStatus) && (
         <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2">
@@ -570,15 +575,7 @@ function ChatInterface() {
         <div className="sticky bottom-0 left-0 right-0 z-40 bg-white py-4 border-t border-gray-100">
           <div className="max-w-4xl mx-auto px-4">
             <div className="w-full bg-[#34495E] rounded-2xl border-t border-gray-200 flex items-center px-4 py-3">
-              <button className="p-2 text-gray-600 hover:text-gray-800 text-lg">
-                <Image
-                  src="/Microphone.png"
-                  alt="Microphone"
-                  width={24}
-                  height={24}
-                />
-              </button>
-
+              {/* Input */}
               <input
                 type="text"
                 placeholder="Message here..."
@@ -615,12 +612,16 @@ function ChatInterface() {
                     {reply}
                   </button>
                 ))}
-                <button
-                  onClick={() => router.push("/form")}
-                  className="px-4 py-1.5 rounded-full text-sm bg-white text-[#34495E] font-semibold hover:bg-gray-100 border-2 border-[#34495E] whitespace-nowrap flex-shrink-0"
-                >
-                  📋 Fill Form
-                </button>
+                {activeFormId && (
+                  <button
+                    onClick={() =>
+                      router.push(`/form?serviceId=${activeFormId}`)
+                    }
+                    className="px-4 py-1.5 rounded-full text-sm bg-white text-[#34495E] font-semibold hover:bg-gray-100 border-2 border-[#34495E] whitespace-nowrap flex-shrink-0"
+                  >
+                    📋 Fill Form
+                  </button>
+                )}
               </div>
             )}
           </div>
