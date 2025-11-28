@@ -60,7 +60,6 @@ export default function SystemPage() {
 
       if (response.ok) {
         const result = await response.json();
-        alert(`Counter key generated successfully: ${result.data.key}`);
       } else {
         alert('Failed to generate counter key');
       }
