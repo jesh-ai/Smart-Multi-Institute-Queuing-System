@@ -15,12 +15,15 @@ interface Session {
   startedAt: string;
   status: string;
   endedAt: string;
+  sessionId: string
 }
 const BASE_URL = `http://localhost:4000/api/`
 export default function SystemPage() {
   const [activeTab, setActiveTab] = useState('devices');
   const [devices, setDevices] = useState<Device[]>([]);
   const [counters, setCounters] = useState<Session[]>([]);
+  const [sessionId, setSessionId] = useState("");
+  const [result, setResult] = useState("");
 
   const handleDisconnect = async (deviceId: string) => {
     if (!confirm('Are you sure you want to disconnect this device?')) {
@@ -80,13 +83,13 @@ export default function SystemPage() {
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json'
-        }
+        },
+        body: JSON.stringify({ sessionId })
       });
 
       if (response.ok) {
         const result = await response.json();
         alert(result.message);
-        
         // Refresh sessions list
         const sessionsResponse = await fetch(`${BASE_URL}server/counters`, {
           credentials: 'include'
@@ -285,7 +288,7 @@ export default function SystemPage() {
                     <td className="text-center">
                       {session.status === 'Active' ? (
                         <button 
-                          onClick={() => handleEndSession(session.id.toString())}
+                          onClick={() => handleEndSession(session.sessionId)}
                           className="action-end-session"
                         >
                           End Session

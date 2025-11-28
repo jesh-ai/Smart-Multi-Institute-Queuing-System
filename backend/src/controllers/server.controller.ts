@@ -188,6 +188,7 @@ export async function getCounters(req: Request, res: Response): Promise<void> {
       startedAt: string;
       status: string;
       endedAt: string;
+      sessionId: string
     }> = [];
 
     counterSessions.forEach((item, index) => {
@@ -254,6 +255,7 @@ export async function getCounters(req: Request, res: Response): Promise<void> {
         startedAt,
         status,
         endedAt,
+        sessionId: item.sessionId
       });
     });
 
@@ -269,6 +271,7 @@ export async function getCounters(req: Request, res: Response): Promise<void> {
         startedAt: '-',
         status: 'Online',
         endedAt: '-',
+        sessionId: 'None'
       });
       nextCounterNumber++;
     });
