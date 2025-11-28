@@ -25,12 +25,9 @@ declare module "express-session" {
       document?: string,
       isPriority?: boolean;
       dateSubmitted?: string;
-      dateServed?: string;
-      /**
-       * @deprecated
-       */
-      closedServed?: string;
+      dateClosed?: string;
       dateProcessing?: string;
+      missingCount?: number;
       feedbackChoice?: string;
       feedbackComments?: string;
       formResponses?: {

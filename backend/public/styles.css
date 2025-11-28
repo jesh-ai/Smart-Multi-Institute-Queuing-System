@@ -253,3 +253,18 @@ input, textarea {
 .applicant-actions {
   background: #a9ece3 ;
 }
+.server-connected-devices {
+  background: #a4a6ff ;
+}
+.debugger {
+  background: #fdacac ;
+}
+.server-actions-session {
+  background: #ffbf6b ;
+}
+.counter-1 {
+  background: #fffefc ;
+}
+.counter-actions {
+  background: #ffabf8 ;
+}

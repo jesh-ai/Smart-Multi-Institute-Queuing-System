@@ -50,7 +50,7 @@ export default function DashboardPage() {
         setActiveUsers(Array.isArray(devicesData) ? devicesData.length : 0);
 
         // Connected devices
-        const connectedRes = await fetch(`${BASE_URL}/session/devices`, {
+        const connectedRes = await fetch(`${BASE_URL}/session/all`, {
           credentials: 'include'
         });
         const connectedText = await connectedRes.text();

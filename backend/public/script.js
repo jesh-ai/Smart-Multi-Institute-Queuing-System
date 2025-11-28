@@ -127,7 +127,6 @@ const cardConfigs = [
     buttons: [{ label: 'Shutdown Server', endpoint: '/api/server/shutdown', method: 'POST' }],
     customClass: 'small-server'
   },
-  
   {
     id: 'dashboard-queue',
     title: 'Dashboard - Queue Status',
@@ -153,8 +152,7 @@ const cardConfigs = [
     id: 'qr',
     title: 'QR Code Generator',
     description: 'Generate QR code for any URL',
-    inputs: [{ id: 'qr-url', type: 'text', placeholder: 'Enter URL', defaultValue: 'http://localhost:4000/test.html' }],
-    buttons: [{ endpoint: '/api/server/qr', method: 'GET', useInputs: ['qr-url'] }],
+    buttons: [{ endpoint: '/api/server/qr', method: 'GET'}],
     customClass: 'small-server'
   },
   {
@@ -165,138 +163,198 @@ const cardConfigs = [
     customClass: 'small-server'
   },
 
-  // IOK
+  // Blue
   {
-    id: 'session',
-    title: 'Session Info',
+    id: 'server-devices',
+    title: 'Connected Devices',
+    description: 'Check registered devices with types',
+    buttons: [{ endpoint: '/api/server/devices', method: 'GET' }],
+    customClass: 'server-connected-devices'
+  },
+  {
+    id: 'counter-sessions',
+    title: 'Counter Sessions',
     description: 'Check session information',
-    buttons: [{ endpoint: '/api/session/self', method: 'GET' }]
+    buttons: [{ endpoint: '/api/server/counters', method: 'GET' }],
+    customClass: 'server-connected-devices'
   },
   {
-    id: 'devices',
-    title: 'Devices Info',
-    description: 'Check registered devices',
-    buttons: [{ endpoint: '/api/session/devices', method: 'GET' }]
-  },
-  
-  {
-    id: 'applicant-update',
-    title: 'Update Applicant Info',
-    description: 'Update applicant information',
-    textareas: [{ id: 'update-data', rows: 3, placeholder: '{"name": "Updated Name", "isPriority": true}', defaultValue: '{\n  "isPriority": true\n}' }],
-    buttons: [{ label: 'Update Info', endpoint: '/api/applicant/update', method: 'PUT', useBody: 'update-data' }]
-  },
-  {
-    id: 'applicant-by-id',
-    title: 'Get Applicant by ID',
-    description: 'Get applicant info by session ID',
-    inputs: [{ id: 'get-applicant-id', type: 'text', placeholder: 'Session ID' }],
-    buttons: [{ label: 'Get Applicant', endpoint: '/api/applicant/info/:id', method: 'GET', useInputs: ['get-applicant-id'] }]
-  },
-  {
-    id: 'applicant-all',
-    title: 'All Applicants',
-    description: 'Get list of all applicants',
-    buttons: [{ label: 'Get All', endpoint: '/api/applicant/all', method: 'GET' }]
-  },
-  {
-    id: 'applicant-served',
-    title: 'Mark as Served',
-    description: 'Mark applicant as served',
-    textareas: [{ id: 'served-data', rows: 2, placeholder: '{"closedServed": "notes"}', defaultValue: '{\n  "closedServed": "Completed"\n}' }],
-    buttons: [{ label: 'Mark Served', endpoint: '/api/applicant/served', method: 'PUT', useBody: 'served-data' }]
-  },
-  {
-    id: 'applicant-delete',
-    title: 'Delete Applicant Info',
-    description: 'Remove applicant data from session',
-    buttons: [{ label: 'Delete Info', endpoint: '/api/applicant/info', method: 'DELETE' }]
+    id: 'queue-management',
+    title: 'Queue Management',
+    description: 'Get complete queue distribution across all counters',
+    buttons: [{ label: 'Get Queue Status', endpoint: '/api/queue/status', method: 'GET' }],
+    customClass: 'server-connected-devices'
   },
   
+  // Orange
   {
-    id: 'counter-info',
-    title: 'Counter Info',
-    description: 'Get current counter information from session',
-    buttons: [{ label: 'Get My Info', endpoint: '/api/counter/info', method: 'GET' }]
-  },
-  {
-    id: 'counter-keys',
-    title: 'Available Keys',
-    description: 'Get available and used counter keys',
-    buttons: [{ label: 'Get Keys', endpoint: '/api/counter/keys', method: 'GET' }]
+    id: 'session-delete',
+    title: 'Disconnect Session',
+    description: 'Disconnect a session',
+    inputs: [{ id: 'delete-session-id', type: 'text', placeholder: 'Session ID' }],
+    buttons: [{ label: 'Disconnect Session', endpoint: '/api/session/:id', method: 'DELETE', useInputs: ['delete-session-id'] }],
+    customClass: 'server-actions-session'
   },
   {
     id: 'counter-generate-keys',
     title: 'Generate Key',
     description: 'Generate a new counter key',
-    buttons: [{ label: 'Generate Key', endpoint: '/api/counter/keys/generate', method: 'POST' }]
+    buttons: [{ label: 'Generate Key', endpoint: '/api/server/generate-counter', method: 'POST' }],
+    customClass: 'server-actions-session'
   },
+  {
+    id: 'counter-close',
+    title: 'Close Counter',
+    description: 'Close a counter by session ID',
+    textareas: [{ id: 'close-counter-data', rows: 2, placeholder: '{"sessionId": "session-id-here"}', defaultValue: '{\n  "sessionId": ""\n}' }],
+    buttons: [{ label: 'Close Counter', endpoint: '/api/counter/close', method: 'POST', useBody: 'close-counter-data' }],
+    customClass: 'server-actions-session'
+  },
+  
+  // White
   {
     id: 'counter-activate',
     title: 'Activate Counter',
     description: 'Activate a counter with a key (one-time)',
     textareas: [{ id: 'activate-counter-data', rows: 2, placeholder: '{"key": "CS-2025-001-A4F9"}', defaultValue: '{\n  "key": "CS-2025-001-XXXX"\n}' }],
-    buttons: [{ label: 'Activate Counter', endpoint: '/api/counter/activate', method: 'POST', useBody: 'activate-counter-data' }]
-  },
-  {
-    id: 'counter-by-id',
-    title: 'Get Counter by ID',
-    description: 'Get counter info by session ID',
-    inputs: [{ id: 'get-counter-id', type: 'text', placeholder: 'Session ID' }],
-    buttons: [{ label: 'Get Counter', endpoint: '/api/counter/info/:id', method: 'GET', useInputs: ['get-counter-id'] }]
-  },
-  {
-    id: 'counter-all',
-    title: 'All Counters',
-    description: 'Get list of all counters',
-    buttons: [{ label: 'Get All', endpoint: '/api/counter/all', method: 'GET' }]
-  },
-  {
-    id: 'counter-active',
-    title: 'Active Counters',
-    description: 'Get list of active counters only',
-    buttons: [{ label: 'Get Active', endpoint: '/api/counter/active', method: 'GET' }]
-  },
-  {
-    id: 'counter-update',
-    title: 'Update Counter Info',
-    description: 'Update counter information',
-    textareas: [{ id: 'counter-update-data', rows: 2, placeholder: '{"dateActivated": "..."}' }],
-    buttons: [{ label: 'Update Info', endpoint: '/api/counter/update', method: 'PUT', useBody: 'counter-update-data' }]
-  },
-  {
-    id: 'counter-delete',
-    title: 'Delete Counter Info',
-    description: 'Remove counter data from session',
-    buttons: [{ label: 'Delete Info', endpoint: '/api/counter/info', method: 'DELETE' }]
+    buttons: [{ label: 'Activate Counter', endpoint: '/api/counter/activate', method: 'POST', useBody: 'activate-counter-data' }],
+    customClass: 'counter-1'
   },
   
+  // Purple
   {
-    id: 'queue-status',
-    title: 'Queue Status',
-    description: 'Get complete queue distribution across all counters',
-    buttons: [{ label: 'Get Queue Status', endpoint: '/api/queue/status', method: 'GET' }]
+    id: 'applicant-processing',
+    title: 'Mark as Processing',
+    description: 'Mark applicant as processing (sets dateProcessing)',
+    buttons: [{ label: 'Mark Processing', endpoint: '/api/applicant/processing', method: 'PUT' }],
+    customClass: 'counter-actions'
   },
   {
-    id: 'applicant-position',
-    title: 'Applicant Position',
-    description: 'Get queue position for current session or specific applicant',
-    inputs: [{ id: 'applicant-session-id', type: 'text', placeholder: 'Session ID (optional, uses current session if empty)' }],
-    buttons: [{ label: 'Get Position', endpoint: '/api/queue/applicant/:id', method: 'GET', useInputs: ['applicant-session-id'] }]
+    id: 'applicant-closed',
+    title: 'Mark as Closed',
+    description: 'Mark applicant as closed (sets dateClosed)',
+    textareas: [{ id: 'closed-data', rows: 2, placeholder: '{"closedServed": "notes"}', defaultValue: '{\n  "closedServed": "Session ended"\n}' }],
+    buttons: [{ label: 'Mark Closed', endpoint: '/api/applicant/closed', method: 'PUT', useBody: 'closed-data' }],
+    customClass: 'counter-actions'
   },
   {
-    id: 'counter-next',
-    title: 'Next Applicant',
-    description: 'Get next applicant for current counter session',
-    buttons: [{ label: 'Get Next', endpoint: '/api/queue/counter/next', method: 'GET' }]
+    id: 'applicant-missing',
+    title: 'Mark as Missing',
+    description: 'Mark applicant as missing (moves to back of queue)',
+    buttons: [{ label: 'Mark Missing', endpoint: '/api/applicant/missing', method: 'PUT' }],
+    customClass: 'counter-actions'
+  },
+
+  // Debugger
+  {
+    id: 'session',
+    title: 'Session Info',
+    description: 'Check session information',
+    buttons: [{ endpoint: '/api/session/self', method: 'GET' }],
+    customClass: 'debugger'
   },
   {
-    id: 'counter-queue',
-    title: 'Counter Queue',
-    description: 'Get queue for specific counter or current session',
-    inputs: [{ id: 'counter-session-id', type: 'text', placeholder: 'Counter ID (optional, uses current session if empty)' }],
-    buttons: [{ label: 'Get Counter Queue', endpoint: '/api/queue/counter/:id', method: 'GET', useInputs: ['counter-session-id'] }]
+    id: 'devices',
+    title: 'Devices Info',
+    description: 'Check registered devices',
+    buttons: [{ endpoint: '/api/session/all', method: 'GET' }],
+    customClass: 'debugger'
   },
+  {
+    id: 'counter-keys',
+    title: 'Available Keys',
+    description: 'Get available and used counter keys',
+    buttons: [{ label: 'Get Keys', endpoint: '/api/counter/keys', method: 'GET' }],
+    customClass: 'debugger'
+  },
+
+  // IDK
+  // {
+  //   id: 'applicant-update',
+  //   title: 'Update Applicant Info',
+  //   description: 'Update applicant information',
+  //   textareas: [{ id: 'update-data', rows: 3, placeholder: '{"name": "Updated Name", "isPriority": true}', defaultValue: '{\n  "isPriority": true\n}' }],
+  //   buttons: [{ label: 'Update Info', endpoint: '/api/applicant/update', method: 'PUT', useBody: 'update-data' }]
+  // },
+  // {
+  //   id: 'applicant-by-id',
+  //   title: 'Get Applicant by ID',
+  //   description: 'Get applicant info by session ID',
+  //   inputs: [{ id: 'get-applicant-id', type: 'text', placeholder: 'Session ID' }],
+  //   buttons: [{ label: 'Get Applicant', endpoint: '/api/applicant/info/:id', method: 'GET', useInputs: ['get-applicant-id'] }]
+  // },
+  // {
+  //   id: 'applicant-all',
+  //   title: 'All Applicants',
+  //   description: 'Get list of all applicants',
+  //   buttons: [{ label: 'Get All', endpoint: '/api/applicant/all', method: 'GET' }]
+  // },
+  
+  // {
+  //   id: 'counter-info',
+  //   title: 'Counter Info',
+  //   description: 'Get current counter information from session',
+  //   buttons: [{ label: 'Get My Info', endpoint: '/api/counter/info', method: 'GET' }]
+  // },
+  // {
+  //   id: 'counter-by-id',
+  //   title: 'Get Counter by ID',
+  //   description: 'Get counter info by session ID',
+  //   inputs: [{ id: 'get-counter-id', type: 'text', placeholder: 'Session ID' }],
+  //   buttons: [{ label: 'Get Counter', endpoint: '/api/counter/info/:id', method: 'GET', useInputs: ['get-counter-id'] }]
+  // },
+  // {
+  //   id: 'counter-all',
+  //   title: 'All Counters',
+  //   description: 'Get list of all counters',
+  //   buttons: [{ label: 'Get All', endpoint: '/api/counter/all', method: 'GET' }]
+  // },
+  // {
+  //   id: 'counter-active',
+  //   title: 'Active Counters',
+  //   description: 'Get list of active counters only',
+  //   buttons: [{ label: 'Get Active', endpoint: '/api/counter/active', method: 'GET' }]
+  // },
+  // {
+  //   id: 'counter-update',
+  //   title: 'Update Counter Info',
+  //   description: 'Update counter information',
+  //   textareas: [{ id: 'counter-update-data', rows: 2, placeholder: '{"dateActivated": "..."}' }],
+  //   buttons: [{ label: 'Update Info', endpoint: '/api/counter/update', method: 'PUT', useBody: 'counter-update-data' }]
+  // },
+  // {
+  //   id: 'counter-delete',
+  //   title: 'Delete Counter Info',
+  //   description: 'Remove counter data from session',
+  //   buttons: [{ label: 'Delete Info', endpoint: '/api/counter/info', method: 'DELETE' }]
+  // },
+  
+  // {
+  //   id: 'queue-all',
+  //   title: 'Queue Status',
+  //   description: 'Get complete queue distribution across all counters',
+  //   buttons: [{ label: 'Get Queue Status', endpoint: '/api/queue/all', method: 'GET' }]
+  // },
+  // {
+  //   id: 'applicant-position',
+  //   title: 'Applicant Position',
+  //   description: 'Get queue position for current session or specific applicant',
+  //   inputs: [{ id: 'applicant-session-id', type: 'text', placeholder: 'Session ID (optional, uses current session if empty)' }],
+  //   buttons: [{ label: 'Get Position', endpoint: '/api/queue/applicant/:id', method: 'GET', useInputs: ['applicant-session-id'] }]
+  // },
+  // {
+  //   id: 'counter-next',
+  //   title: 'Next Applicant',
+  //   description: 'Get next applicant for current counter session',
+  //   buttons: [{ label: 'Get Next', endpoint: '/api/queue/counter/next', method: 'GET' }]
+  // },
+  // {
+  //   id: 'counter-queue',
+  //   title: 'Counter Queue',
+  //   description: 'Get queue for specific counter or current session',
+  //   inputs: [{ id: 'counter-session-id', type: 'text', placeholder: 'Counter ID (optional, uses current session if empty)' }],
+  //   buttons: [{ label: 'Get Counter Queue', endpoint: '/api/queue/counter/:id', method: 'GET', useInputs: ['counter-session-id'] }]
+  // },
   // {
   //   id: 'stats',
   //   title: 'Database Statistics',

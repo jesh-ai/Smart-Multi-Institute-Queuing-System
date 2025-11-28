@@ -49,7 +49,7 @@ export class QueueManager {
       if (
         session.applicant &&
         session.applicant.dateSubmitted &&
-        !session.applicant.dateServed 
+        !session.applicant.dateClosed 
       ) {
         applicants.push({
           sessionId,
@@ -192,136 +192,137 @@ export async function getQueueStatus(req: Request, res: Response): Promise<void>
   }
 }
 
-export async function getApplicantPosition(req: Request, res: Response): Promise<void> {
-  try {
-    const applicantSessionId = req.params.sessionId || req.sessionID;
-    const position = QueueManager.getApplicantQueuePosition(applicantSessionId);
+
+
+
+// TBR
+// export async function getApplicantPosition(req: Request, res: Response): Promise<void> {
+//   try {
+//     const applicantSessionId = req.params.sessionId || req.sessionID;
+//     const position = QueueManager.getApplicantQueuePosition(applicantSessionId);
     
-    res.json({
-      success: true,
-      data: position,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: "Failed to retrieve applicant position",
-      message: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-}
-
-export async function getNextApplicant(req: Request, res: Response): Promise<void> {
-  try {
-    const counterSessionId = req.sessionID;
-    const nextApplicant = QueueManager.getNextApplicantForCounter(counterSessionId);
+//     res.json({
+//       success: true,
+//       data: position,
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       error: "Failed to retrieve applicant position",
+//       message: error instanceof Error ? error.message : "Unknown error",
+//     });
+//   }
+// }
+// export async function getNextApplicant(req: Request, res: Response): Promise<void> {
+//   try {
+//     const counterSessionId = req.sessionID;
+//     const nextApplicant = QueueManager.getNextApplicantForCounter(counterSessionId);
     
-    if (!nextApplicant) {
-      res.json({
-        success: true,
-        data: null,
-        message: "No applicants in queue",
-      });
-      return;
-    }
+//     if (!nextApplicant) {
+//       res.json({
+//         success: true,
+//         data: null,
+//         message: "No applicants in queue",
+//       });
+//       return;
+//     }
     
-    res.json({
-      success: true,
-      data: nextApplicant,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: "Failed to retrieve next applicant",
-      message: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-}
-
-export async function getCounterQueue(req: Request, res: Response): Promise<void> {
-  try {
-    const counterSessionId = req.params.counterId || req.sessionID;
-    const queueData = QueueManager.manageQueue();
+//     res.json({
+//       success: true,
+//       data: nextApplicant,
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       error: "Failed to retrieve next applicant",
+//       message: error instanceof Error ? error.message : "Unknown error",
+//     });
+//   }
+// }
+// export async function getCounterQueue(req: Request, res: Response): Promise<void> {
+//   try {
+//     const counterSessionId = req.params.counterId || req.sessionID;
+//     const queueData = QueueManager.manageQueue();
     
-    const counterQueue = queueData.queueDistribution.find(
-      (q) => q.counterId === counterSessionId
-    );
+//     const counterQueue = queueData.queueDistribution.find(
+//       (q) => q.counterId === counterSessionId
+//     );
     
-    if (!counterQueue) {
-      res.status(404).json({
-        success: false,
-        error: "Counter not found or not active",
-      });
-      return;
-    }
+//     if (!counterQueue) {
+//       res.status(404).json({
+//         success: false,
+//         error: "Counter not found or not active",
+//       });
+//       return;
+//     }
     
-    res.json({
-      success: true,
-      data: counterQueue,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: "Failed to retrieve counter queue",
-      message: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-}
+//     res.json({
+//       success: true,
+//       data: counterQueue,
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       error: "Failed to retrieve counter queue",
+//       message: error instanceof Error ? error.message : "Unknown error",
+//     });
+//   }
+// }
+// export async function getAllQueueItems(req: Request, res: Response): Promise<void> {
+//   try {
+//     const sessions = fetchSessions();
+//     const queueItems: Array<{
+//       id: number;
+//       name: string;
+//       request: string;
+//       counter: string;
+//       status: string;
+//     }> = [];
 
-export async function getAllQueueItems(req: Request, res: Response): Promise<void> {
-  try {
-    const sessions = fetchSessions();
-    const queueItems: Array<{
-      id: number;
-      name: string;
-      request: string;
-      counter: string;
-      status: string;
-    }> = [];
+//     let queueNumber = 1;
 
-    let queueNumber = 1;
+//     // Get all applicants (both waiting and served)
+//     sessions.forEach((session, sessionId) => {
+//       if (session.applicant && session.applicant.dateSubmitted) {
+//         let status = 'Waiting';
+//         let counter = '-';
 
-    // Get all applicants (both waiting and served)
-    sessions.forEach((session, sessionId) => {
-      if (session.applicant && session.applicant.dateSubmitted) {
-        let status = 'Waiting';
-        let counter = '-';
+//         if (session.applicant.dateServed) {
+//           status = 'Ended';
+//           // Try to find which counter served them (would need to be tracked)
+//           counter = 'Completed';
+//         } else {
+//           // Check if currently being processed
+//           const queueData = QueueManager.manageQueue();
+//           for (const counterQueue of queueData.queueDistribution) {
+//             const applicantInQueue = counterQueue.applicants.find(a => a.sessionId === sessionId);
+//             if (applicantInQueue) {
+//               counter = counterQueue.counterName || '-';
+//               if (applicantInQueue.position === 1) {
+//                 status = 'Processing';
+//               }
+//               break;
+//             }
+//           }
+//         }
 
-        if (session.applicant.dateServed) {
-          status = 'Ended';
-          // Try to find which counter served them (would need to be tracked)
-          counter = 'Completed';
-        } else {
-          // Check if currently being processed
-          const queueData = QueueManager.manageQueue();
-          for (const counterQueue of queueData.queueDistribution) {
-            const applicantInQueue = counterQueue.applicants.find(a => a.sessionId === sessionId);
-            if (applicantInQueue) {
-              counter = counterQueue.counterName || '-';
-              if (applicantInQueue.position === 1) {
-                status = 'Processing';
-              }
-              break;
-            }
-          }
-        }
+//         queueItems.push({
+//           id: queueNumber,
+//           name: session.applicant.name || 'Anonymous',
+//           request: session.applicant.document || 'N/A',
+//           counter: counter,
+//           status: status,
+//         });
 
-        queueItems.push({
-          id: queueNumber,
-          name: session.applicant.name || 'Anonymous',
-          request: session.applicant.document || 'N/A',
-          counter: counter,
-          status: status,
-        });
+//         queueNumber++;
+//       }
+//     });
 
-        queueNumber++;
-      }
-    });
-
-    res.json(queueItems);
-  } catch (error) {
-    res.status(500).json({
-      error: "Failed to retrieve queue items",
-      message: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-}
+//     res.json(queueItems);
+//   } catch (error) {
+//     res.status(500).json({
+//       error: "Failed to retrieve queue items",
+//       message: error instanceof Error ? error.message : "Unknown error",
+//     });
+//   }
+// }

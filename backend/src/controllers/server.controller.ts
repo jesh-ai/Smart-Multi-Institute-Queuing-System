@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { fetchSessions } from "../db/sessions.js";
+import { getAvailableKeys } from "../utils/counterKeys.js";
 
 export async function getIsServer(req: Request, res: Response): Promise<void> {
   const serverIp = req.socket.localAddress?.replace("::ffff:", "") || "unknown";
@@ -10,7 +11,6 @@ export async function getIsServer(req: Request, res: Response): Promise<void> {
   console.warn("Server IP:", serverIp, "Client IP:", clientIp);
   res.json({ isServer: serverIp == clientIp });
 }
-
 export async function shutdownServer(req: Request, res: Response): Promise<void> {
   console.log("Server shutdown requested");
   res.json({ message: "Server shutting down..." });
@@ -21,7 +21,6 @@ export async function shutdownServer(req: Request, res: Response): Promise<void>
     process.exit(0);
   }, 1000);
 }
-
 export async function getDashboardQueue(req: Request, res: Response): Promise<void> {
   try {
     const sessions = fetchSessions();
@@ -33,7 +32,7 @@ export async function getDashboardQueue(req: Request, res: Response): Promise<vo
       if (
         session.applicant &&
         session.applicant.dateSubmitted &&
-        !session.applicant.dateServed
+        !session.applicant.dateClosed
       ) {
         usersInQueue++;
       }
@@ -45,7 +44,7 @@ export async function getDashboardQueue(req: Request, res: Response): Promise<vo
       if (
         session.applicant &&
         session.applicant.dateSubmitted &&
-        !session.applicant.dateServed
+        !session.applicant.dateClosed
       ) {
         applicants.push({ dateSubmitted: session.applicant.dateSubmitted });
       }
@@ -66,7 +65,6 @@ export async function getDashboardQueue(req: Request, res: Response): Promise<vo
     });
   }
 }
-
 export async function getActiveUsers(req: Request, res: Response): Promise<void> {
   try {
     const sessions = fetchSessions();
@@ -90,7 +88,6 @@ export async function getActiveUsers(req: Request, res: Response): Promise<void>
     });
   }
 }
-
 export async function getSummary(req: Request, res: Response): Promise<void> {
   try {
     const sessions = fetchSessions();
@@ -115,8 +112,8 @@ export async function getSummary(req: Request, res: Response): Promise<void> {
         }
 
         // Calculate wait time for completed requests (served today or any day)
-        if (session.applicant.dateServed) {
-          const servedDate = new Date(session.applicant.dateServed);
+        if (session.applicant.dateClosed) {
+          const servedDate = new Date(session.applicant.dateClosed);
           const waitTime = (servedDate.getTime() - submittedDate.getTime()) / (1000 * 60); // minutes
           
           // Only count valid wait times (positive and reasonable)
@@ -181,9 +178,141 @@ export async function getSummary(req: Request, res: Response): Promise<void> {
     });
   }
 }
+export async function getCounters(req: Request, res: Response): Promise<void> {
+  try {
+    const sessions = fetchSessions();
+    
+    // First, collect all counter sessions with their timestamps
+    const counterSessions: Array<{
+      sessionId: string;
+      session: any;
+      timestamp: number;
+      isActive: boolean;
+    }> = [];
 
+    sessions.forEach((session, sessionId) => {
+      if (!session.counter) return;
+      
+      console.log('Counter session found:', {
+        sessionId,
+        counter: session.counter,
+        hasKey: !!session.counter.key,
+        hasDateOpened: !!session.counter.dateOpened,
+        dateOpened: session.counter.dateOpened
+      });
+      
+      const timestamp = session.counter.dateOpened 
+        ? new Date(session.counter.dateOpened).getTime()
+        : Date.now();
+      
+      const isActive = !session.counter.dateClosed;
+      
+      counterSessions.push({
+        sessionId,
+        session,
+        timestamp,
+        isActive
+      });
+    });
 
-// TBR
+    // Sort by active status first (active first), then by timestamp (oldest first)
+    counterSessions.sort((a, b) => {
+      if (a.isActive !== b.isActive) {
+        return a.isActive ? -1 : 1; // Active sessions first
+      }
+      return a.timestamp - b.timestamp; // Then by timestamp (oldest first)
+    });
+
+    // Assign incremental counter names
+    const sessionsList: Array<{
+      id: number;
+      counterName: string;
+      sessionKey: string;
+      startedAt: string;
+      status: string;
+      endedAt: string;
+    }> = [];
+
+    counterSessions.forEach((item, index) => {
+      const counterNumber = index + 1;
+      const counterName = `Counter ${counterNumber}`;
+      const counterKey = item.session.counter.key || '-';
+      
+      // Format dates
+      const startedAt = item.session.counter.dateOpened 
+        ? new Date(item.session.counter.dateOpened).toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+          })
+        : '-';
+
+      // Determine status
+      let status = 'Active';
+      let endedAt = '-';
+      
+      if (item.session.counter.dateClosed) {
+        // Counter session has ended
+        endedAt = new Date(item.session.counter.dateClosed).toLocaleString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+        });
+        
+        // Check if there are still applicants waiting
+        let hasWaitingApplicants = false;
+        const sessions = fetchSessions();
+        sessions.forEach((session) => {
+          if (session.applicant && 
+              session.applicant.dateSubmitted && 
+              !session.applicant.dateClosed) {
+            hasWaitingApplicants = true;
+          }
+        });
+        
+        status = hasWaitingApplicants ? 'Ending' : 'Ended';
+      }
+
+      sessionsList.push({
+        id: counterNumber,
+        counterName,
+        sessionKey: counterKey,
+        startedAt,
+        status,
+        endedAt,
+      });
+    });
+
+    // Add available keys as Online counters (generated but unused)
+    const availableKeys = getAvailableKeys();
+    let nextCounterNumber = counterSessions.length + 1;
+    
+    availableKeys.forEach((key) => {
+      sessionsList.push({
+        id: nextCounterNumber,
+        counterName: `Counter ${nextCounterNumber}`,
+        sessionKey: key,
+        startedAt: '-',
+        status: 'Online',
+        endedAt: '-',
+      });
+      nextCounterNumber++;
+    });
+
+    res.json(sessionsList);
+  } catch (error) {
+    res.status(500).json({
+      error: "Failed to retrieve sessions list",
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+}
 export async function getDevices(req: Request, res: Response): Promise<void> {
   try {
     const sessions = fetchSessions();
