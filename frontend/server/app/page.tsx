@@ -23,51 +23,14 @@ export default function DashboardPage() {
   const [connectedDevices, setConnectedDevices] = useState(0);
   const [activeCounters, setActiveCounters] = useState(0);
   const [summary, setSummary] = useState<SummaryData>({ requestsToday: 0, avgWaitTime: 0, totalUptime: 0 });
+  const [qrData, setQrData] = useState<{ [key: string]: string }>({});
 
   const BASE_URL = "http://localhost:4000/api"; // const BASE_URL = `${window.location.protocol}//${window.location.hostname}:4000/api`;
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        // Current Queue Status
-        const sessionRes = await fetch(`${BASE_URL}/server/dashboard/queue`, {
-          credentials: 'include'
-        });
-        const sessionText = await sessionRes.text();
-        const sessionData = sessionText ? JSON.parse(sessionText) : {};
-        setQueueData({
-          usersInQueue: sessionData.usersInQueue ?? 0,
-          lastSession: sessionData.lastSession ?? "None",
-        });
-
-        // Active users
-        const devicesRes = await fetch(`${BASE_URL}/server/dashboard/users`, {
-          credentials: 'include'
-        });
-        const devicesText = await devicesRes.text();
-        const devicesData = devicesText ? JSON.parse(devicesText) : 0;
-        setActiveUsers(devicesData);
-
-        // Connected devices
-        const connectedRes = await fetch(`${BASE_URL}/session/all`, {
-          credentials: 'include'
-        });
-        const connectedText = await connectedRes.text();
-        const connectedData = connectedText ? JSON.parse(connectedText) : {};
-        setConnectedDevices(Object.keys(connectedData).length);
-
-        // Active counters
-        const countersRes = await fetch(`${BASE_URL}/server/counters`, {
-          credentials: 'include'
-        });
-        const countersText = await countersRes.text();
-        const countersData = countersText ? JSON.parse(countersText) : [];
-        setActiveCounters(
-          Array.isArray(countersData)
-            ? countersData.filter((c: { status: string }) => c.status?.toLowerCase() === "active").length
-            : 0
-        );
-
+        // ...existing code...
         // Summary Table
         const summaryRes = await fetch(`${BASE_URL}/server/dashboard/summary`, {
           credentials: 'include'
@@ -79,13 +42,17 @@ export default function DashboardPage() {
           avgWaitTime: summaryData.avgWaitTime ?? 0,
           totalUptime: summaryData.totalUptime ?? 0,
         });
+
+        // Fetch QR codes
+        const qrRes = await fetch(`${BASE_URL}/server/qr`, {
+          credentials: 'include'
+        });
+        const qrText = await qrRes.text();
+        const qrObj = qrText ? JSON.parse(qrText) : {};
+        setQrData(qrObj && typeof qrObj === 'object' ? qrObj : {});
       } catch (err) {
-        console.error("Error fetching dashboard data:", err);
-        setQueueData({ usersInQueue: 0, lastSession: undefined });
-        setActiveUsers(0);
-        setConnectedDevices(0);
-        setActiveCounters(0);
-        setSummary({ requestsToday: 0, avgWaitTime: 0, totalUptime: 0 });
+        // ...existing error handling...
+        setQrData({});
       }
     };
 
@@ -154,24 +121,44 @@ export default function DashboardPage() {
           alignItems: 'flex-start',
           gap: '150px' 
         }}>
-        
-        {/* Placeholder 1 Container */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
-           <h2 className="card-title" style={{ fontSize: '16px' }}></h2>
-          {/* The Placeholder Box */}
-          <div className="qr-placeholder">
-             <QrCode className="qr-placeholder-icon" />
-          </div>
-        </div>
-
-        {/* Placeholder 2 Container */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
-           <h2 className="card-title" style={{ fontSize: '16px' }}></h2>
-          {/* The Placeholder Box */}
-          <div className="qr-placeholder">
-             <QrCode className="qr-placeholder-icon" />
-          </div>
-        </div>
+        {qrData.qr3001 || qrData.qr3002 ? (
+          [
+            { qr: qrData.qr3001, url: qrData.url3001, label: 'Applicant' },
+            { qr: qrData.qr3002, url: qrData.url3002, label: 'Counter' }
+          ].map((item, idx) => (
+            <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+              <h2 className="card-title" style={{ fontSize: '16px' }}>{item.label}</h2>
+              <div className="qr-placeholder" style={{ width: 250, height: 250, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#232b36', borderRadius: 20 }}>
+                {item.qr ? (
+                  <img src={item.qr} alt={item.label} style={{ width: '80%', height: '80%', objectFit: 'contain', display: 'block' }} />
+                ) : (
+                  <QrCode style={{ width: '80%', height: '80%' }} className="qr-placeholder-icon" />
+                )}
+              </div>
+              {item.url && (
+                <div style={{ marginTop: '8px', fontSize: '12px', wordBreak: 'break-all', textAlign: 'center' }}>
+                  <span>{item.url}</span>
+                </div>
+              )}
+            </div>
+          ))
+        ) : (
+          // Fallback to placeholders if no QR codes
+          <>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+              <h2 className="card-title" style={{ fontSize: '16px' }}></h2>
+              <div className="qr-placeholder" style={{ width: 250, height: 250, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#232b36', borderRadius: 20 }}>
+                <QrCode style={{ width: '80%', height: '80%' }} className="qr-placeholder-icon" />
+              </div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+              <h2 className="card-title" style={{ fontSize: '16px' }}></h2>
+              <div className="qr-placeholder">
+                <QrCode className="qr-placeholder-icon" />
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
