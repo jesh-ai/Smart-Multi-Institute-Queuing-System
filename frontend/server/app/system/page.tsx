@@ -53,7 +53,7 @@ export default function SystemPage() {
 
   const handleAddCounter = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/counter/keys/generate', {
+      const response = await fetch('http://localhost:4000/api/server/generate-counter', {
         method: 'POST',
         credentials: 'include'
       });

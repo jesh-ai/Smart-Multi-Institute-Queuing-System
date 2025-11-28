@@ -26,7 +26,6 @@ router.get("/info", getCounterInfo);
 router.get("/info/:sessionId", getCounterBySessionId);
 router.get("/active", getActiveCounters);
 router.get("/keys", getAvailableKeysHandler);
-router.post("/keys/generate", generateKeysHandler);
 router.post("/activate", activateCounter);
 router.post("/serve", serveApplicant);
 router.post("/missing", markApplicantMissing);

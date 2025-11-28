@@ -206,7 +206,7 @@ const cardConfigs = [
     id: 'counter-generate-keys',
     title: 'Generate Key',
     description: 'Generate a new counter key',
-    buttons: [{ label: 'Generate Key', endpoint: '/api/counter/keys/generate', method: 'POST' }],
+    buttons: [{ label: 'Generate Key', endpoint: '/api/server/generate-counter', method: 'POST' }],
     customClass: 'server-actions-session'
   },
   
