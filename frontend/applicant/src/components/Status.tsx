@@ -196,10 +196,7 @@ export default function QueueChatUI({
   // Desktop: Show full-page queue status
   if (isDesktop) {
     return (
-      <div
-        className="h-full flex flex-col items-center justify-between bg-white pt-8 cursor-pointer"
-        onClick={handleStatusClick}
-      >
+      <div className="h-full flex flex-col items-center justify-between bg-white pt-8">
         {/* Queue Info */}
         <div className="flex flex-col items-center flex-grow justify-center">
           <h1 className="text-6xl font-bold text-[#1F3243]">
@@ -236,11 +233,8 @@ export default function QueueChatUI({
   // When keyboard opens on mobile, show only the small status pill (as requested)
   if (keyboardOpen) {
     return (
-      <div
-        className="sticky top-12 z-20 bg-white py-2"
-        onClick={handleStatusClick}
-      >
-        <div className="text-sm text-white font-semibold bg-[#2b4059] p-2 rounded-lg w-[205px] mx-auto cursor-pointer">
+      <div className="sticky top-12 z-20 bg-white py-2">
+        <div className="text-sm text-white font-semibold bg-[#2b4059] p-2 rounded-lg w-[205px] mx-auto">
           Queue Status:{" "}
           <span className={`${statusColor} font-bold`}>{displayStatus}</span>
         </div>
@@ -250,13 +244,10 @@ export default function QueueChatUI({
 
   return (
     // offset slightly so header (sticky top-0 z-50) remains visible above this
-    <div
-      className="sticky top-16 z-40 flex flex-col text-gray-900"
-      onClick={handleStatusClick}
-    >
+    <div className="sticky top-16 z-40 flex flex-col text-gray-900">
       {/* Main chat bubble */}
       <main className="flex-1 px-4 py-5 space-y-3">
-        <div className="max-w-sm bg-gray-100 rounded-2xl shadow p-4 space-y-3 border border-gray-200 cursor-pointer">
+        <div className="max-w-sm bg-gray-100 rounded-2xl shadow p-4 space-y-3 border border-gray-200">
           <div className="flex justify-between items-center bg-gray-200 p-3 rounded-lg">
             <div>
               <div className="text-sm text-white font-semibold bg-[#2b4059] p-2 rounded-lg w-[205px]">
