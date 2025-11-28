@@ -224,7 +224,7 @@ export default function SystemPage() {
                         onClick={() => handleDisconnect(device.id.toString())}
                         className="action-disconnect"
                       >
-                        Disconnect
+                        Reset
                       </button>
                     </td>
                   </tr>
