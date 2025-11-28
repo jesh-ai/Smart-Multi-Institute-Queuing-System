@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { QueueManager } from "./queue.controller.js";
 
 export async function getApplicantInfo(req: Request, res: Response): Promise<void> {
   try {
@@ -18,6 +19,10 @@ export async function getApplicantInfo(req: Request, res: Response): Promise<voi
       : applicant.dateProcessing
       ? "Processing"
       : "In Line";
+
+  const queue = QueueManager.manageQueue()
+  const counter = queue
+  const quueuNumber = ""
 
     res.json({
       success: true,

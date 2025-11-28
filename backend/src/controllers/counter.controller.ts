@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { fetchSessions, storeSession } from "../db/sessions.js";
-import { addAvailableKey } from "../utils/counterKeys.js";
+import { addAvailableKey, isKeyAvailable, useKey } from "../utils/counterKeys.js";
 
 export async function getAllCounters(req: Request, res: Response): Promise<void> {
   try {
@@ -152,6 +152,116 @@ export async function closeCounter(req: Request, res: Response): Promise<void> {
     });
   }
 }
+export async function activateCounter(req: Request, res: Response): Promise<void> {
+  try {
+    const { key } = req.body;
+
+    if (!key) {
+      res.status(400).json({
+        success: false,
+        error: "Counter key is required",
+        message: "Please provide a valid counter key to activate",
+      });
+      return;
+    }
+
+    if (!req.session.counter) {
+      req.session.counter = {};
+    }
+
+    // If this session already has this exact key activated and it's still open, let them in
+    if (req.session.counter.key === key && 
+        req.session.counter.dateOpened && 
+        !req.session.counter.dateClosed) {
+      res.json({
+        success: true,
+        message: "Counter already activated with this key",
+        data: {
+          sessionId: req.sessionID,
+          deviceId: req.session.deviceId,
+          key: req.session.counter.key,
+          dateOpened: req.session.counter.dateOpened,
+          status: "open",
+        },
+      });
+      return;
+    }
+
+    // Check if trying to activate a different key while already having an active counter
+    if (req.session.counter.key && 
+        req.session.counter.key !== key && 
+        req.session.counter.dateOpened && 
+        !req.session.counter.dateClosed) {
+      res.status(400).json({
+        success: false,
+        error: "Counter is already activated with a different key",
+        message: "This session already has an active counter. Please logout first.",
+      });
+      return;
+    }
+
+    // Check if the key is available
+    if (!isKeyAvailable(key)) {
+      res.status(400).json({
+        success: false,
+        error: "Invalid or already used key",
+        message: "The provided key is not available for activation",
+      });
+      return;
+    }
+
+    // If counter was previously closed, allow re-activation by resetting
+    if (req.session.counter.dateClosed) {
+      req.session.counter = {};
+    }
+
+    const keyUsed = useKey(key);
+    if (!keyUsed) {
+      res.status(400).json({
+        success: false,
+        error: "Failed to use key",
+        message: "The key could not be marked as used",
+      });
+      return;
+    }
+
+    
+    req.session.counter.key = key;
+    const dateOpenedValue = new Date().toISOString();
+    req.session.counter.dateOpened = dateOpenedValue;
+    req.session.counter.dateClosed = undefined;
+
+    req.session.save((err) => {
+      if (err) {
+        console.error('Failed to save session after activation:', err);
+        res.status(500).json({
+          success: false,
+          error: "Failed to save session",
+          message: err.message,
+        });
+        return;
+      }
+
+      res.json({
+        success: true,
+        message: "Counter activated successfully",
+        data: {
+          sessionId: req.sessionID,
+          deviceId: req.session.deviceId,
+          key: req.session.counter?.key,
+          dateOpened: req.session.counter?.dateOpened,
+          status: "open",
+        },
+      });
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: "Failed to activate counter",
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+}
 
 
 
@@ -204,116 +314,6 @@ export async function closeCounter(req: Request, res: Response): Promise<void> {
 //     res.status(500).json({
 //       success: false,
 //       error: "Failed to retrieve counter information",
-//       message: error instanceof Error ? error.message : "Unknown error",
-//     });
-//   }
-// }
-// export async function activateCounter(req: Request, res: Response): Promise<void> {
-//   try {
-//     const { key } = req.body;
-
-//     if (!key) {
-//       res.status(400).json({
-//         success: false,
-//         error: "Counter key is required",
-//         message: "Please provide a valid counter key to activate",
-//       });
-//       return;
-//     }
-
-//     if (!req.session.counter) {
-//       req.session.counter = {};
-//     }
-
-//     // If this session already has this exact key activated and it's still open, let them in
-//     if (req.session.counter.key === key && 
-//         req.session.counter.dateOpened && 
-//         !req.session.counter.dateClosed) {
-//       res.json({
-//         success: true,
-//         message: "Counter already activated with this key",
-//         data: {
-//           sessionId: req.sessionID,
-//           deviceId: req.session.deviceId,
-//           key: req.session.counter.key,
-//           dateOpened: req.session.counter.dateOpened,
-//           status: "open",
-//         },
-//       });
-//       return;
-//     }
-
-//     // Check if trying to activate a different key while already having an active counter
-//     if (req.session.counter.key && 
-//         req.session.counter.key !== key && 
-//         req.session.counter.dateOpened && 
-//         !req.session.counter.dateClosed) {
-//       res.status(400).json({
-//         success: false,
-//         error: "Counter is already activated with a different key",
-//         message: "This session already has an active counter. Please logout first.",
-//       });
-//       return;
-//     }
-
-//     // Check if the key is available
-//     if (!isKeyAvailable(key)) {
-//       res.status(400).json({
-//         success: false,
-//         error: "Invalid or already used key",
-//         message: "The provided key is not available for activation",
-//       });
-//       return;
-//     }
-
-//     // If counter was previously closed, allow re-activation by resetting
-//     if (req.session.counter.dateClosed) {
-//       req.session.counter = {};
-//     }
-
-//     const keyUsed = useKey(key);
-//     if (!keyUsed) {
-//       res.status(400).json({
-//         success: false,
-//         error: "Failed to use key",
-//         message: "The key could not be marked as used",
-//       });
-//       return;
-//     }
-
-    
-//     req.session.counter.key = key;
-//     const dateOpenedValue = new Date().toISOString();
-//     req.session.counter.dateOpened = dateOpenedValue;
-//     req.session.counter.dateClosed = undefined;
-
-//     req.session.save((err) => {
-//       if (err) {
-//         console.error('Failed to save session after activation:', err);
-//         res.status(500).json({
-//           success: false,
-//           error: "Failed to save session",
-//           message: err.message,
-//         });
-//         return;
-//       }
-
-//       res.json({
-//         success: true,
-//         message: "Counter activated successfully",
-//         data: {
-//           sessionId: req.sessionID,
-//           deviceId: req.session.deviceId,
-//           key: req.session.counter?.key,
-//           dateOpened: req.session.counter?.dateOpened,
-//           status: "open",
-//         },
-//       });
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       error: "Failed to activate counter",
 //       message: error instanceof Error ? error.message : "Unknown error",
 //     });
 //   }

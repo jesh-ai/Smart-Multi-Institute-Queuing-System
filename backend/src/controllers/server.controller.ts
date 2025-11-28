@@ -24,40 +24,23 @@ export async function shutdownServer(req: Request, res: Response): Promise<void>
 export async function getDashboardQueue(req: Request, res: Response): Promise<void> {
   try {
     const sessions = fetchSessions();
-    let usersInQueue = 0;
-    let nextInLine = 0;
 
-    // Count applicants in queue (submitted but not served)
-    sessions.forEach((session) => {
-      if (
-        session.applicant &&
-        session.applicant.dateSubmitted &&
-        !session.applicant.dateClosed
-      ) {
-        usersInQueue++;
-      }
-    });
+    const applicants = Array.from(sessions).filter(s => {
+      const isApplicant = s[1].applicant != undefined
+      const isClosed = s[1].applicant?.dateClosed == undefined
 
-    // Calculate next in line (earliest submitted applicant)
-    const applicants: Array<{ dateSubmitted: string }> = [];
-    sessions.forEach((session) => {
-      if (
-        session.applicant &&
-        session.applicant.dateSubmitted &&
-        !session.applicant.dateClosed
-      ) {
-        applicants.push({ dateSubmitted: session.applicant.dateSubmitted });
-      }
-    });
+      return isApplicant && isClosed
+    })
+    const sortedApplicants = applicants.sort((a, b) => {
+      const x = a[1].applicant
+      const y = b[1].applicant
+      return new Date(x?.dateSubmitted || 0).getTime() - new Date(y?.dateSubmitted || 0).getTime()
+    })
+    
+    const lastSession = sortedApplicants.length > 0 ? sortedApplicants[sortedApplicants.length - 1][1].applicant?.name : undefined
 
-    if (applicants.length > 0) {
-      applicants.sort((a, b) => 
-        new Date(a.dateSubmitted).getTime() - new Date(b.dateSubmitted).getTime()
-      );
-      nextInLine = 1; // First in queue
-    }
-
-    res.json({ usersInQueue, nextInLine });
+    const usersInQueue = applicants.length
+    res.json({ usersInQueue, lastSession });
   } catch (error) {
     res.status(500).json({
       error: "Failed to retrieve queue data",
@@ -68,19 +51,19 @@ export async function getDashboardQueue(req: Request, res: Response): Promise<vo
 export async function getActiveUsers(req: Request, res: Response): Promise<void> {
   try {
     const sessions = fetchSessions();
-    const activeUsers: Array<{ sessionId: string; deviceId?: string }> = [];
 
-    // Count active applicants (those with applicant data)
-    sessions.forEach((session, sessionId) => {
-      if (session.applicant) {
-        activeUsers.push({
-          sessionId,
-          deviceId: session.deviceId,
-        });
-      }
-    });
+    const serverStartTime = Date.now() - (process.uptime() * 1000);
+    const applicants = Array.from(sessions).filter(s => {
+      const isApplicant = s[1].applicant != undefined
+      const isClosed = s[1].applicant?.dateClosed == undefined
+      const dateSubmitted = s[1].applicant?.dateSubmitted
+      const isAfterServerStart = dateSubmitted ? new Date(dateSubmitted).getTime() >= serverStartTime : false
 
-    res.json(activeUsers);
+      return isApplicant && isClosed && isAfterServerStart
+    })
+
+    
+    res.json(applicants.length);
   } catch (error) {
     res.status(500).json({
       error: "Failed to retrieve active users",
@@ -132,30 +115,21 @@ export async function getSummary(req: Request, res: Response): Promise<void> {
       }
     });
 
-    // Calculate average wait time
-    // If we have completed requests, use their average
-    // If no completed but have waiting, use current waiting average
-    // Otherwise, return 0
     let avgWaitTime = 0;
     if (completedRequestsCount > 0) {
       avgWaitTime = Math.round(totalWaitTime / completedRequestsCount);
     } else if (waitingRequestsCount > 0) {
-      // If no completed requests, show average of current wait times
       avgWaitTime = Math.round(totalCurrentWaitTime / waitingRequestsCount);
     }
     
-    // Calculate uptime
     const uptimeSeconds = process.uptime();
     let totalUptime = 0;
     
     if (uptimeSeconds >= 3600) {
-      // Show in hours if >= 1 hour
       totalUptime = Math.round(uptimeSeconds / 3600);
     } else if (uptimeSeconds >= 60) {
-      // Show in minutes if >= 1 minute (convert to decimal hours)
       totalUptime = Math.round((uptimeSeconds / 3600) * 10) / 10; // Round to 1 decimal
     } else {
-      // Less than a minute, show 0
       totalUptime = 0;
     }
 
@@ -163,7 +137,6 @@ export async function getSummary(req: Request, res: Response): Promise<void> {
       requestsToday,
       avgWaitTime,
       totalUptime,
-      // Extra data for debugging (can be removed in production)
       stats: {
         completedRequests: completedRequestsCount,
         waitingRequests: waitingRequestsCount,
