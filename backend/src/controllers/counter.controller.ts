@@ -39,6 +39,12 @@ export async function getCounterInfo(req: Request, res: Response): Promise<void>
   }
 }
 
+/**
+ * @deprecated
+ * @param req 
+ * @param res 
+ * @returns 
+ */
 export async function getCounterBySessionId(req: Request, res: Response): Promise<void> {
   try {
     const { sessionId } = req.params;
@@ -182,25 +188,47 @@ export async function activateCounter(req: Request, res: Response): Promise<void
       return;
     }
 
+    if (!req.session.counter) {
+      req.session.counter = {};
+    }
+
+    // If this session already has this exact key activated and it's still open, let them in
+    if (req.session.counter.key === key && 
+        req.session.counter.dateOpened && 
+        !req.session.counter.dateClosed) {
+      res.json({
+        success: true,
+        message: "Counter already activated with this key",
+        data: {
+          sessionId: req.sessionID,
+          deviceId: req.session.deviceId,
+          key: req.session.counter.key,
+          dateOpened: req.session.counter.dateOpened,
+          status: "open",
+        },
+      });
+      return;
+    }
+
+    // Check if trying to activate a different key while already having an active counter
+    if (req.session.counter.key && 
+        req.session.counter.key !== key && 
+        req.session.counter.dateOpened && 
+        !req.session.counter.dateClosed) {
+      res.status(400).json({
+        success: false,
+        error: "Counter is already activated with a different key",
+        message: "This session already has an active counter. Please logout first.",
+      });
+      return;
+    }
+
+    // Check if the key is available
     if (!isKeyAvailable(key)) {
       res.status(400).json({
         success: false,
         error: "Invalid or already used key",
         message: "The provided key is not available for activation",
-      });
-      return;
-    }
-
-    if (!req.session.counter) {
-      req.session.counter = {};
-    }
-
-    // Check if this session already has an active counter (not closed)
-    if (req.session.counter.dateOpened && !req.session.counter.dateClosed) {
-      res.status(400).json({
-        success: false,
-        error: "Counter is already activated",
-        message: "This counter has already been activated. Please logout first.",
       });
       return;
     }
