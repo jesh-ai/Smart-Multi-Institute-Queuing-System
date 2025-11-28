@@ -541,12 +541,12 @@ body {
     color: #ffffff; 
 }
 
-.queue-status-badge.status-waiting {
+.queue-status-badge.status-in-line {
     background-color: #facc15;
     color: #713f12;
 }
 
-.queue-status-badge.status-ended {
+.queue-status-badge.status-closed {
     background-color: #ffffff;
     color: #ef4444;
     border-color: #ef4444;

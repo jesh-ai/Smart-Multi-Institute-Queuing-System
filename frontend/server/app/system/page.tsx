@@ -60,7 +60,6 @@ export default function SystemPage() {
 
       if (response.ok) {
         const result = await response.json();
-        alert(`Counter key generated successfully: ${result.data.key}`);
       } else {
         alert('Failed to generate counter key');
       }
@@ -89,7 +88,7 @@ export default function SystemPage() {
         alert(result.message);
         
         // Refresh sessions list
-        const sessionsResponse = await fetch('http://localhost:4000/api/session/all', {
+        const sessionsResponse = await fetch('http://localhost:4000/api/server/counters', {
           credentials: 'include'
         });
         if (sessionsResponse.ok) {
@@ -128,14 +127,14 @@ export default function SystemPage() {
 
     const fetchSessions = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/session/all', {
+        const response = await fetch('http://localhost:4000/api/server/counters', {
           credentials: 'include'
         });
         if (response.ok) {
           const data = await response.json();
           setCounters(data);
         } else {
-          console.log('Failed to fetch sessions from /api/session/all');
+          console.log('Failed to fetch sessions from /api/server/counters');
           setCounters([]);
         }
       } catch (error) {

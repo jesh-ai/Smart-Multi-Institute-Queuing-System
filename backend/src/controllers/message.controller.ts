@@ -24,8 +24,32 @@ interface MessageStructure {
     lastMessages: {
       [key: string]: { u: string; b: string };
     };
+    form_flag: {
+      [key: string]: number;
+    };
   };
   Error_Message: string;
+}
+
+interface InstituteContext {
+  institute: {
+    id: string;
+    name: string;
+    description: string;
+    services: string[];
+    intro: string;
+  };
+  forms: Array<{
+    formId: string;
+    title: string;
+    purpose: string;
+    applicantTypes: string[];
+    requiredFields: string[];
+    conditionalLogic: string[];
+    filingRules: string[];
+    signatureRequirements: string;
+    legalReferences?: string[];
+  }>;
 }
 
 interface InstituteInfo {
@@ -42,6 +66,9 @@ interface BotResponse {
   Message: string;
   Choices: {};
   Errors: string;
+  form_flag?: {
+    [key: string]: number;
+  };
 }
 
 interface MessageEntry {
@@ -58,6 +85,9 @@ interface ContextData {
     lastMessages: {
       [key: string]: { u: string; b: string };
     };
+    currentFormFlags?: {
+      [key: string]: number;
+    };
   };
 }
 
@@ -66,7 +96,13 @@ const loadMessageStructure = (): MessageStructure => {
   try {
     const filePath = path.join(CONFIG_BASE_PATH, 'message_structure.json');
     const data = fs.readFileSync(filePath, 'utf8');
-    return JSON.parse(data);
+    const messageStructure = JSON.parse(data);
+    
+    // Dynamically populate form_flag with current forms
+    const dynamicFormFlags = loadFormFlags();
+    messageStructure.Response_Format.form_flag = dynamicFormFlags;
+    
+    return messageStructure;
   } catch (error) {
     console.error('Error loading message structure:', error);
     throw new Error('Failed to load message structure configuration');
@@ -84,6 +120,49 @@ const loadInstituteInfo = (): InstituteInfo => {
   }
 };
 
+const loadAllInstituteContexts = (): InstituteContext[] => {
+  try {
+    const contexts: InstituteContext[] = [];
+    const files = fs.readdirSync(CONFIG_BASE_PATH);
+    
+    for (const file of files) {
+      if (file.startsWith('institute_context_') && file.endsWith('.json')) {
+        const filePath = path.join(CONFIG_BASE_PATH, file);
+        const data = fs.readFileSync(filePath, 'utf8');
+        contexts.push(JSON.parse(data));
+      }
+    }
+    
+    return contexts;
+  } catch (error) {
+    console.error('Error loading institute contexts:', error);
+    throw new Error('Failed to load institute contexts');
+  }
+};
+
+const loadFormFlags = (): { [key: string]: number } => {
+  try {
+    const formFlags: { [key: string]: number } = {};
+    const formsPath = path.join(CONFIG_BASE_PATH, 'forms');
+    
+    if (fs.existsSync(formsPath)) {
+      const files = fs.readdirSync(formsPath);
+      
+      for (const file of files) {
+        if (file.endsWith('.json')) {
+          const formName = file.replace('.json', '');
+          formFlags[formName] = 0; // Initialize all flags as 0 (false)
+        }
+      }
+    }
+    
+    return formFlags;
+  } catch (error) {
+    console.error('Error loading form flags:', error);
+    return {};
+  }
+};
+
 // Context and messages file management
 const ensureConvosDirectory = (): void => {
   if (!fs.existsSync(DATA_BASE_PATH)) {
@@ -94,6 +173,7 @@ const ensureConvosDirectory = (): void => {
 const createSessionFiles = (sessionId: string): void => {
   const contextFilePath = path.join(DATA_BASE_PATH, `session_${sessionId}_context.json`);
   const messagesFilePath = path.join(DATA_BASE_PATH, `session_${sessionId}_messages.json`);
+  const formFlags = loadFormFlags();
 
   // Create context file structure
   const contextData: ContextData = {
@@ -104,7 +184,8 @@ const createSessionFiles = (sessionId: string): void => {
         1: { u: "", b: "" },
         2: { u: "", b: "" },
         3: { u: "", b: "" }
-      }
+      },
+      currentFormFlags: formFlags
     }
   };
 
@@ -119,28 +200,7 @@ const createSessionFiles = (sessionId: string): void => {
       },
       messageType: "open",
       timestamp: ""
-    },
-    {
-      userMessage: "",
-      botResponse: {
-        Message: "",
-        Choices: {},
-        Errors: ""
-      },
-      messageType: "open",
-      timestamp: ""
-    },
-    {
-      userMessage: "",
-      botResponse: {
-        Message: "",
-        Choices: {},
-        Errors: ""
-      },
-      messageType: "open",
-      timestamp: ""
-    }
-  ];
+    }  ];
 
   // Write files
   fs.writeFileSync(contextFilePath, JSON.stringify(contextData, null, 2), { flag: "w" });
@@ -179,7 +239,7 @@ const updateMessagesFile = (sessionId: string, userMessage: string, botResponse:
   fs.writeFileSync(messagesFilePath, JSON.stringify(messagesData, null, 2));
 };
 
-const updateContextFile = (sessionId: string): void => {
+const updateContextFile = (sessionId: string, latestFormFlags?: { [key: string]: number }): void => {
   const contextFilePath = path.join(DATA_BASE_PATH, `session_${sessionId}_context.json`);
   const messagesFilePath = path.join(DATA_BASE_PATH, `session_${sessionId}_messages.json`);
 
@@ -215,6 +275,11 @@ const updateContextFile = (sessionId: string): void => {
   // Update context data
   contextData[sessionId].lastMessages = updatedLastMessages;
   contextData[sessionId].timestamp = new Date().toISOString();
+  
+  // Update form flags if provided
+  if (latestFormFlags) {
+    contextData[sessionId].currentFormFlags = latestFormFlags;
+  }
 
   // Write updated context back to file
   fs.writeFileSync(contextFilePath, JSON.stringify(contextData, null, 2));
@@ -223,23 +288,52 @@ const updateContextFile = (sessionId: string): void => {
 const constructCompletePrompt = (userMessage: string, sessionId: string, isFirstMessage: boolean = false): string => {
   const messageStructure = loadMessageStructure();
   const instituteInfo = loadInstituteInfo();
+  const instituteContexts = loadAllInstituteContexts();
+  const formFlags = loadFormFlags();
 
   let prompt = `${messageStructure.VA_Personality}\n\n`;
   prompt += `${messageStructure.General_Instruction}\n\n`;
 
   if (isFirstMessage) {
     prompt += `${messageStructure.Start_Instruction}\n\n`;
-    prompt += `Institute Context:\n`;
+    
+    // Add main institute info
+    prompt += `Main Institute Context:\n`;
     prompt += `Name: ${instituteInfo.name}\n`;
     prompt += `Welcome Message: ${instituteInfo.welcome_message}\n`;
     prompt += `Available Services:\n`;
     instituteInfo.service_list.forEach((service, index) => {
       prompt += `${index + 1}. ${service.name}\n`;
       prompt += `   Requirements: ${service.requirements.join(', ')}\n`;
+      prompt += `   Form: ${service.form}\n`;
+    });
+    
+    // Add all institute contexts
+    prompt += `\n\nDetailed Institute Contexts:\n`;
+    instituteContexts.forEach((context, index) => {
+      prompt += `\n${index + 1}. ${context.institute.name} (${context.institute.id.toUpperCase()})\n`;
+      prompt += `   Description: ${context.institute.description}\n`;
+      prompt += `   Introduction: ${context.institute.intro}\n`;
+      prompt += `   Services: ${context.institute.services.join(', ')}\n`;
+      
+      if (context.forms && context.forms.length > 0) {
+        prompt += `   Available Forms:\n`;
+        context.forms.forEach((form) => {
+          prompt += `   - ${form.title} (${form.formId}): ${form.purpose}\n`;
+        });
+      }
+    });
+    
+    // Add form flags information
+    prompt += `\n\nForm Flags (Set to 1 for relevant forms, 0 for irrelevant):\n`;
+    Object.keys(formFlags).forEach(formName => {
+      prompt += `${formName}: ${formFlags[formName]}\n`;
     });
   } else {
     // Add conversation context for continuing messages
     const contextFilePath = path.join(DATA_BASE_PATH, `session_${sessionId}_context.json`);
+    let currentFormFlags = formFlags;
+    
     if (fs.existsSync(contextFilePath)) {
       const contextData: ContextData = JSON.parse(fs.readFileSync(contextFilePath, 'utf8'));
       const sessionContext = contextData[sessionId];
@@ -252,12 +346,46 @@ const constructCompletePrompt = (userMessage: string, sessionId: string, isFirst
           }
         });
       }
+      
+      // Use current form flags from session if available
+      if (sessionContext && sessionContext.currentFormFlags) {
+        currentFormFlags = sessionContext.currentFormFlags;
+      }
     }
+    
+    // Add form flags for continuing conversation
+    prompt += `\n\nCurrent Form Flags (Update based on user's current request):\n`;
+    Object.keys(currentFormFlags).forEach(formName => {
+      prompt += `${formName}: ${currentFormFlags[formName]}\n`;
+    });
   }
 
-  prompt += `\nCurrent user message: "${userMessage}"\n\n`;
-  prompt += `Response Format (JSON):\n`;
-  prompt += JSON.stringify(messageStructure.Response_Format.botResponse, null, 2);
+  prompt += `\n\nIMPORTANT: Based on the user's message, analyze which form(s) are most relevant to their inquiry and set the corresponding form_flag to 1. Only set flags to 1 for forms that are directly relevant to the user's current needs. All other flags should remain 0.\n\n`;
+  prompt += `Current user message: "${userMessage}"\n\n`;
+  prompt += `Response Format (JSON) - MUST include form_flag object with all forms:\n`;
+  
+  // Use current form flags for response format (either from session or default)
+  let currentFormFlags = formFlags;
+  if (!isFirstMessage) {
+    const contextFilePath = path.join(DATA_BASE_PATH, `session_${sessionId}_context.json`);
+    if (fs.existsSync(contextFilePath)) {
+      const contextData: ContextData = JSON.parse(fs.readFileSync(contextFilePath, 'utf8'));
+      const sessionContext = contextData[sessionId];
+      if (sessionContext && sessionContext.currentFormFlags) {
+        currentFormFlags = sessionContext.currentFormFlags;
+      }
+    }
+  }
+  
+  // Update the message structure form_flag with current dynamic flags
+  const dynamicResponseFormat = {
+    ...messageStructure.Response_Format.botResponse,
+    form_flag: currentFormFlags
+  };
+  
+  const responseFormat = dynamicResponseFormat;
+  
+  prompt += JSON.stringify(responseFormat, null, 2);
 
   return prompt;
 };
@@ -276,24 +404,30 @@ const callGeminiAPI = async (completePrompt: string): Promise<BotResponse> => {
       if (jsonMatch) {
         const jsonStr = jsonMatch[0];
         const parsed = JSON.parse(jsonStr);
+        const formFlags = loadFormFlags();
         parsedResponse = {
           Message: parsed.Message || parsed.message || response,
           Choices: parsed.Choices || parsed.choices || {},
-          Errors: parsed.Errors || parsed.errors || ""
+          Errors: parsed.Errors || parsed.errors || "",
+          form_flag: parsed.form_flag || formFlags
         };
       } else {
         // If no JSON found, use the raw response as the message
+        const formFlags = loadFormFlags();
         parsedResponse = {
           Message: response || "Hello! I'm AIvin, your virtual queuing assistant. How can I help you today?",
           Choices: {},
-          Errors: ""
+          Errors: "",
+          form_flag: formFlags
         };
       }
     } catch (parseError) {
+      const formFlags = loadFormFlags();
       parsedResponse = {
         Message: response || "Hello! I'm AIvin, your virtual queuing assistant. How can I help you today?",
         Choices: {},
-        Errors: ""
+        Errors: "",
+        form_flag: formFlags
       };
     }
     
@@ -301,11 +435,13 @@ const callGeminiAPI = async (completePrompt: string): Promise<BotResponse> => {
   } catch (error) {
     console.error('Gemini API error:', error);
     const messageStructure = loadMessageStructure();
+    const formFlags = loadFormFlags();
     const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
     return {
       Message: messageStructure.Error_Message,
       Choices: {},
-      Errors: errorMessage
+      Errors: errorMessage,
+      form_flag: formFlags
     };
   }
 };
@@ -344,7 +480,7 @@ export const sendMessage = async (req: Request, res: Response) => {
     updateMessagesFile(sessionId, message, botResponse);
 
     // Update context file
-    updateContextFile(sessionId);
+    updateContextFile(sessionId, botResponse.form_flag);
 
     return res.status(200).json({
       success: true,
@@ -358,13 +494,15 @@ export const sendMessage = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Send message error:', error);
     const messageStructure = loadMessageStructure();
+    const formFlags = loadFormFlags();
     const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
     return res.status(500).json({
       error: "Failed to process message",
       botResponse: {
         Message: messageStructure.Error_Message,
         Choices: {},
-        Errors: errorMessage
+        Errors: errorMessage,
+        form_flag: formFlags
       }
     });
   }
