@@ -49,7 +49,7 @@ export class QueueManager {
       if (
         session.applicant &&
         session.applicant.dateSubmitted &&
-        !session.applicant.dateServed 
+        !session.applicant.dateClosed 
       ) {
         applicants.push({
           sessionId,

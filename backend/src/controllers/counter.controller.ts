@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { fetchSessions, storeSession } from "../db/sessions.js";
-import { SessionData } from "express-session";
-import { useKey, isKeyAvailable, addAvailableKey, getAvailableKeys, getUsedKeys, generateMultipleKeys } from "../utils/counterKeys.js";
+import { addAvailableKey } from "../utils/counterKeys.js";
 
 export async function getAllCounters(req: Request, res: Response): Promise<void> {
   try {
@@ -120,7 +119,7 @@ export async function closeCounter(req: Request, res: Response): Promise<void> {
     sessions.forEach((session, sid) => {
       if (session.applicant && 
           session.applicant.dateSubmitted && 
-          !session.applicant.dateServed &&
+          !session.applicant.dateClosed &&
           session.counter?.key === counterSession.counter?.key) {
         hasActiveApplicants = true;
       }

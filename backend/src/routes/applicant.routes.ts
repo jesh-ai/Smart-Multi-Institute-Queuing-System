@@ -2,8 +2,10 @@ import { Router } from "express";
 import {
   getApplicantInfo,
   submitApplicantForm,
-  markApplicantServed,
+  markApplicantClosed,
   submitFeedback,
+  markApplicantProcessing,
+  markApplicantMissing,
 } from "../controllers/applicant.controller.js";
 
 const router = Router();
@@ -11,9 +13,9 @@ const router = Router();
 router.get("/info", getApplicantInfo);
 
 router.post("/submit", submitApplicantForm);
-router.put("/served", markApplicantServed);
-router.put("/process", markApplicantServed)
-router.put("/closed", markApplicantServed)
+router.put("/missing", markApplicantMissing);
+router.put("/process",  markApplicantProcessing)
+router.put("/closed", markApplicantClosed)
 
 router.post("/feedback", submitFeedback);
 

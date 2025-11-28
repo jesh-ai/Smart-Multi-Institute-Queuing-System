@@ -32,7 +32,7 @@ export async function getDashboardQueue(req: Request, res: Response): Promise<vo
       if (
         session.applicant &&
         session.applicant.dateSubmitted &&
-        !session.applicant.dateServed
+        !session.applicant.dateClosed
       ) {
         usersInQueue++;
       }
@@ -44,7 +44,7 @@ export async function getDashboardQueue(req: Request, res: Response): Promise<vo
       if (
         session.applicant &&
         session.applicant.dateSubmitted &&
-        !session.applicant.dateServed
+        !session.applicant.dateClosed
       ) {
         applicants.push({ dateSubmitted: session.applicant.dateSubmitted });
       }
@@ -112,8 +112,8 @@ export async function getSummary(req: Request, res: Response): Promise<void> {
         }
 
         // Calculate wait time for completed requests (served today or any day)
-        if (session.applicant.dateServed) {
-          const servedDate = new Date(session.applicant.dateServed);
+        if (session.applicant.dateClosed) {
+          const servedDate = new Date(session.applicant.dateClosed);
           const waitTime = (servedDate.getTime() - submittedDate.getTime()) / (1000 * 60); // minutes
           
           // Only count valid wait times (positive and reasonable)
@@ -271,7 +271,7 @@ export async function getCounters(req: Request, res: Response): Promise<void> {
         sessions.forEach((session) => {
           if (session.applicant && 
               session.applicant.dateSubmitted && 
-              !session.applicant.dateServed) {
+              !session.applicant.dateClosed) {
             hasWaitingApplicants = true;
           }
         });

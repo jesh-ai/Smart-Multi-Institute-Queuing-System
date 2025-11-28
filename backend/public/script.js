@@ -223,27 +223,25 @@ const cardConfigs = [
   
   // Purple
   {
-    id: 'applicant-served',
-    title: 'Mark as Served',
-    description: 'Mark applicant as served',
-    textareas: [{ id: 'served-data', rows: 2, placeholder: '{"closedServed": "notes"}', defaultValue: '{\n  "closedServed": "Completed"\n}' }],
-    buttons: [{ label: 'Mark Served', endpoint: '/api/applicant/served', method: 'PUT', useBody: 'served-data' }],
+    id: 'applicant-processing',
+    title: 'Mark as Processing',
+    description: 'Mark applicant as processing (sets dateProcessing)',
+    buttons: [{ label: 'Mark Processing', endpoint: '/api/applicant/processing', method: 'PUT' }],
     customClass: 'counter-actions'
   },
   {
-    id: 'applicant-served',
-    title: 'Mark as Served',
-    description: 'Mark applicant as served',
-    textareas: [{ id: 'served-data', rows: 2, placeholder: '{"closedServed": "notes"}', defaultValue: '{\n  "closedServed": "Completed"\n}' }],
-    buttons: [{ label: 'Mark Served', endpoint: '/api/applicant/served', method: 'PUT', useBody: 'served-data' }],
+    id: 'applicant-closed',
+    title: 'Mark as Closed',
+    description: 'Mark applicant as closed (sets dateClosed)',
+    textareas: [{ id: 'closed-data', rows: 2, placeholder: '{"closedServed": "notes"}', defaultValue: '{\n  "closedServed": "Session ended"\n}' }],
+    buttons: [{ label: 'Mark Closed', endpoint: '/api/applicant/closed', method: 'PUT', useBody: 'closed-data' }],
     customClass: 'counter-actions'
   },
   {
-    id: 'applicant-served',
-    title: 'Mark as Served',
-    description: 'Mark applicant as served',
-    textareas: [{ id: 'served-data', rows: 2, placeholder: '{"closedServed": "notes"}', defaultValue: '{\n  "closedServed": "Completed"\n}' }],
-    buttons: [{ label: 'Mark Served', endpoint: '/api/applicant/served', method: 'PUT', useBody: 'served-data' }],
+    id: 'applicant-missing',
+    title: 'Mark as Missing',
+    description: 'Mark applicant as missing (moves to back of queue)',
+    buttons: [{ label: 'Mark Missing', endpoint: '/api/applicant/missing', method: 'PUT' }],
     customClass: 'counter-actions'
   },
 

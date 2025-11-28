@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { fetchSessions } from "../db/sessions.js";
 
 export async function getApplicantInfo(req: Request, res: Response): Promise<void> {
   try {
@@ -14,7 +13,7 @@ export async function getApplicantInfo(req: Request, res: Response): Promise<voi
       return;
     }
 
-   const status = applicant.dateServed
+   const status = applicant.dateClosed
       ? "Closed"
       : applicant.dateProcessing
       ? "Processing"
@@ -54,8 +53,7 @@ export async function submitApplicantForm(req: Request, res: Response): Promise<
       document,
       isPriority: isPriority || false,
       dateSubmitted: new Date().toISOString(),
-      dateServed: undefined,
-      closedServed: undefined,
+      dateClosed: undefined,
       feedbackChoice: undefined,
       feedbackComments: undefined,
     };
@@ -138,16 +136,11 @@ export async function submitFeedback(req: Request, res: Response): Promise<void>
     });
   }
 } 
-export async function markApplicantServed(req: Request, res: Response): Promise<void> {
+export async function markApplicantClosed(req: Request, res: Response): Promise<void> {
   try {
     const { sessionId } = req.params;
-    const { closedServed } = req.body;
 
-    // If sessionId provided, mark that applicant; otherwise mark current session
     if (sessionId && sessionId !== req.sessionID) {
-      // Admin/Counter marking another applicant as served
-      // Note: This requires direct session manipulation which isn't ideal
-      // Better approach would be to use a database or proper session store API
       res.status(501).json({
         success: false,
         error: "Marking other sessions as served requires database implementation",
@@ -164,10 +157,7 @@ export async function markApplicantServed(req: Request, res: Response): Promise<
       return;
     }
 
-    req.session.applicant.dateServed = new Date().toISOString();
-    if (closedServed) {
-      req.session.applicant.closedServed = closedServed;
-    }
+    req.session.applicant.dateClosed = new Date().toISOString();
 
     req.session.save((err) => {
       if (err) {
@@ -189,6 +179,126 @@ export async function markApplicantServed(req: Request, res: Response): Promise<
     res.status(500).json({
       success: false,
       error: "Failed to mark applicant as served",
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+}
+export async function markApplicantProcessing(req: Request, res: Response): Promise<void> {
+  try {
+    const { sessionId } = req.params;
+
+    if (sessionId && sessionId !== req.sessionID) {
+      res.status(501).json({
+        success: false,
+        error: "Marking other sessions as processing requires database implementation",
+        message: "Please use the applicant's own session to mark as processing",
+      });
+      return;
+    }
+
+    if (!req.session.applicant) {
+      res.status(404).json({
+        success: false,
+        error: "No applicant information found",
+      });
+      return;
+    }
+
+    req.session.applicant.dateProcessing = new Date().toISOString();
+
+    req.session.save((err) => {
+      if (err) {
+        res.status(500).json({
+          success: false,
+          error: "Failed to mark as processing",
+          message: err.message,
+        });
+        return;
+      }
+
+      res.json({
+        success: true,
+        message: "Applicant marked as processing",
+        data: req.session.applicant,
+      });
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: "Failed to mark applicant as processing",
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+}
+export async function markApplicantMissing(req: Request, res: Response): Promise<void> {
+  try {
+    const { sessionId } = req.params;
+
+    if (sessionId && sessionId !== req.sessionID) {
+      res.status(501).json({
+        success: false,
+        error: "Marking other sessions as missing requires database implementation",
+        message: "Please use the applicant's own session to mark as missing",
+      });
+      return;
+    }
+
+    if (!req.session.applicant) {
+      res.status(404).json({
+        success: false,
+        error: "No applicant information found",
+      });
+      return;
+    }
+
+    const missingCount = (req.session.applicant.missingCount || 0) + 1;
+    req.session.applicant.missingCount = missingCount;
+    
+    if (missingCount >= 3) {
+      req.session.applicant.dateClosed = new Date().toISOString();
+      
+      req.session.save((err) => {
+        if (err) {
+          res.status(500).json({
+            success: false,
+            error: "Failed to close applicant",
+            message: err.message,
+          });
+          return;
+        }
+
+        res.json({
+          success: true,
+          message: "Applicant marked missing 3 times and removed from queue",
+          data: req.session.applicant,
+        });
+      });
+      return;
+    }
+    
+    req.session.applicant.isPriority = false;
+    req.session.applicant.dateSubmitted = new Date().toISOString();
+
+    req.session.save((err) => {
+      if (err) {
+        res.status(500).json({
+          success: false,
+          error: "Failed to mark as missing",
+          message: err.message,
+        });
+        return;
+      }
+
+      res.json({
+        success: true,
+        message: `Applicant marked as missing (${missingCount}/3) and moved to back of queue`,
+        data: req.session.applicant,
+      });
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: "Failed to mark applicant as missing",
       message: error instanceof Error ? error.message : "Unknown error",
     });
   }
