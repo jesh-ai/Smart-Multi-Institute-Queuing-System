@@ -20,16 +20,28 @@ export async function getApplicantInfo(req: Request, res: Response): Promise<voi
       ? "Processing"
       : "In Line";
 
-  const queue = QueueManager.manageQueue()
-  const counter = queue
-  const quueuNumber = ""
+    const queue = QueueManager.manageQueue()
+    const counter = queue.applicants[req.sessionID] 
+    const counters = Object.keys(queue.activeCounters)
+    const counterIndex = counters.findIndex(i => i == counter)
+    const counterName = counterIndex !== -1 ? "Counter " + (counterIndex + 1) : "No Counter"
+    
+    let nthInLine = 0;
+    if (counter) {
+      const counterQueue = queue.queueDistribution.find(q => q.counterId === counter);
+      if (counterQueue) {
+        const applicantPosition = counterQueue.applicants.findIndex(a => a.sessionId === req.sessionID);
+        nthInLine = applicantPosition !== -1 ? applicantPosition + 1 : 0;
+      }
+    }
 
     res.json({
       success: true,
       data: {
         sessionId: req.sessionID,
         status,
-        applicant
+        counterName: counterName,
+        nthInLine: nthInLine,
       }
     });
   } catch (error) {
@@ -143,13 +155,13 @@ export async function submitFeedback(req: Request, res: Response): Promise<void>
 } 
 export async function markApplicantClosed(req: Request, res: Response): Promise<void> {
   try {
-    const { sessionId } = req.params;
+    const { sessionId } = req.body;
 
     if (sessionId && sessionId !== req.sessionID) {
       res.status(501).json({
         success: false,
-        error: "Marking other sessions as served requires database implementation",
-        message: "Please use the applicant's own session to mark as served",
+        error: "Marking other sessions as closed requires database implementation",
+        message: "Please use the applicant's own session to mark as closed",
       });
       return;
     }
@@ -190,7 +202,7 @@ export async function markApplicantClosed(req: Request, res: Response): Promise<
 }
 export async function markApplicantProcessing(req: Request, res: Response): Promise<void> {
   try {
-    const { sessionId } = req.params;
+    const { sessionId } = req.body;
 
     if (sessionId && sessionId !== req.sessionID) {
       res.status(501).json({
@@ -237,7 +249,7 @@ export async function markApplicantProcessing(req: Request, res: Response): Prom
 }
 export async function markApplicantMissing(req: Request, res: Response): Promise<void> {
   try {
-    const { sessionId } = req.params;
+    const { sessionId } = req.body;
 
     if (sessionId && sessionId !== req.sessionID) {
       res.status(501).json({
