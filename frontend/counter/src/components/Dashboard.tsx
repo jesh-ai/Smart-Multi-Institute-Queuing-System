@@ -173,22 +173,32 @@ const Dashboard = () => {
           </thead>
           <tbody>
             {filteredQueue.length > 0 ? (
-              filteredQueue.map((item, index) => (
-                <tr key={item.sessionId} className="even:bg-yellow-50/50 border-b border-gray-100">
-                  <td className="p-4 text-gray-700 font-medium">#{item.position}</td>
-                  <td className="p-4 text-gray-700">{item.name}</td>
-                  <td className="p-4 text-gray-700">{item.document}</td>
-                  <td className="p-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      item.position === 1
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {item.position === 1 ? 'In Progress' : 'Waiting'}
-                    </span>
-                  </td>
-                </tr>
-              ))
+              filteredQueue.map((item, index) => {
+                const status = item.dateClosed
+                  ? "Closed"
+                  : item.dateProcessing
+                  ? "Processing"
+                  : "In Line";
+                
+                const statusStyles = item.dateClosed
+                  ? 'bg-gray-100 text-gray-800'
+                  : item.dateProcessing
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-yellow-100 text-yellow-800';
+                
+                return (
+                  <tr key={item.sessionId} className="even:bg-yellow-50/50 border-b border-gray-100">
+                    <td className="p-4 text-gray-700 font-medium">#{item.position}</td>
+                    <td className="p-4 text-gray-700">{item.name}</td>
+                    <td className="p-4 text-gray-700">{item.document}</td>
+                    <td className="p-4">
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusStyles}`}>
+                        {status}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })
             ) : (
               <tr>
                 <td colSpan={4} className="p-4 text-center text-gray-500">

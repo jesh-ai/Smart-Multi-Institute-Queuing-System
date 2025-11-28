@@ -18,6 +18,8 @@ interface QueueApplicant {
   document: string;
   isPriority: boolean;
   dateSubmitted: string;
+  dateClosed?: string;
+  dateProcessing?: string;
 }
 
 const Applicant = () => {
@@ -44,17 +46,26 @@ const Applicant = () => {
       
       if (response.ok) {
         const result = await response.json();
-        const sessionId = getSessionId(); // Get current counter's session
         
-        // Find current counter's queue
+        // Find current counter's queue using currentCounterId
         const counterQueue = result.data.queueDistribution.find(
-          (q: any) => q.counterId === sessionId
+          (q: any) => q.counterId === result.data.currentCounterId
         );
         
         if (counterQueue && counterQueue.applicants.length > 0) {
-          setInProgressApplicant(counterQueue.applicants[0]);
-          setNextInLine(counterQueue.applicants[1] || null);
-          setInQueueCount(counterQueue.applicants.length - 1);
+          // Find the applicant currently being processed
+          const processing = counterQueue.applicants.find(
+            (a: QueueApplicant) => a.dateProcessing && !a.dateClosed
+          );
+          
+          // Find waiting applicants (not processing, not closed)
+          const waiting = counterQueue.applicants.filter(
+            (a: QueueApplicant) => !a.dateProcessing && !a.dateClosed
+          );
+          
+          setInProgressApplicant(processing || null);
+          setNextInLine(waiting[0] || null);
+          setInQueueCount(waiting.length);
         } else {
           setInProgressApplicant(null);
           setNextInLine(null);
@@ -67,19 +78,13 @@ const Applicant = () => {
       setLoading(false);
     }
   };
-
-  const getSessionId = () => {
-    // This would come from cookies or session storage
-    // For now, we'll use the counter's session
-    return 'current'; // Placeholder - will use actual session
-  };
   
   const handleProcessConfirm = async () => {
     if (!inProgressApplicant) return;
 
     try {
-      const response = await fetch('http://localhost:4000/api/counter/serve', {
-        method: 'POST',
+      const response = await fetch('http://localhost:4000/api/applicant/process', {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -104,8 +109,8 @@ const Applicant = () => {
     if (!inProgressApplicant) return;
 
     try {
-      const response = await fetch('http://localhost:4000/api/counter/missing', {
-        method: 'POST',
+      const response = await fetch('http://localhost:4000/api/applicant/missing', {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -130,8 +135,8 @@ const Applicant = () => {
     if (!inProgressApplicant) return;
 
     try {
-      const response = await fetch('http://localhost:4000/api/counter/close-request', {
-        method: 'POST',
+      const response = await fetch('http://localhost:4000/api/applicant/closed', {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
