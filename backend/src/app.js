@@ -14,8 +14,10 @@ dotenv.config();
 
 const app = express();
 const corsOptions = {
-  origin: process.env.FRONTEND_ORIGIN || true,
+  origin: process.env.FRONTEND_ORIGIN || true, // Allow all origins for development
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
 // Middlewares

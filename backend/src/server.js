@@ -5,6 +5,11 @@ import { instituteInfo, privacyNotice, startBackend } from './controllers/instit
 await startBackend()
 
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+const HOST = '0.0.0.0'; // Listen on all network interfaces
+
+app.listen(PORT, HOST, () => {
+  console.log(`Server running on:`);
+  console.log(`  - Local:   http://localhost:${PORT}`);
+  console.log(`  - Network: http://<your-ip>:${PORT}`);
+  console.log(`\nTo access from mobile, use your computer's IP address.`);
 });

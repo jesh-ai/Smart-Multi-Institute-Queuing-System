@@ -5,6 +5,16 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Header from "../../components/Header";
 import Status from "../../components/Status";
 
+type QueueStatus = "IN LINE" | "PROCESSING" | "CLOSED";
+
+interface ApplicantInfo {
+  queueNumber?: string;
+  status?: QueueStatus;
+  counter?: number;
+  waitTime?: string;
+  message?: string;
+}
+
 function ChatInterface() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -100,10 +110,13 @@ function ChatInterface() {
   const [isLoading, setIsLoading] = useState(false);
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [showStatus, setShowStatus] = useState(false);
-  const [applicantInfo, setApplicantInfo] = useState(null);
+  const [applicantInfo, setApplicantInfo] = useState<ApplicantInfo | null>(
+    null
+  );
   const [viewportHeight, setViewportHeight] = useState<number>(0);
   const [sessionId, setSessionId] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
   // Initialize session ID on client side only
   useEffect(() => {
@@ -156,7 +169,7 @@ function ChatInterface() {
 
       // Fetch applicant info if sessionId is provided
       if (urlSessionId) {
-        fetch(`http://localhost:4000/api/applicant/info/${urlSessionId}`)
+        fetch(`${API_URL}/api/applicant/info/${urlSessionId}`)
           .then((res) => res.json())
           .then((data) => {
             setApplicantInfo(data);
@@ -187,7 +200,7 @@ function ChatInterface() {
     try {
       // Fetch response from backend AI
       const apiResponse = await fetch(
-        `http://localhost:4000/api/sendMessage/${sessionId}`,
+        `${API_URL}/api/sendMessage/${sessionId}`,
         {
           method: "POST",
           headers: {
@@ -197,16 +210,32 @@ function ChatInterface() {
         }
       );
 
-      if (!apiResponse.ok) throw new Error("Failed to fetch response");
+      if (!apiResponse.ok) {
+        console.error(
+          "API Response not OK:",
+          apiResponse.status,
+          apiResponse.statusText
+        );
+        throw new Error(
+          `Server returned ${apiResponse.status}: ${apiResponse.statusText}`
+        );
+      }
+
       const response = await apiResponse.json();
+      console.log("API Response:", response); // Debug log
 
       if (!response.success) {
         // Handle error
+        console.error("Error response:", response); // Debug log
+        const errorMsg =
+          response.botResponse?.Message ||
+          response.error ||
+          "Sorry, there was an error processing your request.";
         setMessages((prev) => [
           ...prev,
           {
             sender: "bot",
-            text: "Sorry, there was an error processing your request.",
+            text: errorMsg,
           },
         ]);
       } else {
@@ -308,13 +337,13 @@ function ChatInterface() {
       </div>
 
       {/* Status Component - shown as sticky chat bubble */}
-      {showStatus && (
+      {showStatus && applicantInfo && (
         <Status
-          queueNumber={applicantInfo?.queueNumber}
-          status={applicantInfo?.status}
-          counter={applicantInfo?.counter}
-          waitTime={applicantInfo?.waitTime}
-          message={applicantInfo?.message}
+          queueNumber={applicantInfo.queueNumber}
+          status={applicantInfo.status}
+          counter={applicantInfo.counter}
+          waitTime={applicantInfo.waitTime}
+          message={applicantInfo.message}
         />
       )}
 

@@ -45,6 +45,32 @@ cd frontend && npm run dev:counter   # Counter dashboard (port 3002)
 - **Applicant Frontend**: `http://localhost:3001` - Customer portal 
 - **Counter Frontend**: `http://localhost:3002` - Staff dashboard
 
+### Mobile/Network Access Setup
+To access the application from mobile devices or other computers on your network:
+
+1. **Find your computer's IP address:**
+   ```bash
+   ipconfig | Select-String "IPv4"
+   ```
+   Look for your active network adapter (e.g., `192.168.1.5`)
+
+2. **Update applicant frontend environment:**
+   - Create/edit `frontend/applicant/.env.local`
+   - Set: `NEXT_PUBLIC_API_URL=http://YOUR_IP:4000`
+   - Replace `YOUR_IP` with your computer's IP address
+
+3. **Restart services:**
+   ```bash
+   npm run server:stop
+   npm run server:start
+   ```
+
+4. **Access from mobile device:**
+   - Ensure mobile is on the same WiFi network
+   - Navigate to: `http://YOUR_IP:3001`
+
+**Note:** The backend now listens on `0.0.0.0` (all network interfaces) to accept connections from any device on your network.
+
 ### Automatic Startup
 The `npm run server:start` command will:
 1. Start the backend server (port 4000)
