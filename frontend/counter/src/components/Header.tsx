@@ -34,22 +34,39 @@ const Header: React.FC<HeaderProps> = ({
     }
 
     try {
-      // Logout and close the counter session
-      const response = await fetch(`${API_BASE}counter/logout`, {
+      // Try to close the counter session first
+      const closeRes = await fetch(`${BASE_URL}counter/close`, {
         method: "POST",
         credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ sessionId: "self" }), // sessionId will be resolved by backend from cookie/session
       });
-
-      if (response.ok) {
-        // Call the parent logout handler
-        onLogout();
+      const closeData = await closeRes.json();
+      if (closeRes.ok) {
+        if (closeData.canClose) {
+          // No applicants, proceed with logout
+          const response = await fetch(`${BASE_URL}counter/logout`, {
+            method: "POST",
+            credentials: "include",
+          });
+          if (response.ok) {
+            onLogout();
+          } else {
+            const error = await response.json();
+            alert(`Logout failed: ${error.message || "Unknown error"}`);
+          }
+        } else {
+          alert(
+            "Counter is closing, but there are still applicants in queue. Please serve all applicants before logging out."
+          );
+        }
       } else {
-        const error = await response.json();
-        alert(`Logout failed: ${error.message || "Unknown error"}`);
+        alert(closeData.message || "Failed to close counter.");
       }
     } catch (error) {
       console.error("Error during logout:", error);
-      // Still logout locally even if the request fails
       onLogout();
     }
   };
