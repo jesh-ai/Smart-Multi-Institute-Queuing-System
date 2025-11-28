@@ -175,7 +175,7 @@ const cardConfigs = [
     id: 'counter-sessions',
     title: 'Counter Sessions',
     description: 'Check session information',
-    buttons: [{ endpoint: '/api/session/all', method: 'GET' }],
+    buttons: [{ endpoint: '/api/server/counters', method: 'GET' }],
     customClass: 'server-connected-devices'
   },
   {
@@ -266,7 +266,7 @@ const cardConfigs = [
     id: 'devices',
     title: 'Devices Info',
     description: 'Check registered devices',
-    buttons: [{ endpoint: '/api/session/devices', method: 'GET' }],
+    buttons: [{ endpoint: '/api/session/all', method: 'GET' }],
     customClass: 'debugger'
   },
   {

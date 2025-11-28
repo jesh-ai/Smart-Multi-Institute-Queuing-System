@@ -1,12 +1,11 @@
 import express from "express";
-import { getCurrentSession, getSessions, getSessionsList, removeSession } from "../controllers/session.controller.js";
+import { getCurrentSession, getSessions, removeSession } from "../controllers/session.controller.js";
 
 const sessionRoutes = express.Router();
 
-sessionRoutes.get("/all", getSessionsList); // FIXME: this is counter only
-sessionRoutes.delete("/:sessionId", removeSession); // TODO: Change implementation
+sessionRoutes.delete("/:sessionId", removeSession); 
 
-sessionRoutes.get("/devices", getSessions); // TODO: rename to all
+sessionRoutes.get("/all", getSessions); 
 sessionRoutes.get("/self", getCurrentSession);
 
 export default sessionRoutes;
