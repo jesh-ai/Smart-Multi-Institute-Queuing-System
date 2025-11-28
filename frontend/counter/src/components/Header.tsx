@@ -11,7 +11,7 @@ interface HeaderProps {
   onLogout: () => void;
 }
 
-const BASE_URL = 'http://localhost:4000/api';
+const BASE_URL = 'http://localhost:4000/api/';
 
 const Header: React.FC<HeaderProps> = ({ currentView, onViewChange, onLogout }) => {
   

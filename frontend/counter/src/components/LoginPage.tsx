@@ -8,7 +8,7 @@ interface LoginPageProps {
   onLogin: (key: string) => void;
 }
 
-const BASE_URL = 'http://localhost:4000/api';
+const BASE_URL = 'http://localhost:4000/api/';
 
 const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
   const [sessionKey, setSessionKey] = useState('');
