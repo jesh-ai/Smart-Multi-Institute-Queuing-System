@@ -21,10 +21,12 @@ function ChatInterface() {
   const [isDesktop, setIsDesktop] = useState<boolean | undefined>(undefined);
   const [mounted, setMounted] = useState(false);
   const [showLanding, setShowLanding] = useState(true);
-  
+
   // --- RESTORED MISSING STATES ---
   const [showMenu, setShowMenu] = useState(false); // Used in logic
-  const [applicantInfo, setApplicantInfo] = useState<ApplicantInfo | null>(null); // Used for Status
+  const [applicantInfo, setApplicantInfo] = useState<ApplicantInfo | null>(
+    null
+  ); // Used for Status
   // ------------------------------
 
   useEffect(() => {
