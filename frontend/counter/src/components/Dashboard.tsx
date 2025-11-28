@@ -31,6 +31,8 @@ interface QueueData {
   currentCounterId: string;
 }
 
+const BASE_URL = 'http://localhost:4000/api';
+
 const Dashboard = () => {
   const [queueData, setQueueData] = useState<QueueData | null>(null);
   const [currentQueue, setCurrentQueue] = useState<CounterQueue | null>(null);
@@ -45,7 +47,7 @@ const Dashboard = () => {
 
   const fetchQueueData = async () => {
     try {
-      const statusResponse = await fetch('http://localhost:4000/api/queue/status', {
+      const statusResponse = await fetch(`${BASE_URL}queue/status`, {
         credentials: 'include'
       });
       

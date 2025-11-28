@@ -22,6 +22,8 @@ interface QueueApplicant {
   dateProcessing?: string;
 }
 
+const BASE_URL = `http://localhost:4000/api/`
+
 const Applicant = () => {
   const [inProgressApplicant, setInProgressApplicant] = useState<QueueApplicant | null>(null);
   const [nextInLine, setNextInLine] = useState<QueueApplicant | null>(null);
@@ -40,7 +42,7 @@ const Applicant = () => {
 
   const fetchQueueData = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/queue/status', {
+      const response = await fetch(`${BASE_URL}queue/status`, {
         credentials: 'include'
       });
       
@@ -83,7 +85,7 @@ const Applicant = () => {
     if (!inProgressApplicant) return;
 
     try {
-      const response = await fetch('http://localhost:4000/api/applicant/process', {
+      const response = await fetch(`${BASE_URL}applicant/process`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -109,7 +111,7 @@ const Applicant = () => {
     if (!inProgressApplicant) return;
 
     try {
-      const response = await fetch('http://localhost:4000/api/applicant/missing', {
+      const response = await fetch(`${BASE_URL}applicant/missing`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -135,7 +137,7 @@ const Applicant = () => {
     if (!inProgressApplicant) return;
 
     try {
-      const response = await fetch('http://localhost:4000/api/applicant/closed', {
+      const response = await fetch(`${BASE_URL}applicant/closed`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

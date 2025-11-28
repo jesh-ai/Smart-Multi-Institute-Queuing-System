@@ -3,6 +3,7 @@
 import React from "react";
 import { Power } from "lucide-react";
 
+const BASE_URL = `http://localhost:4000/api/`
 export default function SettingsPage() {
   
   const handleShutdown = async () => {
@@ -11,7 +12,7 @@ export default function SettingsPage() {
     }
 
     try {
-      const response = await fetch('http://localhost:4000/api/server/shutdown', {
+      const response = await fetch(`${BASE_URL}server/shutdown`, {
         method: 'POST',
         credentials: 'include',
         headers: {

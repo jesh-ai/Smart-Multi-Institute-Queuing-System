@@ -47,6 +47,7 @@ interface QueueStatusResponse {
     };
   };
 }
+const BASE_URL = `http://localhost:4000/api/`
 
 export default function QueuePage() {
   const [queueData, setQueueData] = useState<QueueItem[]>([]);
@@ -59,7 +60,7 @@ export default function QueuePage() {
   useEffect(() => {
     const fetchQueueData = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/queue/status', {
+        const response = await fetch(`${BASE_URL}queue/status`, {
           credentials: 'include'
         });
         if (response.ok) {

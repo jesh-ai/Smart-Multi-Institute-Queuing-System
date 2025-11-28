@@ -16,7 +16,7 @@ interface Session {
   status: string;
   endedAt: string;
 }
-
+const BASE_URL = `http://localhost:4000/api/`
 export default function SystemPage() {
   const [activeTab, setActiveTab] = useState('devices');
   const [devices, setDevices] = useState<Device[]>([]);
@@ -28,14 +28,14 @@ export default function SystemPage() {
     }
 
     try {
-      const response = await fetch(`http://localhost:4000/api/session/${deviceId}`, {
+      const response = await fetch(`${BASE_URL}session/${deviceId}`, {
         method: 'DELETE',
         credentials: 'include'
       });
 
       if (response.ok) {
         // Refresh devices list
-        const devicesResponse = await fetch('http://localhost:4000/api/server/devices', {
+        const devicesResponse = await fetch(`${BASE_URL}server/devices`, {
           credentials: 'include'
         });
         if (devicesResponse.ok) {
@@ -53,7 +53,7 @@ export default function SystemPage() {
 
   const handleAddCounter = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/server/generate-counter', {
+      const response = await fetch(`${BASE_URL}server/generate-counter`, {
         method: 'POST',
         credentials: 'include'
       });
@@ -75,7 +75,7 @@ export default function SystemPage() {
     }
 
     try {
-      const response = await fetch(`http://localhost:4000/api/counter/close`, {
+      const response = await fetch(`${BASE_URL}counter/close`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -88,7 +88,7 @@ export default function SystemPage() {
         alert(result.message);
         
         // Refresh sessions list
-        const sessionsResponse = await fetch('http://localhost:4000/api/server/counters', {
+        const sessionsResponse = await fetch(`${BASE_URL}server/counters`, {
           credentials: 'include'
         });
         if (sessionsResponse.ok) {
@@ -109,7 +109,7 @@ export default function SystemPage() {
   useEffect(() => {
     const fetchDevices = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/server/devices', {
+        const response = await fetch(`${BASE_URL}server/devices`, {
           credentials: 'include'
         });
         if (response.ok) {
@@ -127,7 +127,7 @@ export default function SystemPage() {
 
     const fetchSessions = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/server/counters', {
+        const response = await fetch(`${BASE_URL}server/counters`, {
           credentials: 'include'
         });
         if (response.ok) {
