@@ -38,6 +38,7 @@ export async function getApplicantInfo(req: Request, res: Response): Promise<voi
     res.json({
       success: true,
       data: {
+        sessionId: req.sessionID,
         status,
         counterName: counterName,
         nthInLine: nthInLine,
@@ -154,13 +155,13 @@ export async function submitFeedback(req: Request, res: Response): Promise<void>
 } 
 export async function markApplicantClosed(req: Request, res: Response): Promise<void> {
   try {
-    const { sessionId } = req.params;
+    const { sessionId } = req.body;
 
     if (sessionId && sessionId !== req.sessionID) {
       res.status(501).json({
         success: false,
-        error: "Marking other sessions as served requires database implementation",
-        message: "Please use the applicant's own session to mark as served",
+        error: "Marking other sessions as closed requires database implementation",
+        message: "Please use the applicant's own session to mark as closed",
       });
       return;
     }
@@ -201,7 +202,7 @@ export async function markApplicantClosed(req: Request, res: Response): Promise<
 }
 export async function markApplicantProcessing(req: Request, res: Response): Promise<void> {
   try {
-    const { sessionId } = req.params;
+    const { sessionId } = req.body;
 
     if (sessionId && sessionId !== req.sessionID) {
       res.status(501).json({
@@ -248,7 +249,7 @@ export async function markApplicantProcessing(req: Request, res: Response): Prom
 }
 export async function markApplicantMissing(req: Request, res: Response): Promise<void> {
   try {
-    const { sessionId } = req.params;
+    const { sessionId } = req.body;
 
     if (sessionId && sessionId !== req.sessionID) {
       res.status(501).json({
