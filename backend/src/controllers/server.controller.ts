@@ -24,40 +24,18 @@ export async function shutdownServer(req: Request, res: Response): Promise<void>
 export async function getDashboardQueue(req: Request, res: Response): Promise<void> {
   try {
     const sessions = fetchSessions();
-    let usersInQueue = 0;
-    let nextInLine = 0;
 
-    // Count applicants in queue (submitted but not served)
-    sessions.forEach((session) => {
-      if (
-        session.applicant &&
-        session.applicant.dateSubmitted &&
-        !session.applicant.dateClosed
-      ) {
-        usersInQueue++;
-      }
-    });
+    const applicants = Array.from(sessions).filter(s => s[1].applicant != undefined && s[1].applicant.dateClosed == undefined)
+    const sortedApplicants = applicants.sort((a, b) => {
+      const x = a[1].applicant
+      const y = b[1].applicant
+      return new Date(x?.dateSubmitted || 0).getTime() - new Date(y?.dateSubmitted || 0).getTime()
+    })
+    
+    const lastSession = sortedApplicants.length > 0 ? sortedApplicants[sortedApplicants.length - 1][1].applicant?.name : undefined
 
-    // Calculate next in line (earliest submitted applicant)
-    const applicants: Array<{ dateSubmitted: string }> = [];
-    sessions.forEach((session) => {
-      if (
-        session.applicant &&
-        session.applicant.dateSubmitted &&
-        !session.applicant.dateClosed
-      ) {
-        applicants.push({ dateSubmitted: session.applicant.dateSubmitted });
-      }
-    });
-
-    if (applicants.length > 0) {
-      applicants.sort((a, b) => 
-        new Date(a.dateSubmitted).getTime() - new Date(b.dateSubmitted).getTime()
-      );
-      nextInLine = 1; // First in queue
-    }
-
-    res.json({ usersInQueue, nextInLine });
+    const usersInQueue = applicants.length
+    res.json({ usersInQueue, lastSession });
   } catch (error) {
     res.status(500).json({
       error: "Failed to retrieve queue data",

@@ -7,7 +7,7 @@ import "../styles/globals.css";
 
 interface SessionData {
   usersInQueue: number;
-  nextInLine: number;
+  lastSession?: string;
 }
 
 interface SummaryData {
@@ -17,7 +17,7 @@ interface SummaryData {
 }
 
 export default function DashboardPage() {
-  const [queueData, setQueueData] = useState<SessionData>({ usersInQueue: 0, nextInLine: 0 });
+  const [queueData, setQueueData] = useState<SessionData>({ usersInQueue: 0, lastSession: "None" });
   const [activeUsers, setActiveUsers] = useState(0);
   const [connectedDevices, setConnectedDevices] = useState(0);
   const [activeCounters, setActiveCounters] = useState(0);
@@ -38,7 +38,7 @@ export default function DashboardPage() {
         const sessionData = sessionText ? JSON.parse(sessionText) : {};
         setQueueData({
           usersInQueue: sessionData.usersInQueue ?? 0,
-          nextInLine: sessionData.nextInLine ?? 0,
+          lastSession: sessionData.lastSession ?? "None",
         });
 
         // Active users
@@ -82,7 +82,7 @@ export default function DashboardPage() {
         });
       } catch (err) {
         console.error("Error fetching dashboard data:", err);
-        setQueueData({ usersInQueue: 0, nextInLine: 0 });
+        setQueueData({ usersInQueue: 0, lastSession: undefined });
         setActiveUsers(0);
         setConnectedDevices(0);
         setActiveCounters(0);
@@ -100,8 +100,8 @@ export default function DashboardPage() {
           title="Current Queue Status"
           subtitle="Users in Queue"
           value={`${queueData.usersInQueue} Users`}
-          subtitle2="Next in Line"
-          value2={`Queue No. ${queueData.nextInLine}`}
+          subtitle2="Last applicant entered"
+          value2={`${queueData.lastSession ?? "None"}`}
           icon={<img src="/icons/currentQueueStatus.svg" alt="Users" className="dashboard-icon" />}
         />
         <DashboardCard
