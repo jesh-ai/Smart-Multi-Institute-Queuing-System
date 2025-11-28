@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { fetchSessions } from "../db/sessions.js";
 import { getAvailableKeys } from "../utils/counterKeys.js";
+import { SessionData } from "express-session";
 
 export async function getIsServer(req: Request, res: Response): Promise<void> {
   const serverIp = req.socket.localAddress?.replace("::ffff:", "") || "unknown";
@@ -80,7 +81,6 @@ export async function getSummary(req: Request, res: Response): Promise<void> {
     let waitingRequestsCount = 0;
     let totalCurrentWaitTime = 0;
 
-    // Get today's date at midnight for comparison
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const now = new Date();
@@ -89,27 +89,17 @@ export async function getSummary(req: Request, res: Response): Promise<void> {
       if (session.applicant && session.applicant.dateSubmitted) {
         const submittedDate = new Date(session.applicant.dateSubmitted);
         
-        // Count all requests submitted today (both completed and waiting)
         if (submittedDate >= today) {
           requestsToday++;
         }
 
-        // Calculate wait time for completed requests (served today or any day)
         if (session.applicant.dateClosed) {
           const servedDate = new Date(session.applicant.dateClosed);
-          const waitTime = (servedDate.getTime() - submittedDate.getTime()) / (1000 * 60); // minutes
+          const waitTime = (servedDate.getTime() - submittedDate.getTime()) / (1000 * 60);
           
-          // Only count valid wait times (positive and reasonable)
-          if (waitTime > 0 && waitTime < 1440) { // Less than 24 hours
+          if (waitTime > 0 && waitTime < 1440) { 
             totalWaitTime += waitTime;
             completedRequestsCount++;
-          }
-        } else {
-          // For requests still waiting, calculate current wait time
-          const currentWaitTime = (now.getTime() - submittedDate.getTime()) / (1000 * 60); // minutes
-          if (currentWaitTime > 0 && currentWaitTime < 1440) {
-            totalCurrentWaitTime += currentWaitTime;
-            waitingRequestsCount++;
           }
         }
       }
@@ -293,21 +283,20 @@ export async function getDevices(req: Request, res: Response): Promise<void> {
     // Separate counters and applicants
     const counterDevices: Array<{
       sessionId: string;
-      session: any;
+      session: SessionData;
       timestamp: number;
       isActive: boolean;
     }> = [];
     
     const applicantDevices: Array<{
       sessionId: string;
-      session: any;
+      session: SessionData;
     }> = [];
 
     sessions.forEach((session, sessionId) => {
       if (!session.deviceId) return;
 
       if (session.counter) {
-        // Counter device
         const timestamp = session.counter.dateOpened 
           ? new Date(session.counter.dateOpened).getTime()
           : Date.now();
@@ -344,21 +333,23 @@ export async function getDevices(req: Request, res: Response): Promise<void> {
       status: string;
     }> = [];
 
-    // Add counter devices with incremental names
+    
+    const serverStartTime = Date.now() - (process.uptime() * 1000);
     counterDevices.forEach((item, index) => {
       const counterNumber = index + 1;
       const deviceName = `Counter ${counterNumber}`;
       
       let status = "Online";
-      if (item.session.counter.dateClosed) {
-        status = "Ended";
+      
+      const lastSeen = item.session.lastSeen ? new Date(item.session.lastSeen).getTime() : 0;
+      if (lastSeen > 0 && lastSeen < serverStartTime) {
+        status = "Idle";
       } else if (item.session.cookie?.expires) {
         const expiryDate = new Date(item.session.cookie.expires);
         if (expiryDate < new Date()) {
-          status = "Idle";
+          status = "Expired";
         }
       }
-
       devices.push({
         id: item.sessionId,
         name: deviceName,
@@ -367,15 +358,19 @@ export async function getDevices(req: Request, res: Response): Promise<void> {
       });
     });
 
-    // Add applicant devices
+    
     applicantDevices.forEach((item) => {
       const deviceName = item.session.deviceId || "Unknown Device";
       
       let status = "Online";
-      if (item.session.cookie?.expires) {
+      
+      const lastSeen = item.session.lastSeen ? new Date(item.session.lastSeen).getTime() : 0;
+      if (lastSeen > 0 && lastSeen < serverStartTime) {
+        status = "Idle";
+      } else if (item.session.cookie?.expires) {
         const expiryDate = new Date(item.session.cookie.expires);
         if (expiryDate < new Date()) {
-          status = "Idle";
+          status = "Expired";
         }
       }
 

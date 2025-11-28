@@ -28,8 +28,6 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        
-
         // Current Queue Status
         const sessionRes = await fetch(`${BASE_URL}/server/dashboard/queue`, {
           credentials: 'include'
@@ -58,14 +56,14 @@ export default function DashboardPage() {
         setConnectedDevices(Object.keys(connectedData).length);
 
         // Active counters
-        const countersRes = await fetch(`${BASE_URL}/counter/active`, {
+        const countersRes = await fetch(`${BASE_URL}/server/counters`, {
           credentials: 'include'
         });
         const countersText = await countersRes.text();
         const countersData = countersText ? JSON.parse(countersText) : [];
         setActiveCounters(
           Array.isArray(countersData)
-            ? countersData.filter((c: { status: string }) => c.status?.toLowerCase() === "open").length
+            ? countersData.filter((c: { status: string }) => c.status?.toLowerCase() === "active").length
             : 0
         );
 
