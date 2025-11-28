@@ -203,7 +203,10 @@ export async function getQueueStatus(req: Request, res: Response): Promise<void>
     const queueData = QueueManager.manageQueue();
     res.json({
       success: true,
-      data: queueData,
+      data: {
+        ...queueData,
+        currentCounterId: req.sessionID, // Add the requesting counter's session ID
+      },
     });
   } catch (error) {
     res.status(500).json({

@@ -10,6 +10,8 @@ interface QueueApplicant {
   document: string;
   isPriority: boolean;
   dateSubmitted: string;
+  dateClosed?: string;
+  dateProcessing?: string;
 }
 
 interface CounterQueue {
@@ -26,6 +28,7 @@ interface QueueData {
     priorityApplicants: number;
     regularApplicants: number;
   };
+  currentCounterId: string;
 }
 
 const Dashboard = () => {
@@ -36,33 +39,25 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchQueueData();
-    const interval = setInterval(fetchQueueData, 5000); // Refresh every 5 seconds
+    const interval = setInterval(fetchQueueData, 5000); 
     return () => clearInterval(interval);
   }, []);
 
   const fetchQueueData = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/queue/counter/next', {
+      const statusResponse = await fetch('http://localhost:4000/api/queue/status', {
         credentials: 'include'
       });
       
-      if (response.ok) {
-        const result = await response.json();
-        // Get full queue status
-        const statusResponse = await fetch('http://localhost:4000/api/queue/status', {
-          credentials: 'include'
-        });
+      if (statusResponse.ok) {
+        const statusData = await statusResponse.json();
+        setQueueData(statusData.data);
         
-        if (statusResponse.ok) {
-          const statusData = await statusResponse.json();
-          setQueueData(statusData.data);
-          
-          // Find current counter's queue
-          const counterQueue = statusData.data.queueDistribution.find(
-            (q: CounterQueue) => q.counterId === result.data?.sessionId
-          );
-          setCurrentQueue(counterQueue || null);
-        }
+        // Find current counter's queue using the currentCounterId from backend
+        const counterQueue = statusData.data.queueDistribution.find(
+          (q: CounterQueue) => q.counterId === statusData.data.currentCounterId
+        ) || null;
+        setCurrentQueue(counterQueue);
       }
       setLoading(false);
     } catch (error) {
@@ -71,9 +66,10 @@ const Dashboard = () => {
     }
   };
 
-  const inProgressApplicant = currentQueue?.applicants[0] || null;
-  const nextInLine = currentQueue?.applicants[1] || null;
-  const inQueueCount = currentQueue ? currentQueue.applicants.length - 1 : 0;
+  const inProgressApplicant = currentQueue?.applicants.find(a => a.dateProcessing && !a.dateClosed) || null;
+  const waitingApplicants = currentQueue?.applicants.filter(a => !a.dateProcessing && !a.dateClosed) || [];
+  const nextInLine = waitingApplicants[0] || null;
+  const inQueueCount = waitingApplicants.length;
 
   const filteredQueue = currentQueue?.applicants.filter(applicant =>
     applicant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
