@@ -8,9 +8,11 @@ routes.get("/check", getIsServer);
 routes.get("/dashboard/queue", getDashboardQueue);
 routes.get("/dashboard/users", getActiveUsers);
 routes.get("/dashboard/summary", getSummary);
-routes.get("/devices", getDevices);
 routes.get("/qr", getQR);
 routes.post("/shutdown", shutdownServer);
+
+
+routes.get("/devices", getDevices);
 
 const serverRoutes = routes;
 export default serverRoutes;

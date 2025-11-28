@@ -62,6 +62,7 @@
 const API_BASE = '';
 
 const cardConfigs = [
+  // Green
   {
     id: 'institute-info',
     title: 'Institute Info',
@@ -92,7 +93,7 @@ const cardConfigs = [
     customClass: 'institute'
   },
   
-  
+  // Cyan
   {
     id: 'applicant-submit',
     title: 'Submit Applicant Form',
@@ -117,7 +118,54 @@ const cardConfigs = [
     customClass: "applicant-actions"
   },
 
+  
+  // Yellow
+  {
+    id: 'server-shutdown',
+    title: 'Server Shutdown',
+    description: 'Shutdown the entire server',
+    buttons: [{ label: 'Shutdown Server', endpoint: '/api/server/shutdown', method: 'POST' }],
+    customClass: 'small-server'
+  },
+  
+  {
+    id: 'dashboard-queue',
+    title: 'Dashboard - Queue Status',
+    description: 'Get queue data for dashboard (users in queue, next in line)',
+    buttons: [{ label: 'Get Queue Data', endpoint: '/api/server/dashboard/queue', method: 'GET' }],
+    customClass: 'small-server'
+  },
+  {
+    id: 'dashboard-users',
+    title: 'Dashboard - Active Users',
+    description: 'Get list of active users for dashboard',
+    buttons: [{ label: 'Get Active Users', endpoint: '/api/server/dashboard/users', method: 'GET' }],
+    customClass: 'small-server'
+  },
+  {
+    id: 'dashboard-summary',
+    title: 'Dashboard - Summary',
+    description: 'Get summary statistics (requests today, avg wait time, uptime)',
+    buttons: [{ label: 'Get Summary', endpoint: '/api/server/dashboard/summary', method: 'GET' }],
+    customClass: 'small-server'
+  },
+  {
+    id: 'qr',
+    title: 'QR Code Generator',
+    description: 'Generate QR code for any URL',
+    inputs: [{ id: 'qr-url', type: 'text', placeholder: 'Enter URL', defaultValue: 'http://localhost:4000/test.html' }],
+    buttons: [{ endpoint: '/api/server/qr', method: 'GET', useInputs: ['qr-url'] }],
+    customClass: 'small-server'
+  },
+  {
+    id: 'server-check',
+    title: 'Server Check',
+    description: 'Check server status',
+    buttons: [{ endpoint: '/api/server/check', method: 'GET' }],
+    customClass: 'small-server'
+  },
 
+  // IOK
   {
     id: 'session',
     title: 'Session Info',
@@ -249,37 +297,6 @@ const cardConfigs = [
     inputs: [{ id: 'counter-session-id', type: 'text', placeholder: 'Counter ID (optional, uses current session if empty)' }],
     buttons: [{ label: 'Get Counter Queue', endpoint: '/api/queue/counter/:id', method: 'GET', useInputs: ['counter-session-id'] }]
   },
-  
-  {
-    id: 'server-shutdown',
-    title: 'Server Shutdown',
-    description: 'Shutdown the entire server',
-    buttons: [{ label: 'Shutdown Server', endpoint: '/api/server/shutdown', method: 'POST' }],
-    customClass: 'danger-card'
-  },
-  
-  // Dashboard Routes
-  {
-    id: 'dashboard-queue',
-    title: 'Dashboard - Queue Status',
-    description: 'Get queue data for dashboard (users in queue, next in line)',
-    buttons: [{ label: 'Get Queue Data', endpoint: '/api/server/dashboard/queue', method: 'GET' }],
-    customClass: 'dashboard-card'
-  },
-  {
-    id: 'dashboard-users',
-    title: 'Dashboard - Active Users',
-    description: 'Get list of active users for dashboard',
-    buttons: [{ label: 'Get Active Users', endpoint: '/api/server/dashboard/users', method: 'GET' }],
-    customClass: 'dashboard-card'
-  },
-  {
-    id: 'dashboard-summary',
-    title: 'Dashboard - Summary',
-    description: 'Get summary statistics (requests today, avg wait time, uptime)',
-    buttons: [{ label: 'Get Summary', endpoint: '/api/server/dashboard/summary', method: 'GET' }],
-    customClass: 'dashboard-card'
-  },
   // {
   //   id: 'stats',
   //   title: 'Database Statistics',
@@ -335,19 +352,6 @@ const cardConfigs = [
   //   title: 'Database Tables',
   //   description: 'List all database tables',
   //   buttons: [{ endpoint: '/api/test/tables', method: 'GET' }]
-  // },
-  // {
-  //   id: 'qr',
-  //   title: 'QR Code Generator',
-  //   description: 'Generate QR code for any URL',
-  //   inputs: [{ id: 'qr-url', type: 'text', placeholder: 'Enter URL', defaultValue: 'http://localhost:4000/test.html' }],
-  //   buttons: [{ endpoint: '/api/qr', method: 'GET', useInputs: ['qr-url'] }]
-  // },
-  // {
-  //   id: 'server-check',
-  //   title: 'Server Check',
-  //   description: 'Check server status',
-  //   buttons: [{ endpoint: '/api/server/check', method: 'GET' }]
   // },
   // {
   //   id: 'counters-get',

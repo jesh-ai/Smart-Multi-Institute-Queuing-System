@@ -57,7 +57,7 @@ body {
 }
 
 .card {
-  background: white;
+  background: rgb(209, 6, 6);
   border: 1px solid #ddd;
   padding: 20px;
   height: 500px;
@@ -207,7 +207,7 @@ input, textarea {
 }
 
 .card {
-  background: #d4ffe1;
+  background: #ff0000;
 }
 
 .card h2 {
@@ -247,12 +247,9 @@ input, textarea {
 .institute {
   background: rgb(196, 236, 158)
 }
-.danger {
-  background: #ffe5e5 ;
-}
-.dashboard {
-  background: #ffcccb ;
+.small-server {
+  background: #f9fdbb ;
 }
 .applicant-actions {
-  background: #7afcea ;
+  background: #a9ece3 ;
 }
