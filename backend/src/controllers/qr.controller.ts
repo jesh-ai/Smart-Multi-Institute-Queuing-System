@@ -1,16 +1,40 @@
 import QRCode from 'qrcode';
 import { Request, Response } from 'express';
+import os from 'os';
+
+function getServerIP(): string {
+  const interfaces = os.networkInterfaces();
+  for (const name of Object.keys(interfaces)) {
+    const iface = interfaces[name];
+    if (iface) {
+      for (const alias of iface) {
+        if (alias.family === 'IPv4' && !alias.internal) {
+          return alias.address;
+        }
+      }
+    }
+  }
+  return 'localhost';
+}
 
 export async function getQR(req: Request, res: Response) {
   try {
-    const url = req.query.url || req.body.url;
+    const serverIP = getServerIP();
+    const protocol = req.protocol;
     
-    if (!url) {
-      return res.status(400).json({ error: "URL parameter is required" });
-    }
+    // Generate QR codes for both ports
+    const url3001 = `${protocol}://${serverIP}:3001`;
+    const url3002 = `${protocol}://${serverIP}:3002`;
     
-    const qrDataUrl = await QRCode.toDataURL(url as string);
-    res.json({ qr: qrDataUrl });
+    const qr3001 = await QRCode.toDataURL(url3001);
+    const qr3002 = await QRCode.toDataURL(url3002);
+    
+    res.json({ 
+      qr3001: qr3001,
+      qr3002: qr3002,
+      url3001: url3001,
+      url3002: url3002
+    });
   } catch (err) {
     console.error("QR Error:", err);
     res.status(500).json({ error: "Failed to generate QR" });
