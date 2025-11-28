@@ -23,13 +23,15 @@ export async function generateKeysHandler(req: Request, res: Response): Promise<
 }
 export async function closeCounter(req: Request, res: Response): Promise<void> {
   try {
-    const { sessionId } = req.body;
+    let { sessionId } = req.body;
+    if (sessionId == "self") sessionId = req.sessionID
 
     if (!sessionId) {
       res.status(400).json({
         success: false,
         error: "Session ID is required",
       });
+      console.warn("Session ID is required")
       return;
     }
 
@@ -42,6 +44,7 @@ export async function closeCounter(req: Request, res: Response): Promise<void> {
         error: "Counter not found",
         message: "No counter found with the provided session ID",
       });
+      console.warn("Counter not found")
       return;
     }
 
@@ -51,6 +54,7 @@ export async function closeCounter(req: Request, res: Response): Promise<void> {
         error: "Counter was never opened",
         message: "Cannot close a counter that was never opened",
       });
+      console.warn("Counter was never opened")
       return;
     }
 
@@ -60,6 +64,7 @@ export async function closeCounter(req: Request, res: Response): Promise<void> {
         error: "Counter is already closed",
         message: "This counter has already been closed",
       });
+      console.warn("Counter is already closed")
       return;
     }
 
