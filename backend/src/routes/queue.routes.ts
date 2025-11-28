@@ -10,6 +10,8 @@ import {
 const router = Router();
 
 router.get("/status", getQueueStatus);
+
+// TBR
 router.get("/all", getAllQueueItems);
 router.get("/applicant/:sessionId", getApplicantPosition);
 router.get("/counter/next", getNextApplicant);

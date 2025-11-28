@@ -20,7 +20,7 @@ interface Session {
 export default function SystemPage() {
   const [activeTab, setActiveTab] = useState('devices');
   const [devices, setDevices] = useState<Device[]>([]);
-  const [sessions, setSessions] = useState<Session[]>([]);
+  const [counters, setCounters] = useState<Session[]>([]);
 
   const handleDisconnect = async (deviceId: string) => {
     if (!confirm('Are you sure you want to disconnect this device?')) {
@@ -94,7 +94,7 @@ export default function SystemPage() {
         });
         if (sessionsResponse.ok) {
           const data = await sessionsResponse.json();
-          setSessions(data);
+          setCounters(data);
         }
       } else {
         const error = await response.json();
@@ -133,14 +133,14 @@ export default function SystemPage() {
         });
         if (response.ok) {
           const data = await response.json();
-          setSessions(data);
+          setCounters(data);
         } else {
           console.log('Failed to fetch sessions from /api/session/all');
-          setSessions([]);
+          setCounters([]);
         }
       } catch (error) {
         console.log('Failed to fetch sessions:', error);
-        setSessions([]);
+        setCounters([]);
       }
     };
 
@@ -260,7 +260,7 @@ export default function SystemPage() {
                 </tr>
               </thead>
               <tbody>
-                {sessions.map((session) => (
+                {counters.map((session) => (
                   <tr key={session.id}>
                     <td>{session.counterName}</td>
                     <td>
