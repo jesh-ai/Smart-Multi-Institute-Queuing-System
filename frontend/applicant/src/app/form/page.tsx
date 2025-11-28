@@ -83,6 +83,9 @@ function FormFillingPage() {
   const [pageIndex, setPageIndex] = useState(0);
   const [fieldsPerPage, setFieldsPerPage] = useState(4);
   const [confirmationChecked, setConfirmationChecked] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
 
   // Calculate responsive fields per page based on viewport height
   useEffect(() => {
@@ -140,6 +143,113 @@ function FormFillingPage() {
     setConfirmationChecked(false);
   }, [pageIndex]);
 
+  // Check if all required fields on current page are filled
+  const areRequiredFieldsFilled = useCallback(() => {
+    const pages = chunk(leafFields, fieldsPerPage);
+    const currentPageFields = pages[pageIndex] || [];
+
+    for (const field of currentPageFields) {
+      const { path, schema } = field;
+
+      // Check if field is required
+      if (schema && typeof schema === "object" && !Array.isArray(schema)) {
+        const schemaObj = schema as JsonObject;
+        const required = schemaObj.required as boolean | undefined;
+
+        if (required) {
+          // Get the value for this field
+          const value = getValueAtPath(formData, path);
+          const strValue =
+            typeof value === "string" ? value : String(value || "");
+
+          // If required field is empty, return false
+          if (!strValue.trim()) {
+            return false;
+          }
+        }
+      }
+    }
+
+    return true;
+  }, [leafFields, fieldsPerPage, pageIndex, formData]);
+
+  // Validation function
+  const validateField = (
+    path: string,
+    value: JsonValue,
+    fieldSchema: JsonValue
+  ): string => {
+    if (
+      fieldSchema === null ||
+      typeof fieldSchema !== "object" ||
+      Array.isArray(fieldSchema)
+    ) {
+      return "";
+    }
+
+    const schema = fieldSchema as JsonObject;
+    const validation = schema.validation as JsonObject | undefined;
+    const required = schema.required as boolean | undefined;
+    const fieldType = schema.fieldType as string | undefined;
+    const pattern = schema.pattern as string | undefined; // For tel fields
+
+    const strValue = typeof value === "string" ? value : String(value || "");
+
+    // Check required
+    if (required && !strValue.trim()) {
+      return "This field is required";
+    }
+
+    // Skip validation if field is empty and not required
+    if (!strValue.trim() && !required) {
+      return "";
+    }
+
+    // Check validation rules
+    if (validation) {
+      // Pattern validation
+      const validationPattern = validation.pattern as string | undefined;
+      if (validationPattern) {
+        try {
+          const regex = new RegExp(validationPattern);
+          if (!regex.test(strValue)) {
+            return "Invalid format";
+          }
+        } catch (e) {
+          console.error("Invalid regex pattern:", validationPattern, e);
+        }
+      }
+
+      // Max length validation
+      const maxLength = validation.maxLength as number | undefined;
+      if (maxLength && strValue.length > maxLength) {
+        return `Maximum ${maxLength} characters allowed`;
+      }
+    }
+
+    // Check pattern attribute (for tel fields)
+    if (pattern && fieldType === "tel") {
+      try {
+        const regex = new RegExp(pattern);
+        if (!regex.test(strValue)) {
+          return "Invalid phone number format";
+        }
+      } catch (e) {
+        console.error("Invalid regex pattern:", pattern, e);
+      }
+    }
+
+    // Email validation
+    if (fieldType === "email" && strValue) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(strValue)) {
+        return "Invalid email address";
+      }
+    }
+
+    return "";
+  };
+
   const handleChange = (path: string, value: JsonValue) => {
     // update nested formData by path (dot separated)
     setFormData((prev) => {
@@ -157,6 +267,26 @@ function FormFillingPage() {
       (cur as JsonObject)[lastKey] = value;
       return clone;
     });
+
+    // Validate the field
+    const fieldDef = leafFields.find((f) => f.path === path);
+    console.log("🔍 Validating field:", path, "value:", value);
+    console.log("📄 Field definition:", fieldDef);
+    if (fieldDef) {
+      const error = validateField(path, value, fieldDef.schema);
+      console.log("❌ Validation error:", error);
+      setValidationErrors((prev) => {
+        const updated = { ...prev };
+        if (error) {
+          updated[path] = error;
+        } else {
+          delete updated[path];
+        }
+        return updated;
+      });
+    } else {
+      console.log("⚠️ No field definition found for:", path);
+    }
   };
   useEffect(() => {
     // fetch form definition from API
@@ -183,11 +313,84 @@ function FormFillingPage() {
         }
 
         setFormDef(json);
-        // initialize formData with values from json (keeping structure)
-        const initData = deepCloneAndEmpty(json) as JsonObject;
+
+        console.log("🔍 Form JSON structure:", json);
+        console.log("🔍 Has sections?", "sections" in json);
+        console.log("🔍 JSON keys:", Object.keys(json));
+
+        // Check if json has nested form structure (backend returns {institution, form, metadata})
+        let formData = json;
+        if (json && typeof json === "object" && "form" in json) {
+          console.log("📦 Extracting form from nested structure");
+          formData = (json as JsonObject).form as JsonObject;
+          console.log("📦 Extracted form:", formData);
+          console.log(
+            "📦 Form has sections?",
+            formData && "sections" in formData
+          );
+        }
+
+        // Check if form has sections with fields (new structure)
+        if (
+          formData &&
+          typeof formData === "object" &&
+          "sections" in formData
+        ) {
+          console.log("📋 Form has sections structure");
+          const sections = (formData as JsonObject).sections as JsonValue[];
+          if (Array.isArray(sections)) {
+            // Extract all fields from sections
+            const allFields: { path: string; schema: JsonValue }[] = [];
+            const initData: JsonObject = {};
+
+            sections.forEach((section) => {
+              if (typeof section === "object" && section !== null) {
+                const sectionObj = section as JsonObject;
+                const fields = sectionObj.fields as JsonValue[];
+
+                if (Array.isArray(fields)) {
+                  fields.forEach((field) => {
+                    if (typeof field === "object" && field !== null) {
+                      const fieldObj = field as JsonObject;
+                      const fieldId = fieldObj.id as string;
+
+                      if (fieldId) {
+                        // Store the full field definition as schema
+                        allFields.push({
+                          path: fieldId,
+                          schema: field,
+                        });
+
+                        // Initialize empty value based on field type
+                        const fieldType = fieldObj.fieldType as string;
+                        if (fieldType === "checkbox") {
+                          initData[fieldId] = false;
+                        } else {
+                          initData[fieldId] = "";
+                        }
+                      }
+                    }
+                  });
+                }
+              }
+            });
+
+            console.log("✅ Extracted fields:", allFields.length);
+            console.log("📝 Sample field:", allFields[0]);
+            setLeafFields(allFields);
+            setFormData(initData);
+            setPageIndex(0);
+            setLoading(false);
+            return;
+          }
+        }
+
+        console.log("⚠️ Using fallback flat structure");
+
+        // Fallback to old flat structure
+        const initData = deepCloneAndEmpty(formData) as JsonObject;
         setFormData(initData);
-        // compute leaf fields and reset pagination
-        const leaves = collectLeafPaths(json, "");
+        const leaves = collectLeafPaths(formData, "");
         setLeafFields(leaves.filter((l) => l.path));
         setPageIndex(0);
       } catch (err) {
@@ -325,14 +528,28 @@ function FormFillingPage() {
                           onChange={(e) =>
                             setConfirmationChecked(e.target.checked)
                           }
-                          className="mt-1 w-5 h-5 cursor-pointer"
+                          disabled={!areRequiredFieldsFilled()}
+                          className={`mt-1 w-5 h-5 ${
+                            areRequiredFieldsFilled()
+                              ? "cursor-pointer"
+                              : "cursor-not-allowed opacity-50"
+                          }`}
                         />
                         <label
                           htmlFor="confirmation-checkbox"
-                          className="text-sm font-medium text-gray-800 cursor-pointer"
+                          className={`text-sm font-medium ${
+                            areRequiredFieldsFilled()
+                              ? "text-gray-800 cursor-pointer"
+                              : "text-gray-400 cursor-not-allowed"
+                          }`}
                         >
                           Please confirm if the following information is
                           correct.
+                          {!areRequiredFieldsFilled() && (
+                            <span className="block text-xs text-red-500 mt-1">
+                              * Please fill all required fields first
+                            </span>
+                          )}
                         </label>
                       </div>
                     </>
@@ -453,14 +670,28 @@ function FormFillingPage() {
                           onChange={(e) =>
                             setConfirmationChecked(e.target.checked)
                           }
-                          className="mt-1 w-5 h-5 cursor-pointer"
+                          disabled={!areRequiredFieldsFilled()}
+                          className={`mt-1 w-5 h-5 ${
+                            areRequiredFieldsFilled()
+                              ? "cursor-pointer"
+                              : "cursor-not-allowed opacity-50"
+                          }`}
                         />
                         <label
                           htmlFor="confirmation-checkbox-desktop"
-                          className="text-sm font-medium text-gray-800 cursor-pointer"
+                          className={`text-sm font-medium ${
+                            areRequiredFieldsFilled()
+                              ? "text-gray-800 cursor-pointer"
+                              : "text-gray-400 cursor-not-allowed"
+                          }`}
                         >
                           Please confirm if the following information is
                           correct.
+                          {!areRequiredFieldsFilled() && (
+                            <span className="block text-xs text-red-500 mt-1">
+                              * Please fill all required fields first
+                            </span>
+                          )}
                         </label>
                       </div>
                     </>
@@ -653,25 +884,48 @@ function FormFillingPage() {
   function renderLeafField(f: { path: string; schema: JsonValue }) {
     const { path, schema } = f;
     const key = path;
-    const humanLabel = humanize(path.split(".").slice(-1)[0]);
 
     const raw = getValueAtPath(formData, path);
     const val =
       typeof raw === "string" || typeof raw === "number" ? String(raw) : "";
+
+    const error = validationErrors[path];
+    const hasError = !!error;
+
+    // Extract validation info from schema
+    const schemaObj =
+      typeof schema === "object" && schema !== null && !Array.isArray(schema)
+        ? (schema as JsonObject)
+        : {};
+    const required = schemaObj.required as boolean | undefined;
+    const fieldType = schemaObj.fieldType as string | undefined;
+    const placeholder = schemaObj.placeholder as string | undefined;
+    const pattern = schemaObj.pattern as string | undefined;
+    const label = schemaObj.label as string | undefined;
+    const options = schemaObj.options as
+      | Array<{ value: string; label: string }>
+      | undefined;
+
+    // Use label from schema if available, otherwise humanize the path
+    const displayLabel = label || humanize(path.split(".").slice(-1)[0]);
 
     // primitives and null -> text
     if (typeof schema === "string" || schema === null) {
       return (
         <div key={key}>
           <label className="block font-semibold text-gray-800">
-            {humanLabel}
+            {displayLabel}
+            {required && <span className="text-red-500 ml-1">*</span>}
           </label>
           <input
             type="text"
             value={val}
             onChange={(e) => handleChange(path, e.target.value as JsonValue)}
-            className="w-full p-2 border rounded-md mt-1 bg-white text-gray-900 placeholder-gray-400 border-gray-300"
+            className={`w-full p-2 border rounded-md mt-1 bg-white text-gray-900 placeholder-gray-400 ${
+              hasError ? "border-red-500" : "border-gray-300"
+            }`}
           />
+          {hasError && <p className="text-red-500 text-sm mt-1">{error}</p>}
         </div>
       );
     }
@@ -685,7 +939,148 @@ function FormFillingPage() {
             checked={boolVal}
             onChange={(e) => handleChange(path, e.target.checked as JsonValue)}
           />
-          <label className="font-semibold text-gray-800">{humanLabel}</label>
+          <label className="font-semibold text-gray-800">{displayLabel}</label>
+        </div>
+      );
+    }
+
+    // Handle specific field types from schema
+    if (fieldType === "radio" && options) {
+      return (
+        <div key={key}>
+          <label className="block font-semibold text-gray-800 mb-2">
+            {displayLabel}
+            {required && <span className="text-red-500 ml-1">*</span>}
+          </label>
+          <div className="space-y-2">
+            {options.map((option) => (
+              <label
+                key={option.value}
+                className="flex items-center gap-2 cursor-pointer"
+              >
+                <input
+                  type="radio"
+                  name={path}
+                  value={option.value}
+                  checked={val === option.value}
+                  onChange={(e) =>
+                    handleChange(path, e.target.value as JsonValue)
+                  }
+                  className="w-4 h-4"
+                />
+                <span className="text-gray-800">{option.label}</span>
+              </label>
+            ))}
+          </div>
+          {hasError && <p className="text-red-500 text-sm mt-1">{error}</p>}
+        </div>
+      );
+    }
+
+    if (fieldType === "select" && options) {
+      return (
+        <div key={key}>
+          <label className="block font-semibold text-gray-800">
+            {displayLabel}
+            {required && <span className="text-red-500 ml-1">*</span>}
+          </label>
+          <select
+            value={val}
+            onChange={(e) => handleChange(path, e.target.value as JsonValue)}
+            className={`w-full p-2 border rounded-md mt-1 bg-white text-gray-900 ${
+              hasError ? "border-red-500" : "border-gray-300"
+            }`}
+          >
+            <option value="">Select...</option>
+            {options.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          {hasError && <p className="text-red-500 text-sm mt-1">{error}</p>}
+        </div>
+      );
+    }
+
+    if (fieldType === "date") {
+      return (
+        <div key={key}>
+          <label className="block font-semibold text-gray-800">
+            {displayLabel}
+            {required && <span className="text-red-500 ml-1">*</span>}
+          </label>
+          <input
+            type="date"
+            value={val}
+            onChange={(e) => handleChange(path, e.target.value as JsonValue)}
+            className={`w-full p-2 border rounded-md mt-1 bg-white text-gray-900 ${
+              hasError ? "border-red-500" : "border-gray-300"
+            }`}
+          />
+          {hasError && <p className="text-red-500 text-sm mt-1">{error}</p>}
+        </div>
+      );
+    }
+
+    if (fieldType === "tel") {
+      return (
+        <div key={key}>
+          <label className="block font-semibold text-gray-800">
+            {displayLabel}
+            {required && <span className="text-red-500 ml-1">*</span>}
+          </label>
+          <input
+            type="tel"
+            value={val}
+            placeholder={placeholder}
+            pattern={pattern}
+            onChange={(e) => handleChange(path, e.target.value as JsonValue)}
+            className={`w-full p-2 border rounded-md mt-1 bg-white text-gray-900 placeholder-gray-400 ${
+              hasError ? "border-red-500" : "border-gray-300"
+            }`}
+          />
+          {hasError && <p className="text-red-500 text-sm mt-1">{error}</p>}
+        </div>
+      );
+    }
+
+    if (fieldType === "email") {
+      return (
+        <div key={key}>
+          <label className="block font-semibold text-gray-800">
+            {displayLabel}
+            {required && <span className="text-red-500 ml-1">*</span>}
+          </label>
+          <input
+            type="email"
+            value={val}
+            onChange={(e) => handleChange(path, e.target.value as JsonValue)}
+            className={`w-full p-2 border rounded-md mt-1 bg-white text-gray-900 placeholder-gray-400 ${
+              hasError ? "border-red-500" : "border-gray-300"
+            }`}
+          />
+          {hasError && <p className="text-red-500 text-sm mt-1">{error}</p>}
+        </div>
+      );
+    }
+
+    if (fieldType === "text") {
+      return (
+        <div key={key}>
+          <label className="block font-semibold text-gray-800">
+            {displayLabel}
+            {required && <span className="text-red-500 ml-1">*</span>}
+          </label>
+          <input
+            type="text"
+            value={val}
+            onChange={(e) => handleChange(path, e.target.value as JsonValue)}
+            className={`w-full p-2 border rounded-md mt-1 bg-white text-gray-900 placeholder-gray-400 ${
+              hasError ? "border-red-500" : "border-gray-300"
+            }`}
+          />
+          {hasError && <p className="text-red-500 text-sm mt-1">{error}</p>}
         </div>
       );
     }
@@ -697,7 +1092,7 @@ function FormFillingPage() {
         return (
           <div key={key} className="p-2 border rounded-md bg-white">
             <label className="block font-semibold text-gray-800">
-              {humanLabel}
+              {displayLabel}
             </label>
             {renderObjectFields(schema[0], path)}
           </div>
@@ -706,7 +1101,7 @@ function FormFillingPage() {
       return (
         <div key={key}>
           <label className="block font-semibold text-gray-800">
-            {humanLabel}
+            {displayLabel}
           </label>
           <input
             type="text"
@@ -730,7 +1125,7 @@ function FormFillingPage() {
       return (
         <div key={key} className="p-2 border rounded-md bg-white">
           <label className="block font-semibold text-gray-800">
-            {humanLabel}
+            {displayLabel}
           </label>
           <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-4">
             {renderObjectFields(schema, path)}
