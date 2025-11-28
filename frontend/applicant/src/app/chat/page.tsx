@@ -21,10 +21,12 @@ function ChatInterface() {
   const [isDesktop, setIsDesktop] = useState<boolean | undefined>(undefined);
   const [mounted, setMounted] = useState(false);
   const [showLanding, setShowLanding] = useState(true);
-  
+
   // --- RESTORED MISSING STATES ---
   const [showMenu, setShowMenu] = useState(false); // Used in logic
-  const [applicantInfo, setApplicantInfo] = useState<ApplicantInfo | null>(null); // Used for Status
+  const [applicantInfo, setApplicantInfo] = useState<ApplicantInfo | null>(
+    null
+  ); // Used for Status
   // ------------------------------
 
   useEffect(() => {
@@ -289,6 +291,7 @@ function ChatInterface() {
     const formCompleted = searchParams.get("formCompleted");
 
     if (formCompleted === "true") {
+      setShowLanding(false);
       setShowStatus(true);
       // Applicant info will be fetched by Status component using session cookie
     } else if (message) {
@@ -476,18 +479,20 @@ function ChatInterface() {
       }}
     >
       <div className="bg-[#17293C] text-white px-6 py-4 shadow-lg flex items-center gap-4 sticky top-0 z-50">
-        <button
-          onClick={() => setShowLanding(true)}
-          className="hover:opacity-80 transition-opacity flex items-center justify-center"
-        >
-          <Image
-            src="/arrow.png"
-            alt="Back"
-            width={16}
-            height={16}
-            className="object-contain w-6 h-6"
-          />
-        </button>
+        {!showStatus && (
+          <button
+            onClick={() => setShowLanding(true)}
+            className="hover:opacity-80 transition-opacity flex items-center justify-center"
+          >
+            <Image
+              src="/arrow.png"
+              alt="Back"
+              width={16}
+              height={16}
+              className="object-contain w-6 h-6"
+            />
+          </button>
+        )}
         <Image
           src="/ALVin1.png"
           alt="ALVin Logo"

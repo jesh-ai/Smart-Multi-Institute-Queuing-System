@@ -16,13 +16,13 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
   const [messages, setMessages] = useState<Message[]>([
     { sender: "user", text: "I need help with filling the form" },
-    { sender: "bot", text: "What would you like to inquire about?" },
   ]);
   const [input, setInput] = useState("");
   const [quickReplies, setQuickReplies] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isDesktop, setIsDesktop] = useState(false);
-  
+  const initialFetchDone = useRef(false);
+
   // Initialize Session ID
   const [sessionId] = useState(() => {
     if (typeof window !== "undefined") {
@@ -35,7 +35,7 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
     }
     return `help_${Date.now()}`;
   });
-  
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Detect desktop view
@@ -55,6 +55,9 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
 
   // Initial bot fetch
   useEffect(() => {
+    if (initialFetchDone.current) return;
+    initialFetchDone.current = true;
+
     const fetchInitialResponse = async () => {
       try {
         const apiResponse = await fetch(
@@ -73,13 +76,10 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
         const response = await apiResponse.json();
 
         if (response.success) {
-          setMessages((prev) => {
-            const updated = [...prev];
-            if (updated.length > 1 && updated[1].sender === "bot") {
-              updated[1].text = response.botResponse.Message;
-            }
-            return updated;
-          });
+          setMessages((prev) => [
+            ...prev,
+            { sender: "bot", text: response.botResponse.Message },
+          ]);
 
           if (response.botResponse.Choices) {
             const choices: string[] = [];
@@ -93,6 +93,8 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
         }
       } catch (error) {
         console.error("Error fetching initial response:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchInitialResponse();
@@ -121,7 +123,8 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
         }
       );
 
-      if (!apiResponse.ok) throw new Error(`Server error: ${apiResponse.status}`);
+      if (!apiResponse.ok)
+        throw new Error(`Server error: ${apiResponse.status}`);
 
       const response = await apiResponse.json();
 
@@ -210,7 +213,9 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
                 {/* Message Bubble */}
                 <div
                   className={`px-4 py-3 rounded-2xl max-w-[80%] ${
-                    isDesktop ? "text-lg leading-relaxed" : "text-sm leading-snug"
+                    isDesktop
+                      ? "text-lg leading-relaxed"
+                      : "text-sm leading-snug"
                   } ${
                     msg.sender === "user"
                       ? "bg-[#34495E] text-white rounded-br-none"
@@ -225,23 +230,23 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
             {/* Loading Indicator */}
             {isLoading && (
               <div className="flex items-start gap-3">
-                 {/* Loading Chat Head */}
-                 <div className="shrink-0 w-10 h-10 mt-1">
-                    <Image
-                      src="/ALVin1.png"
-                      alt="Alvin"
-                      width={40}
-                      height={40}
-                      className="rounded-full border border-gray-300 bg-white object-contain"
-                    />
+                {/* Loading Chat Head */}
+                <div className="shrink-0 w-10 h-10 mt-1">
+                  <Image
+                    src="/ALVin1.png"
+                    alt="Alvin"
+                    width={40}
+                    height={40}
+                    className="rounded-full border border-gray-300 bg-white object-contain"
+                  />
+                </div>
+                <div className="bg-gray-200 text-black px-4 py-3 rounded-2xl rounded-bl-none">
+                  <div className="flex space-x-2">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100"></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200"></div>
                   </div>
-                  <div className="bg-gray-200 text-black px-4 py-3 rounded-2xl rounded-bl-none">
-                    <div className="flex space-x-2">
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200"></div>
-                    </div>
-                  </div>
+                </div>
               </div>
             )}
             <div ref={messagesEndRef} />
