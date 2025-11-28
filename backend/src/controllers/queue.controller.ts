@@ -111,13 +111,30 @@ export class QueueManager {
     const sortedApplicants = this.sortApplicants(waitingApplicants);
     const distribution = this.distributeApplicants(sortedApplicants, activeCounters);
     
-    return {
-      activeCounters: activeCounters.map(c => ({
-        sessionId: c.sessionId,
+    const activeCountersObj: Record<string, {
+      counterName?: string;
+      dateOpened: string;
+      queueLength: number;
+    }> = {};
+    
+    activeCounters.forEach(c => {
+      activeCountersObj[c.sessionId] = {
         counterName: c.counterName,
         dateOpened: c.dateOpened,
         queueLength: distribution.get(c.sessionId)?.length || 0,
-      })),
+      };
+    });
+    
+    const applicantsMap: Record<string, string> = {};
+    distribution.forEach((applicants, counterId) => {
+      applicants.forEach(applicant => {
+        applicantsMap[applicant.sessionId] = counterId;
+      });
+    });
+    
+    return {
+      applicants: applicantsMap,
+      activeCounters: activeCountersObj,
       queueDistribution: Array.from(distribution.entries()).map(([counterId, applicants]) => ({
         counterId,
         counterName: activeCounters.find(c => c.sessionId === counterId)?.counterName,

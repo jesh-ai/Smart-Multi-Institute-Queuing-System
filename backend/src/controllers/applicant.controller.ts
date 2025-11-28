@@ -20,16 +20,27 @@ export async function getApplicantInfo(req: Request, res: Response): Promise<voi
       ? "Processing"
       : "In Line";
 
-  const queue = QueueManager.manageQueue()
-  const counter = queue
-  const quueuNumber = ""
+    const queue = QueueManager.manageQueue()
+    const counter = queue.applicants[req.sessionID] 
+    const counters = Object.keys(queue.activeCounters)
+    const counterIndex = counters.findIndex(i => i == counter)
+    const counterName = counterIndex !== -1 ? "Counter " + (counterIndex + 1) : "Counter not found"
+    
+    let nthInLine = 0;
+    if (counter) {
+      const counterQueue = queue.queueDistribution.find(q => q.counterId === counter);
+      if (counterQueue) {
+        const applicantPosition = counterQueue.applicants.findIndex(a => a.sessionId === req.sessionID);
+        nthInLine = applicantPosition !== -1 ? applicantPosition + 1 : 0;
+      }
+    }
 
     res.json({
       success: true,
       data: {
-        sessionId: req.sessionID,
         status,
-        applicant
+        counterName: counterName,
+        nthInLine: nthInLine,
       }
     });
   } catch (error) {
