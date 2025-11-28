@@ -152,7 +152,7 @@ const cardConfigs = [
     id: 'qr',
     title: 'QR Code Generator',
     description: 'Generate QR code for any URL',
-    buttons: [{ endpoint: '/api/server/qr', method: 'GET', useInputs: ['qr-url'] }],
+    buttons: [{ endpoint: '/api/server/qr', method: 'GET'}],
     customClass: 'small-server'
   },
   {
@@ -196,17 +196,18 @@ const cardConfigs = [
     customClass: 'server-actions-session'
   },
   {
-    id: 'counter-close',
-    title: 'Close Counter',
-    description: 'Close a counter if it doesn\'t have any applicants',
-    buttons: [{ label: 'Close Counter', endpoint: '/api/counter/close', method: 'POST' }],
-    customClass: 'server-actions-session'
-  },
-  {
     id: 'counter-generate-keys',
     title: 'Generate Key',
     description: 'Generate a new counter key',
     buttons: [{ label: 'Generate Key', endpoint: '/api/server/generate-counter', method: 'POST' }],
+    customClass: 'server-actions-session'
+  },
+  {
+    id: 'counter-close',
+    title: 'Close Counter',
+    description: 'Close a counter by session ID',
+    textareas: [{ id: 'close-counter-data', rows: 2, placeholder: '{"sessionId": "session-id-here"}', defaultValue: '{\n  "sessionId": ""\n}' }],
+    buttons: [{ label: 'Close Counter', endpoint: '/api/counter/close', method: 'POST', useBody: 'close-counter-data' }],
     customClass: 'server-actions-session'
   },
   

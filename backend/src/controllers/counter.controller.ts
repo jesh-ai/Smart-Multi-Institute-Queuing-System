@@ -38,6 +38,110 @@ export async function getCounterInfo(req: Request, res: Response): Promise<void>
     });
   }
 }
+export async function generateKeysHandler(req: Request, res: Response): Promise<void> {
+  try {
+    const key = addAvailableKey();
+
+    res.json({
+      success: true,
+      message: "Generated counter key",
+      data: {
+        key,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: "Failed to generate key",
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+}
+export async function closeCounter(req: Request, res: Response): Promise<void> {
+  try {
+    const { sessionId } = req.body;
+
+    if (!sessionId) {
+      res.status(400).json({
+        success: false,
+        error: "Session ID is required",
+      });
+      return;
+    }
+
+    const sessions = fetchSessions();
+    const counterSession = sessions.get(sessionId);
+
+    if (!counterSession || !counterSession.counter) {
+      res.status(404).json({
+        success: false,
+        error: "Counter not found",
+        message: "No counter found with the provided session ID",
+      });
+      return;
+    }
+
+    if (!counterSession.counter.dateOpened) {
+      res.status(400).json({
+        success: false,
+        error: "Counter was never opened",
+        message: "Cannot close a counter that was never opened",
+      });
+      return;
+    }
+
+    if (counterSession.counter.dateClosed) {
+      res.status(400).json({
+        success: false,
+        error: "Counter is already closed",
+        message: "This counter has already been closed",
+      });
+      return;
+    }
+
+    // Check if there are any applicants assigned to this counter
+    let hasActiveApplicants = false;
+
+    sessions.forEach((session, sid) => {
+      if (session.applicant && 
+          session.applicant.dateSubmitted && 
+          !session.applicant.dateServed &&
+          session.counter?.key === counterSession.counter?.key) {
+        hasActiveApplicants = true;
+      }
+    });
+
+    counterSession.counter.dateClosed = new Date().toISOString();
+    
+    // Set status as "closing" if there are still active applicants, otherwise "closed"
+    const status = hasActiveApplicants ? "closing" : "closed";
+
+    // Save to database
+    storeSession(sessionId, counterSession);
+
+    res.json({
+      success: true,
+      message: hasActiveApplicants 
+        ? "Counter is closing - waiting for active applicants to be served"
+        : "Counter closed successfully",
+      data: {
+        sessionId: sessionId,
+        deviceId: counterSession.deviceId,
+        key: counterSession.counter?.key,
+        dateOpened: counterSession.counter?.dateOpened,
+        dateClosed: counterSession.counter?.dateClosed,
+        status,
+        activeApplicants: hasActiveApplicants,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: "Failed to close counter",
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+}
 
 /**
  * @deprecated
@@ -93,87 +197,7 @@ export async function getCounterBySessionId(req: Request, res: Response): Promis
 }
 
 
-export async function closeCounter(req: Request, res: Response): Promise<void> {
-  try {
-    if (!req.session.counter) {
-      res.status(404).json({
-        success: false,
-        error: "No counter information found in session",
-        message: "This session does not have counter data",
-      });
-      return;
-    }
 
-    if (!req.session.counter.dateOpened) {
-      res.status(400).json({
-        success: false,
-        error: "Counter was never opened",
-        message: "Cannot close a counter that was never opened",
-      });
-      return;
-    }
-
-    if (req.session.counter.dateClosed) {
-      res.status(400).json({
-        success: false,
-        error: "Counter is already closed",
-        message: "This counter has already been closed",
-      });
-      return;
-    }
-
-    // Check if there are any applicants assigned to this counter
-    const sessions = fetchSessions();
-    let hasActiveApplicants = false;
-
-    sessions.forEach((session, sessionId) => {
-      if (session.applicant && 
-          session.applicant.dateSubmitted && 
-          !session.applicant.dateServed &&
-          session.counter?.key === req.session.counter?.key) {
-        hasActiveApplicants = true;
-      }
-    });
-
-    req.session.counter.dateClosed = new Date().toISOString();
-    
-    // Set status as "closing" if there are still active applicants, otherwise "closed"
-    const status = hasActiveApplicants ? "closing" : "closed";
-
-    req.session.save((err) => {
-      if (err) {
-        res.status(500).json({
-          success: false,
-          error: "Failed to save session",
-          message: err.message,
-        });
-        return;
-      }
-
-      res.json({
-        success: true,
-        message: hasActiveApplicants 
-          ? "Counter is closing - waiting for active applicants to be served"
-          : "Counter closed successfully",
-        data: {
-          sessionId: req.sessionID,
-          deviceId: req.session.deviceId,
-          key: req.session.counter?.key,
-          dateOpened: req.session.counter?.dateOpened,
-          dateClosed: req.session.counter?.dateClosed,
-          status,
-          activeApplicants: hasActiveApplicants,
-        },
-      });
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: "Failed to close counter",
-      message: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-}
 
 export async function activateCounter(req: Request, res: Response): Promise<void> {
   try {
@@ -485,25 +509,6 @@ export async function getAvailableKeysHandler(req: Request, res: Response): Prom
   }
 }
 
-export async function generateKeysHandler(req: Request, res: Response): Promise<void> {
-  try {
-    const key = addAvailableKey();
-
-    res.json({
-      success: true,
-      message: "Generated counter key",
-      data: {
-        key,
-      },
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: "Failed to generate key",
-      message: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-}
 
 export async function serveApplicant(req: Request, res: Response): Promise<void> {
   try {
