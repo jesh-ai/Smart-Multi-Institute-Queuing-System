@@ -99,7 +99,6 @@ export async function closeCounter(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    // Check if there are any applicants assigned to this counter
     let hasActiveApplicants = false;
 
     sessions.forEach((session, sid) => {
@@ -112,11 +111,7 @@ export async function closeCounter(req: Request, res: Response): Promise<void> {
     });
 
     counterSession.counter.dateClosed = new Date().toISOString();
-    
-    // Set status as "closing" if there are still active applicants, otherwise "closed"
-    const status = hasActiveApplicants ? "closing" : "closed";
-
-    // Save to database
+  
     storeSession(sessionId, counterSession);
 
     res.json({
@@ -130,9 +125,9 @@ export async function closeCounter(req: Request, res: Response): Promise<void> {
         key: counterSession.counter?.key,
         dateOpened: counterSession.counter?.dateOpened,
         dateClosed: counterSession.counter?.dateClosed,
-        status,
         activeApplicants: hasActiveApplicants,
       },
+      canClose: !hasActiveApplicants
     });
   } catch (error) {
     res.status(500).json({
@@ -142,6 +137,14 @@ export async function closeCounter(req: Request, res: Response): Promise<void> {
     });
   }
 }
+
+
+
+
+
+
+
+
 
 /**
  * @deprecated
@@ -195,10 +198,6 @@ export async function getCounterBySessionId(req: Request, res: Response): Promis
     });
   }
 }
-
-
-
-
 export async function activateCounter(req: Request, res: Response): Promise<void> {
   try {
     const { key } = req.body;
