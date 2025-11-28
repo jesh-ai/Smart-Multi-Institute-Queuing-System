@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from "react";
 import DashboardCard from "@/components/DashboardCard";
 import "../styles/globals.css";
+import { QrCode } from "lucide-react";
 
 interface SessionData {
   usersInQueue: number;
@@ -143,6 +144,33 @@ export default function DashboardPage() {
             Total Uptime
           </p>
           <p className="summary-value">{`${summary.totalUptime} hours`}</p>
+        </div>
+      </div>
+
+      {/*QR Code Placeholders */}
+      <div className="dashboard-card-row" style={{ 
+          marginTop: '60px', 
+          marginBottom: '60px', 
+          alignItems: 'flex-start',
+          gap: '150px' 
+        }}>
+        
+        {/* Placeholder 1 Container */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+           <h2 className="card-title" style={{ fontSize: '16px' }}></h2>
+          {/* The Placeholder Box */}
+          <div className="qr-placeholder">
+             <QrCode className="qr-placeholder-icon" />
+          </div>
+        </div>
+
+        {/* Placeholder 2 Container */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+           <h2 className="card-title" style={{ fontSize: '16px' }}></h2>
+          {/* The Placeholder Box */}
+          <div className="qr-placeholder">
+             <QrCode className="qr-placeholder-icon" />
+          </div>
         </div>
       </div>
     </div>

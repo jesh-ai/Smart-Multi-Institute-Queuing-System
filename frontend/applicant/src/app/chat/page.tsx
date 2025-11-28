@@ -536,16 +536,6 @@ function ChatInterface() {
         <div className="sticky bottom-0 left-0 right-0 z-40 bg-white py-4 border-t border-gray-100">
           <div className="max-w-4xl mx-auto px-4">
             <div className="w-full bg-[#34495E] rounded-2xl border-t border-gray-200 flex items-center px-4 py-3">
-              {/* Mic Button */}
-              <button className="p-2 text-gray-600 hover:text-gray-800 text-lg">
-                <Image
-                  src="/Microphone.png"
-                  alt="Microphone"
-                  width={24}
-                  height={24}
-                />
-              </button>
-
               {/* Input */}
               <input
                 type="text"
