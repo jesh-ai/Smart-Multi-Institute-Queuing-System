@@ -24,7 +24,7 @@ export default function DashboardPage() {
   const [activeCounters, setActiveCounters] = useState(0);
   const [summary, setSummary] = useState<SummaryData>({ requestsToday: 0, avgWaitTime: 0, totalUptime: 0 });
 
-  const BASE_URL = "http://localhost:4000/api";
+  const BASE_URL = "http://localhost:4000/api"; // const BASE_URL = `${window.location.protocol}//${window.location.hostname}:4000/api`;
 
   useEffect(() => {
     const fetchDashboardData = async () => {
