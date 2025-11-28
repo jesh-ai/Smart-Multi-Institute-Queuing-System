@@ -2,57 +2,6 @@ import { Request, Response } from "express";
 import { fetchSessions, storeSession } from "../db/sessions.js";
 import { addAvailableKey, getAvailableKeys, getUsedKeys, isKeyAvailable, useKey } from "../utils/counterKeys.js";
 
-export async function getAllCounters(req: Request, res: Response): Promise<void> {
-  try {
-    const sessions = fetchSessions();
-    const counters: Array<{
-      sessionId: string;
-      deviceId?: string;
-      key?: string;
-      dateOpened?: string;
-      dateClosed?: string;
-      status: string;
-      isOpen: boolean;
-    }> = [];
-
-    sessions.forEach((session, sessionId) => {
-      if (session.counter) {
-        const isOpen = !!session.counter.dateOpened && !session.counter.dateClosed;
-        counters.push({
-          sessionId,
-          deviceId: session.deviceId,
-          key: session.counter.key,
-          dateOpened: session.counter.dateOpened,
-          dateClosed: session.counter.dateClosed,
-          status: isOpen ? "open" : "closed",
-          isOpen,
-        });
-      }
-    });
-
-    counters.sort((a, b) => {
-      const dateA = new Date(a.dateOpened || 0).getTime();
-      const dateB = new Date(b.dateOpened || 0).getTime();
-      return dateB - dateA;
-    });
-
-    res.json({
-      success: true,
-      data: {
-        total: counters.length,
-        open: counters.filter((c) => c.isOpen).length,
-        closed: counters.filter((c) => !c.isOpen).length,
-        counters,
-      },
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: "Failed to retrieve counters",
-      message: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-}
 export async function generateKeysHandler(req: Request, res: Response): Promise<void> {
   try {
     const key = addAvailableKey();
@@ -294,6 +243,57 @@ export async function getAvailableKeysHandler(req: Request, res: Response): Prom
 
 
 // TBR
+// export async function getAllCounters(req: Request, res: Response): Promise<void> {
+//   try {
+//     const sessions = fetchSessions();
+//     const counters: Array<{
+//       sessionId: string;
+//       deviceId?: string;
+//       key?: string;
+//       dateOpened?: string;
+//       dateClosed?: string;
+//       status: string;
+//       isOpen: boolean;
+//     }> = [];
+
+//     sessions.forEach((session, sessionId) => {
+//       if (session.counter) {
+//         const isOpen = !!session.counter.dateOpened && !session.counter.dateClosed;
+//         counters.push({
+//           sessionId,
+//           deviceId: session.deviceId,
+//           key: session.counter.key,
+//           dateOpened: session.counter.dateOpened,
+//           dateClosed: session.counter.dateClosed,
+//           status: isOpen ? "open" : "closed",
+//           isOpen,
+//         });
+//       }
+//     });
+
+//     counters.sort((a, b) => {
+//       const dateA = new Date(a.dateOpened || 0).getTime();
+//       const dateB = new Date(b.dateOpened || 0).getTime();
+//       return dateB - dateA;
+//     });
+
+//     res.json({
+//       success: true,
+//       data: {
+//         total: counters.length,
+//         open: counters.filter((c) => c.isOpen).length,
+//         closed: counters.filter((c) => !c.isOpen).length,
+//         counters,
+//       },
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       error: "Failed to retrieve counters",
+//       message: error instanceof Error ? error.message : "Unknown error",
+//     });
+//   }
+// }
 // export async function getCounterBySessionId(req: Request, res: Response): Promise<void> {
 //   try {
 //     const { sessionId } = req.params;

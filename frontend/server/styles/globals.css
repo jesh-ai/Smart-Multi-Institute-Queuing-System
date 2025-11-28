@@ -394,24 +394,31 @@ body {
 }
 
 .action-disconnect {
-    display: inline-block;
-    background-color: white;
-    color: #374151;
-    border: 1px solid #d1d5db;
-    padding: 0.25rem 0.75rem;
-    border-radius: 0.375rem;
-    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #00C950; 
+    border: 1px solid #00A63E;
+    color: rgb(0, 0, 0);
+    padding: 6px 20px;
+    border-radius: 6px;
+    font-size: 13px;
     font-weight: 500;
-    font-size: 0.875rem;
+    text-decoration: none;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
     transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    min-width: 80px;
 }
 
-.action-disconnect:hover {
-    background-color: #f9fafb;
-    border-color: #9ca3af;
-    color: #1f2937;
+.action-disconnect:hover{
+    background-color: #00b347;
+    transform: translateY(-1px);
+    box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.2);
     text-decoration: none;
+    color: white;
 }
+
 
 .devices-table tbody tr:last-child td {
     border-bottom: none;
