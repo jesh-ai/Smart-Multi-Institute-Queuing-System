@@ -22,18 +22,30 @@ interface ActiveCounter {
 }
 
 export class QueueManager {
+    public static canDeleteCounterSession(counterSessionId: string): boolean {
+      const sessions = fetchSessions();
+      let allClosed = true;
+      sessions.forEach((session) => {
+        if (
+          session.applicant &&
+          session.applicant.dateSubmitted &&
+          session.counter?.key &&
+          session.counter?.key === sessions.get(counterSessionId)?.counter?.key &&
+          !session.applicant.dateClosed
+        ) {
+          allClosed = false;
+        }
+      });
+      return allClosed;
+    }
   private static getActiveCounters(sessions: Map<string, SessionData>): ActiveCounter[] {
-    const activeCounters: ActiveCounter[] = [];
+    const counters: ActiveCounter[] = [];
 
     sessions.forEach((session, sessionId) => {
-      if (
-        session.counter &&
-        session.counter.dateOpened &&
-        !session.counter.dateClosed
-      ) {
-        activeCounters.push({
+      if (session.counter && session.counter.dateOpened) {
+        counters.push({
           sessionId,
-          counterName: session.deviceId, 
+          counterName: session.deviceId,
           dateOpened: session.counter.dateOpened,
           dateClosed: session.counter.dateClosed,
           assignedApplicants: [],
@@ -41,7 +53,7 @@ export class QueueManager {
       }
     });
 
-    return activeCounters;
+    return counters;
   }
 
   private static getWaitingApplicants(sessions: Map<string, SessionData>): QueueApplicant[] {
@@ -94,13 +106,27 @@ export class QueueManager {
 
     let counterIndex = 0;
     applicants.forEach((applicant) => {
-      const counter = counters[counterIndex];
-      const counterQueue = distribution.get(counter.sessionId)!;
-      
-      counterQueue.push(applicant);
-      applicant.assignedCounter = counter.sessionId;
-
-      counterIndex = (counterIndex + 1) % counters.length;
+      // Find the next counter that is open at the time of applicant submission
+      let assigned = false;
+      for (let i = 0; i < counters.length; i++) {
+        const idx = (counterIndex + i) % counters.length;
+        const counter = counters[idx];
+        // If counter is closed and applicant was submitted after it closed, skip
+        if (
+          counter.dateClosed &&
+          new Date(applicant.dateSubmitted).getTime() > new Date(counter.dateClosed).getTime()
+        ) {
+          continue;
+        }
+        // Otherwise, assign applicant to this counter
+        const counterQueue = distribution.get(counter.sessionId)!;
+        counterQueue.push(applicant);
+        applicant.assignedCounter = counter.sessionId;
+        counterIndex = (idx + 1) % counters.length;
+        assigned = true;
+        break;
+      }
+      // If no counter is eligible, applicant is not assigned
     });
 
     return distribution;

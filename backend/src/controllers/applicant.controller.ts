@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { QueueManager } from "./queue.controller.js";
+import { deleteSession } from "../db/sessions.js";
 
 export async function getApplicantInfo(req: Request, res: Response): Promise<void> {
   try {
@@ -175,17 +176,16 @@ export async function markApplicantClosed(req: Request, res: Response): Promise<
     }
 
     req.session.applicant.dateClosed = new Date().toISOString();
-
-    req.session.save((err) => {
+    req.session.save(async (err) => {
       if (err) {
-        res.status(500).json({
-          success: false,
-          error: "Failed to mark as served",
-          message: err.message,
-        });
+        res.status(500).json({ error: "Failed to save session", message: err.message });
         return;
       }
-
+      // After closing applicant, check if counter can be deleted
+      const counterSessionId = req.session.counter?.key ? Array.from((await import("../db/sessions.js")).fetchSessions().entries()).find(([id, s]) => s.counter?.key === req.session.counter?.key)?.[0] : undefined;
+      if (counterSessionId && QueueManager.canDeleteCounterSession(counterSessionId)) {
+        deleteSession(counterSessionId);
+      }
       res.json({
         success: true,
         message: "Applicant marked as served",
@@ -194,7 +194,6 @@ export async function markApplicantClosed(req: Request, res: Response): Promise<
     });
   } catch (error) {
     res.status(500).json({
-      success: false,
       error: "Failed to mark applicant as served",
       message: error instanceof Error ? error.message : "Unknown error",
     });
