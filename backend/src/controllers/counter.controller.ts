@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { fetchSessions, storeSession } from "../db/sessions.js";
-import { addAvailableKey, isKeyAvailable, useKey } from "../utils/counterKeys.js";
+import { addAvailableKey, getAvailableKeys, getUsedKeys, isKeyAvailable, useKey } from "../utils/counterKeys.js";
 
 export async function getAllCounters(req: Request, res: Response): Promise<void> {
   try {
@@ -262,6 +262,28 @@ export async function activateCounter(req: Request, res: Response): Promise<void
     });
   }
 }
+export async function getAvailableKeysHandler(req: Request, res: Response): Promise<void> {
+  try {
+    const availableKeys = getAvailableKeys();
+    const usedKeys = getUsedKeys();
+
+    res.json({
+      success: true,
+      data: {
+        available: availableKeys,
+        used: usedKeys,
+        totalAvailable: availableKeys.length,
+        totalUsed: usedKeys.length,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: "Failed to retrieve keys",
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+}
 
 
 
@@ -435,28 +457,6 @@ export async function activateCounter(req: Request, res: Response): Promise<void
 //     res.status(500).json({
 //       success: false,
 //       error: "Failed to delete counter information",
-//       message: error instanceof Error ? error.message : "Unknown error",
-//     });
-//   }
-// }
-// export async function getAvailableKeysHandler(req: Request, res: Response): Promise<void> {
-//   try {
-//     const availableKeys = getAvailableKeys();
-//     const usedKeys = getUsedKeys();
-
-//     res.json({
-//       success: true,
-//       data: {
-//         available: availableKeys,
-//         used: usedKeys,
-//         totalAvailable: availableKeys.length,
-//         totalUsed: usedKeys.length,
-//       },
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       error: "Failed to retrieve keys",
 //       message: error instanceof Error ? error.message : "Unknown error",
 //     });
 //   }
