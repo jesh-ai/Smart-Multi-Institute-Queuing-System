@@ -11,6 +11,7 @@ declare module "express-session" {
     deviceId?: string;
     ip?: string;
     isNew?: boolean;
+    originalRoute?: string;
     lastSeen?: string;
     lastRoute?: string,
 
@@ -113,7 +114,9 @@ export function recordSession(req: Request, res: Response, next: NextFunction): 
   if (!s.deviceId || s.deviceId !== fingerprint) s.deviceId = deviceName;
   if (ip) s.ip = ip;
   
-  s.lastRoute = `${req.method} ${req.originalUrl || req.url}`;
+  const currentRoute = `${req.method} ${req.originalUrl || req.url}`;
+  if (!s.originalRoute) s.originalRoute = currentRoute;
+  s.lastRoute = currentRoute;
   s.lastSeen = new Date().toISOString();
 
   s.save((err?: Error) => {
