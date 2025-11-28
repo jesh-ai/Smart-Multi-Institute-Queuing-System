@@ -1,0 +1,128 @@
+{
+  "institute": {
+    "id": "philhealth",
+    "name": "Philippine Health Insurance Corporation (PhilHealth)",
+    "description": "Government corporation mandated to implement the National Health Insurance Program in the Philippines.",
+    "services": [
+      "Member Registration & Updating (PMRF)",
+      "Benefit Availment & Claims (CF-1 to CF-4)",
+      "Maternity & Newborn Care Packages",
+      "Special Benefit Packages (Z-Benefit, Hemodialysis)"
+    ],
+    "intro": "I am the PhilHealth virtual assistant. I can help you register as a member, update your records, and guide you through the claim forms required to avail of health benefits."
+  },
+  "forms": [
+    {
+      "formId": "pmrf",
+      "title": "Member Registration Form (PMRF)",
+      "purpose": "Registration, updating, or amendment of membership",
+      "applicantTypes": ["Direct Contributor", "Indirect Contributor", "Lifetime Member", "Foreign National"],
+      "requiredFields": ["Purpose", "Name (Mother's Maiden)", "DOB", "Place of Birth", "Sex", "Civil Status", "Citizenship", "Address", "Category"],
+      "conditionalLogic": [
+        "Spouse: Required if married",
+        "Email: Required for OFWs",
+        "Profession/TIN: Required for Direct Contributors",
+        "Proof: Birth Cert/Marriage Contract for updates"
+      ],
+      "filingRules": ["Submit with valid ID", "PWDs must attach PWD ID"],
+      "signatureRequirements": ["Member signature or thumbmark"],
+      "legalReferences": ["Penalty for false info", "Data Privacy Act"]
+    },
+    {
+      "formId": "cf1",
+      "title": "Claim Form 1 (CF-1)",
+      "purpose": "Eligibility verification for benefit availment",
+      "applicantTypes": ["Member", "Dependent", "Employer"],
+      "requiredFields": ["PIN", "Member Name/DOB", "Confinement Details", "Certification"],
+      "conditionalLogic": [
+        "Employer Cert: Required for employed members",
+        "Rep Signature: If member is incapacitated (requires reason)"
+      ],
+      "filingRules": ["Local: 60 days from discharge", "Abroad: 180 days"],
+      "signatureRequirements": ["Member/Rep", "Employer (if applicable)"]
+    },
+    {
+      "formId": "cf2",
+      "title": "Claim Form 2 (CF-2)",
+      "purpose": "Hospital charges and benefit calculation",
+      "applicantTypes": ["HCI", "Doctor", "Patient"],
+      "requiredFields": ["HCI Info", "Confinement Dates", "Diagnosis", "Professional Fees", "Consumption Cert", "Consent"],
+      "conditionalLogic": [
+        "Co-pay: Must specify amount if applicable",
+        "Special Packages: Specific dates for Hemodialysis/Maternity/Newborn required",
+        "Expenses: Declare drugs/labs bought outside HCI"
+      ],
+      "filingRules": ["Attach SOA and Discharge Summary"],
+      "signatureRequirements": ["Patient/Rep", "Doctors", "HCI Rep"]
+    },
+    {
+      "formId": "cf3",
+      "title": "Claim Form 3 (CF-3)",
+      "purpose": "Maternity Care Package clinical record",
+      "applicantTypes": ["Physician", "Midwife"],
+      "requiredFields": ["Menstrual/Obstetric History", "Prenatal Log (Min 4)", "Delivery Outcome", "Postpartum Check"],
+      "conditionalLogic": ["Risk Factors: Check applicable medical/surgical risks"],
+      "filingRules": ["Include prenatal/delivery records", "Postpartum follow-up within 1 week"],
+      "signatureRequirements": ["Attending Physician/Midwife"]
+    },
+    {
+      "formId": "cf4",
+      "title": "Claim Form 4 (CF-4)",
+      "purpose": "Detailed clinical abstract for claims",
+      "applicantTypes": ["HCI", "Health Professional"],
+      "requiredFields": ["Clinical History", "Physical Exam", "Vital Signs", "Diagnosis", "Drugs/Meds"],
+      "conditionalLogic": ["Referral: Originating HCI info required if referred"],
+      "filingRules": ["Attach lab/imaging results", "Attach OR technique if surgical"],
+      "signatureRequirements": ["Attending Health Professional"]
+    }
+  ],
+  "faq": {
+    "reg_ofw": {
+      "q": "How do OFWs register?",
+      "a": "Use PMRF as 'Direct Contributor' under 'Migrant Worker'. Email address is mandatory."
+    },
+    "reg_update": {
+      "q": "How to update civil status or info?",
+      "a": "Submit PMRF with 'UPDATING/AMENDMENT' checked and attach supporting docs (e.g., Marriage Contract)."
+    },
+    "reg_dependents": {
+      "q": "Who are qualified dependents?",
+      "a": "Legal spouse, children <21, and parents ≥60 who are totally dependent."
+    },
+    "reg_pwd": {
+      "q": "How to register a child with disability?",
+      "a": "Check 'with Permanent Disability' on PMRF. They are registered as principal members per R.A. 11228."
+    },
+    "claims_general": {
+      "q": "Which forms are needed for claims?",
+      "a": "CF-1 (Member/Employer), CF-2 (HCI/Doctor), and CF-3 (Maternity) or CF-4 (Clinical) if applicable."
+    },
+    "claims_deadline": {
+      "q": "When should claims be filed?",
+      "a": "Within 60 calendar days from discharge for local hospitals; 180 days for overseas."
+    },
+    "cf1_employer": {
+      "q": "Must the employer sign CF-1?",
+      "a": "Yes, for employed members, the employer must sign Part IV to certify contributions."
+    },
+    "cf2_newborn": {
+      "q": "How to claim for a newborn?",
+      "a": "The hospital fills out the Newborn Care Package section in CF-2 (vaccines, screening)."
+    },
+    "cf2_hemodialysis": {
+      "q": "How to claim for dialysis?",
+      "a": "On CF-2, the HCI checks 'Hemodialysis' and lists the specific session dates."
+    },
+    "fees": {
+      "q": "Are forms free?",
+      "a": "Yes, all forms (PMRF, CF-1 to CF-4) are free and can be reproduced."
+    }
+  },
+  "faqLinks": {
+    "pmrf": ["reg_ofw", "reg_update", "reg_dependents", "reg_pwd", "fees"],
+    "cf1": ["claims_general", "claims_deadline", "cf1_employer", "fees"],
+    "cf2": ["claims_general", "claims_deadline", "cf2_newborn", "cf2_hemodialysis", "fees"],
+    "cf3": ["claims_general", "claims_deadline", "fees"],
+    "cf4": ["claims_general", "claims_deadline", "fees"]
+  }
+}
