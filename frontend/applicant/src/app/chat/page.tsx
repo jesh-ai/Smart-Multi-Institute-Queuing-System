@@ -110,22 +110,99 @@ function ChatInterface() {
   const [isLoading, setIsLoading] = useState(false);
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [showStatus, setShowStatus] = useState(false);
-  const [applicantInfo, setApplicantInfo] = useState<ApplicantInfo | null>(
-    null
-  );
   const [viewportHeight, setViewportHeight] = useState<number>(0);
   const [sessionId, setSessionId] = useState<string>("");
+  const [activeFormId, setActiveFormId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
-  // Initialize session ID on client side only
-  useEffect(() => {
-    let id = sessionStorage.getItem("chatSessionId");
-    if (!id) {
-      id = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      sessionStorage.setItem("chatSessionId", id);
+  // Map form flag names to service indices (0-indexed array positions)
+  // Based on backend's institute_info.json service_list array:
+  // [0] = DFA_Passport_New, [1] = DFA_Passport_Renewal,
+  // [2] = PhilHealth_Registration, [3] = PhilHealth_MDR_Update
+  const formFlagToServiceId = (formFlag: string): string => {
+    const mapping: Record<string, string> = {
+      DFA_Passport_New: "0",
+      DFA_Passport_Renewal: "1",
+      PhilHealth_Registration: "2",
+      PhilHealth_MDR_Update: "3",
+    };
+    return mapping[formFlag] || formFlag;
+  };
+
+  // Helper function to check form flags from conversation messages
+  const checkFormFlags = async (sessionId: string): Promise<void> => {
+    try {
+      const response = await fetch(`${API_URL}/api/messages/${sessionId}`);
+
+      if (!response.ok) return;
+
+      const data = await response.json();
+      const messages = data.messages || [];
+
+      // Get the latest message with form_flag
+      for (let i = messages.length - 1; i >= 0; i--) {
+        const msg = messages[i];
+        if (msg.botResponse?.form_flag) {
+          // Find which form flag is set to 1
+          const formFlags = msg.botResponse.form_flag;
+          for (const [formId, value] of Object.entries(formFlags)) {
+            if (value === 1) {
+              setActiveFormId(formFlagToServiceId(formId));
+              return;
+            }
+          }
+        }
+      }
+
+      // No form flag set to 1
+      setActiveFormId(null);
+    } catch (error) {
+      console.error("Error checking form flags:", error);
+      setActiveFormId(null);
     }
-    setSessionId(id);
+  };
+
+  // Helper function to extract session ID from connect.sid cookie
+  const getSessionIdFromCookie = (): string | null => {
+    if (typeof document === "undefined") return null;
+
+    const cookies = document.cookie.split("; ");
+    const connectSidCookie = cookies.find((cookie) =>
+      cookie.startsWith("connect.sid=")
+    );
+
+    if (!connectSidCookie) return null;
+
+    // Extract the value after "connect.sid="
+    const cookieValue = connectSidCookie.split("=")[1];
+
+    // Decode the URL-encoded value
+    const decodedValue = decodeURIComponent(cookieValue);
+
+    // Extract session ID from pattern: s%3A{sessionId}.{signature} or s:{sessionId}.{signature}
+    const match = decodedValue.match(/^s(?:%3A|:)([^.]+)\./);
+
+    return match ? match[1] : null;
+  };
+
+  // Initialize session ID from cookie
+  useEffect(() => {
+    const cookieSessionId = getSessionIdFromCookie();
+    if (cookieSessionId) {
+      setSessionId(cookieSessionId);
+      // Check form flags on initial load
+      checkFormFlags(cookieSessionId);
+    } else {
+      // Fallback to generating a session ID if cookie doesn't exist yet
+      let id = sessionStorage.getItem("chatSessionId");
+      if (!id) {
+        id = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        sessionStorage.setItem("chatSessionId", id);
+      }
+      setSessionId(id);
+      checkFormFlags(id);
+    }
   }, []);
 
   // Track viewport height changes (keyboard open/close)
@@ -162,24 +239,11 @@ function ChatInterface() {
   useEffect(() => {
     const message = searchParams.get("message");
     const formCompleted = searchParams.get("formCompleted");
-    const urlSessionId = searchParams.get("sessionId");
 
     if (formCompleted === "true") {
       setShowStatus(true);
-
-      // Fetch applicant info if sessionId is provided
-      if (urlSessionId) {
-        fetch(`${API_URL}/api/applicant/info/${urlSessionId}`)
-          .then((res) => res.json())
-          .then((data) => {
-            setApplicantInfo(data);
-          })
-          .catch((err) => {
-            console.error("Failed to fetch applicant info:", err);
-          });
-      }
+      // Applicant info will be fetched by Status component using session cookie
     } else if (message) {
-      // Hide menu and send the message
       setShowMenu(false);
       handleSend(message, "closed");
     }
@@ -191,6 +255,19 @@ function ChatInterface() {
     messageType: "closed" | "open" = "open"
   ) => {
     if (!text.trim() || isLoading) return;
+
+    // Check if sessionId is available
+    if (!sessionId) {
+      console.error("No session ID available");
+      setMessages((prev) => [
+        ...prev,
+        {
+          sender: "bot",
+          text: "Please wait while we initialize your session...",
+        },
+      ]);
+      return;
+    }
 
     // Add user message
     setMessages((prev) => [...prev, { sender: "user", text }]);
@@ -206,15 +283,18 @@ function ChatInterface() {
           headers: {
             "Content-Type": "application/json",
           },
+          credentials: "include",
           body: JSON.stringify({ message: text }),
         }
       );
 
       if (!apiResponse.ok) {
+        const errorText = await apiResponse.text();
         console.error(
           "API Response not OK:",
           apiResponse.status,
-          apiResponse.statusText
+          apiResponse.statusText,
+          errorText
         );
         throw new Error(
           `Server returned ${apiResponse.status}: ${apiResponse.statusText}`
@@ -225,7 +305,6 @@ function ChatInterface() {
       console.log("API Response:", response); // Debug log
 
       if (!response.success) {
-        // Handle error
         console.error("Error response:", response); // Debug log
         const errorMsg =
           response.botResponse?.Message ||
@@ -247,6 +326,16 @@ function ChatInterface() {
         ).trim();
 
         setMessages((prev) => [...prev, { sender: "bot", text: cleanMessage }]);
+
+        // Check for form flags in the response
+        if (botResponse.form_flag) {
+          for (const [formId, value] of Object.entries(botResponse.form_flag)) {
+            if (value === 1) {
+              setActiveFormId(formFlagToServiceId(formId));
+              break;
+            }
+          }
+        }
 
         if (botResponse.Choices) {
           const choices: string[] = [];
@@ -364,15 +453,7 @@ function ChatInterface() {
       </div>
 
       {/* Status Component - shown as sticky chat bubble */}
-      {showStatus && applicantInfo && (
-        <Status
-          queueNumber={applicantInfo.queueNumber}
-          status={applicantInfo.status}
-          counter={applicantInfo.counter}
-          waitTime={applicantInfo.waitTime}
-          message={applicantInfo.message}
-        />
-      )}
+      {showStatus && <Status />}
 
       {/* Message Area - hide on desktop when form is completed */}
       {!(isDesktop && showStatus) && (
@@ -434,6 +515,14 @@ function ChatInterface() {
                   {reply}
                 </button>
               ))}
+              {isDesktop && activeFormId && (
+                <button
+                  onClick={() => router.push(`/form?serviceId=${activeFormId}`)}
+                  className="px-4 py-1.5 rounded-full text-lg bg-white text-[#34495E] font-semibold hover:bg-gray-100 border-2 border-[#34495E] whitespace-nowrap flex-shrink-0"
+                >
+                  📋 Fill Form
+                </button>
+              )}
             </div>
           )}
 
@@ -447,7 +536,6 @@ function ChatInterface() {
         <div className="sticky bottom-0 left-0 right-0 z-40 bg-white py-4 border-t border-gray-100">
           <div className="max-w-4xl mx-auto px-4">
             <div className="w-full bg-[#34495E] rounded-2xl border-t border-gray-200 flex items-center px-4 py-3">
-
               {/* Input */}
               <input
                 type="text"
@@ -487,12 +575,16 @@ function ChatInterface() {
                     {reply}
                   </button>
                 ))}
-                <button
-                  onClick={() => router.push("/form")}
-                  className="px-4 py-1.5 rounded-full text-sm bg-white text-[#34495E] font-semibold hover:bg-gray-100 border-2 border-[#34495E] whitespace-nowrap flex-shrink-0"
-                >
-                  📋 Fill Form
-                </button>
+                {activeFormId && (
+                  <button
+                    onClick={() =>
+                      router.push(`/form?serviceId=${activeFormId}`)
+                    }
+                    className="px-4 py-1.5 rounded-full text-sm bg-white text-[#34495E] font-semibold hover:bg-gray-100 border-2 border-[#34495E] whitespace-nowrap flex-shrink-0"
+                  >
+                    📋 Fill Form
+                  </button>
+                )}
               </div>
             )}
           </div>
