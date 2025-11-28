@@ -241,11 +241,14 @@ function ChatInterface() {
       } else {
         const botResponse = response.botResponse;
 
+        // Clean up the message by removing status labels like [QUESTION], [IDLE], etc
+        const cleanMessage = botResponse.Message.replace(
+          /^\[.*?\]\s*/g,
+          ""
+        ).trim();
+
         // Add bot response
-        setMessages((prev) => [
-          ...prev,
-          { sender: "bot", text: botResponse.Message },
-        ]);
+        setMessages((prev) => [...prev, { sender: "bot", text: cleanMessage }]);
 
         // Update quick replies dynamically based on bot response
         if (botResponse.Choices) {
@@ -309,6 +312,32 @@ function ChatInterface() {
 
   // If desktop menu mode requested and still showing menu, show the menu screen instead of chat
   if (isDesktop && showMenu) return <MenuScreen />;
+
+  // Loading indicator component with animated dots
+  const LoadingIndicator = () => (
+    <div className="flex items-end gap-2">
+      {/* AlVin avatar spacer */}
+      <div className={isDesktop ? "w-12" : "w-8"} style={{ flexShrink: 0 }} />
+      {/* Loading dots animation */}
+      <div
+        className={`px-4 py-2 rounded-2xl bg-gray-200 ${
+          isDesktop ? "max-w-[60%] text-xl" : "max-w-[70%] text-sm"
+        }`}
+      >
+        <div className="flex space-x-1">
+          <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
+          <span
+            className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+            style={{ animationDelay: "0.1s" }}
+          ></span>
+          <span
+            className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+            style={{ animationDelay: "0.2s" }}
+          ></span>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div
@@ -389,6 +418,9 @@ function ChatInterface() {
               </div>
             </div>
           ))}
+
+          {/* Loading indicator - shows while waiting for AI response */}
+          {isLoading && <LoadingIndicator />}
 
           {/* Quick Replies */}
           {(!isInputFocused || isDesktop) && (
