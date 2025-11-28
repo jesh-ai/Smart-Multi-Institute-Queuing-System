@@ -9,18 +9,21 @@ interface RequestChoice {
 }
 
 export default function RequestPage() {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
   const router = useRouter();
   const [requests, setRequests] = useState<RequestChoice[]>([]);
 
   useEffect(() => {
     // Fetch the services from the backend
-    fetch("http://localhost:4000/api/institute/services")
+    fetch(`${API_URL}/api/institute/services`)
       .then((res) => res.json())
       .then((services) => {
-        const requestList: RequestChoice[] = services.map((service: { name: string; requirements: string[] }) => ({
-          title: service.name,
-          desc: `Request for ${service.name}`,
-        }));
+        const requestList: RequestChoice[] = services.map(
+          (service: { name: string; requirements: string[] }) => ({
+            title: service.name,
+            desc: `Request for ${service.name}`,
+          })
+        );
         // Add "Other" option at the end
         requestList.push({
           title: "Other",

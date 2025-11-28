@@ -45,6 +45,7 @@ function isObjectEmptyValues(obj: JsonValue): boolean {
 }
 
 function FormFillingPage() {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isDesktop, setIsDesktop] = useState<boolean | undefined>(undefined);
@@ -168,9 +169,7 @@ function FormFillingPage() {
 
         if (serviceId !== null) {
           // Fetch form from backend API based on serviceId
-          const res = await fetch(
-            `http://localhost:4000/api/institute/form/${serviceId}`
-          );
+          const res = await fetch(`${API_URL}/api/institute/form/${serviceId}`);
           if (!res.ok) throw new Error("Failed to fetch form");
           const data = await res.json();
           // Extract the form structure and service name from the response
@@ -198,7 +197,7 @@ function FormFillingPage() {
       }
     };
     fetchForm();
-  }, [collectLeafPaths]);
+  }, [collectLeafPaths, API_URL]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -233,7 +232,7 @@ function FormFillingPage() {
           data.isPregnant
       );
 
-      const res = await fetch("http://localhost:4000/api/applicant/submit", {
+      const res = await fetch(`${API_URL}/api/applicant/submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

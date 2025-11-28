@@ -13,6 +13,7 @@ interface HelpChatbotProps {
 }
 
 export default function HelpChatbot({ onClose }: HelpChatbotProps) {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
   const [messages, setMessages] = useState<Message[]>([
     { sender: "user", text: "I need help with filling the form" },
     { sender: "bot", text: "What would you like to inquire about?" },
@@ -55,7 +56,7 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
     const fetchInitialResponse = async () => {
       try {
         const apiResponse = await fetch(
-          `http://localhost:4000/api/sendMessage/${sessionId}`,
+          `${API_URL}/api/sendMessage/${sessionId}`,
           {
             method: "POST",
             headers: {
@@ -94,7 +95,7 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
       }
     };
     fetchInitialResponse();
-  }, [sessionId]);
+  }, [sessionId, API_URL]);
 
   const handleSend = async (
     text: string,
@@ -110,7 +111,7 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
     try {
       // Fetch response from backend AI
       const apiResponse = await fetch(
-        `http://localhost:4000/api/sendMessage/${sessionId}`,
+        `${API_URL}/api/sendMessage/${sessionId}`,
         {
           method: "POST",
           headers: {
@@ -119,8 +120,20 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
           body: JSON.stringify({ message: text }),
         }
       );
-      if (!apiResponse.ok) throw new Error("Failed to fetch response");
+
+      if (!apiResponse.ok) {
+        console.error(
+          "API Response not OK:",
+          apiResponse.status,
+          apiResponse.statusText
+        );
+        throw new Error(
+          `Server returned ${apiResponse.status}: ${apiResponse.statusText}`
+        );
+      }
+
       const response = await apiResponse.json();
+      console.log("HelpChatbot API Response:", response); // Debug log
 
       if (!response.success) {
         // Handle error
@@ -159,11 +172,14 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
       }
     } catch (error) {
       console.error("Error sending message:", error);
+      console.error("API_URL being used:", API_URL); // Debug log
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
       setMessages((prev) => [
         ...prev,
         {
           sender: "bot",
-          text: "Sorry, I'm having trouble connecting. Please try again.",
+          text: `Sorry, I'm having trouble connecting. ${errorMessage}`,
         },
       ]);
     } finally {

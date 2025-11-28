@@ -3,6 +3,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 function RequirementsPage() {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
   const router = useRouter();
   const searchParams = useSearchParams();
   const [requirements, setRequirements] = useState<string[]>([]);
@@ -15,7 +16,7 @@ function RequirementsPage() {
     setFormName(form);
 
     // Fetch services from the backend
-    fetch("http://localhost:4000/api/institute/services")
+    fetch(`${API_URL}/api/institute/services`)
       .then((res) => res.json())
       .then((services) => {
         // Find the service that matches the form name and get its index

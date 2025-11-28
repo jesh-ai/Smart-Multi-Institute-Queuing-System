@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 export default function Header() {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
   const [isDesktop, setIsDesktop] = useState(false);
   const [instituteName, setInstituteName] = useState("Institute Name");
 
@@ -10,9 +11,7 @@ export default function Header() {
     // Fetch institute name from backend
     const fetchInstituteName = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:4000/api/institute/info"
-        );
+        const response = await fetch(`${API_URL}/api/institute/info`);
         if (response.ok) {
           const data = await response.json();
           setInstituteName(data.name || "Institute Name");
