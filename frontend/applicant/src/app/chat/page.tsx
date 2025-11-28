@@ -20,8 +20,12 @@ function ChatInterface() {
 
   const [isDesktop, setIsDesktop] = useState<boolean | undefined>(undefined);
   const [mounted, setMounted] = useState(false);
-
   const [showLanding, setShowLanding] = useState(true);
+  
+  // --- RESTORED MISSING STATES ---
+  const [showMenu, setShowMenu] = useState(false); // Used in logic
+  const [applicantInfo, setApplicantInfo] = useState<ApplicantInfo | null>(null); // Used for Status
+  // ------------------------------
 
   useEffect(() => {
     setMounted(true);
@@ -37,56 +41,52 @@ function ChatInterface() {
 
   const LandingScreen = () => (
     <div className="min-h-screen flex flex-col bg-white font-sans">
-    <header
-      className="py-4 px-6 flex items-center shadow-md"
-      style={{ backgroundColor: themeColor}}
-    >
-      <div className="flex items-center">
-        <Image
-          src="/institute-1.png"
-          alt="Institute Logo"
-          width={50}
-          height={50}
-          className="w-10 h-10 mr-3 object-contain"
-        />
-        <span
-          className="text-2xl font-extrabold text-white"
-        >
-          DFA/PHILHEALTH
-        </span>
-      </div>
-</header>
+      <header
+        className="py-4 px-6 flex items-center shadow-md"
+        style={{ backgroundColor: themeColor }}
+      >
+        <div className="flex items-center">
+          <Image
+            src="/institute-1.png"
+            alt="Institute Logo"
+            width={50}
+            height={50}
+            className="w-10 h-10 mr-3 object-contain"
+          />
+          <span className="text-2xl font-extrabold text-white">
+            DFA/PHILHEALTH
+          </span>
+        </div>
+      </header>
 
       <main className="grow flex flex-col items-center justify-start pt-12 p-6">
+        {/* Welcome Section */}
+        <div className="flex flex-row items-center justify-center mb-10 gap-4">
+          <div
+            className="w-25 h-25 rounded-full flex items-center justify-center overflow-hidden drop-shadow-lg"
+            style={{ backgroundColor: themeColor }}
+          >
+            <Image
+              src="/ALVin1.png"
+              alt="Welcome"
+              width={70}
+              height={70}
+              className="object-contain"
+            />
+          </div>
 
-{/* Welcome Section */}
-<div className="flex flex-row items-center justify-center mb-10 gap-4">
-  
-  <div
-    className="w-25 h-25 rounded-full flex items-center justify-center overflow-hidden drop-shadow-lg"
-    style={{ backgroundColor: themeColor }}
-  >
-  <Image
-    src="/ALVin1.png"
-    alt="Welcome"
-    width={70}
-    height={70}
-    className="object-contain"
-  />
-  </div>
-
-<div className="flex flex-col items-start">
-    <h2 
-      className="text-4xl font-bold leading-none" 
-      style={{ color: themeColor }}
-    >
-      Welcome!
-    </h2>
-    <p className="italic" style={{ color: themeColor }}>
-      Let&apos;s get started
-    </p>
-  </div>
-</div>
+          <div className="flex flex-col items-start">
+            <h2
+              className="text-4xl font-bold leading-none"
+              style={{ color: themeColor }}
+            >
+              Welcome!
+            </h2>
+            <p className="italic" style={{ color: themeColor }}>
+              Let&apos;s get started
+            </p>
+          </div>
+        </div>
 
         <h3
           className="text-2xl font-extrabold mb-10 text-center"
@@ -100,7 +100,6 @@ function ChatInterface() {
           {/* Inquire Button */}
           <button
             onClick={() => {
-              // Switch to Chat Interface and send initial message
               handleSend("I would like to inquire", "closed");
               setShowLanding(false);
             }}
@@ -108,10 +107,10 @@ function ChatInterface() {
             style={{ backgroundColor: themeColor }}
           >
             <div className="mr-5 shrink-0">
-              <Image 
-                src="/inquire.png" 
-                alt="Inquire Icon" 
-                width={56} 
+              <Image
+                src="/inquire.png"
+                alt="Inquire Icon"
+                width={56}
                 height={56}
                 className="w-14 h-14 object-contain"
               />
@@ -133,10 +132,10 @@ function ChatInterface() {
             style={{ backgroundColor: themeColor }}
           >
             <div className="mr-5 shrink-0">
-               <Image 
-                src="/request.png" 
-                alt="Request Icon" 
-                width={56} 
+              <Image
+                src="/request.png"
+                alt="Request Icon"
+                width={56}
                 height={56}
                 className="w-14 h-14 object-contain"
               />
@@ -172,10 +171,6 @@ function ChatInterface() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
-  // Map form flag names to service indices (0-indexed array positions)
-  // Based on backend's institute_info.json service_list array:
-  // [0] = DFA_Passport_New, [1] = DFA_Passport_Renewal,
-  // [2] = PhilHealth_Registration, [3] = PhilHealth_MDR_Update
   const formFlagToServiceId = (formFlag: string): string => {
     const mapping: Record<string, string> = {
       DFA_Passport_New: "0",
@@ -186,21 +181,15 @@ function ChatInterface() {
     return mapping[formFlag] || formFlag;
   };
 
-  // Helper function to check form flags from conversation messages
   const checkFormFlags = async (sessionId: string): Promise<void> => {
     try {
       const response = await fetch(`${API_URL}/api/messages/${sessionId}`);
-
       if (!response.ok) return;
-
       const data = await response.json();
       const messages = data.messages || [];
-
-      // Get the latest message with form_flag
       for (let i = messages.length - 1; i >= 0; i--) {
         const msg = messages[i];
         if (msg.botResponse?.form_flag) {
-          // Find which form flag is set to 1
           const formFlags = msg.botResponse.form_flag;
           for (const [formId, value] of Object.entries(formFlags)) {
             if (value === 1) {
@@ -210,8 +199,6 @@ function ChatInterface() {
           }
         }
       }
-
-      // No form flag set to 1
       setActiveFormId(null);
     } catch (error) {
       console.error("Error checking form flags:", error);
@@ -219,38 +206,25 @@ function ChatInterface() {
     }
   };
 
-  // Helper function to extract session ID from connect.sid cookie
   const getSessionIdFromCookie = (): string | null => {
     if (typeof document === "undefined") return null;
-
     const cookies = document.cookie.split("; ");
     const connectSidCookie = cookies.find((cookie) =>
       cookie.startsWith("connect.sid=")
     );
-
     if (!connectSidCookie) return null;
-
-    // Extract the value after "connect.sid="
     const cookieValue = connectSidCookie.split("=")[1];
-
-    // Decode the URL-encoded value
     const decodedValue = decodeURIComponent(cookieValue);
-
-    // Extract session ID from pattern: s%3A{sessionId}.{signature} or s:{sessionId}.{signature}
     const match = decodedValue.match(/^s(?:%3A|:)([^.]+)\./);
-
     return match ? match[1] : null;
   };
 
-  // Initialize session ID from cookie
   useEffect(() => {
     const cookieSessionId = getSessionIdFromCookie();
     if (cookieSessionId) {
       setSessionId(cookieSessionId);
-      // Check form flags on initial load
       checkFormFlags(cookieSessionId);
     } else {
-      // Fallback to generating a session ID if cookie doesn't exist yet
       let id = sessionStorage.getItem("chatSessionId");
       if (!id) {
         id = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -261,19 +235,15 @@ function ChatInterface() {
     }
   }, []);
 
-  // Track viewport height changes (keyboard open/close)
   useEffect(() => {
     if (typeof window === "undefined") return;
-
     const updateHeight = () => {
       const height = window.visualViewport
         ? window.visualViewport.height
         : window.innerHeight;
       setViewportHeight(height);
     };
-
     updateHeight();
-
     if (window.visualViewport) {
       window.visualViewport.addEventListener("resize", updateHeight);
       return () =>
@@ -284,33 +254,35 @@ function ChatInterface() {
     }
   }, []);
 
-  // Auto-scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Handle incoming message from URL parameter (e.g., from "Other" request)
+  // --- FIXED LOGIC HERE ---
   useEffect(() => {
     const message = searchParams.get("message");
     const formCompleted = searchParams.get("formCompleted");
+    
+    // Define urlSessionId properly
+    const urlSessionId = searchParams.get("sessionId");
 
     if (formCompleted === "true") {
       setShowStatus(true);
+      setShowLanding(false); // Ensure landing is hidden if returning from form
 
-      // Fetch applicant info if sessionId is provided
       if (urlSessionId) {
         fetch(`${API_URL}/api/applicant/info/${urlSessionId}`)
           .then((res) => res.json())
           .then((data) => {
-            setApplicantInfo(data);
+            setApplicantInfo(data); // Now defined!
           })
           .catch((err) => {
             console.error("Failed to fetch applicant info:", err);
           });
       }
     } else if (message) {
-      // Hide menu and send the message
-      setShowMenu(false);
+      setShowMenu(false); // Now defined!
+      setShowLanding(false);
       handleSend(message, "closed");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -318,12 +290,10 @@ function ChatInterface() {
 
   const handleSend = async (
     text: string,
-    // Renamed to _messageType to avoid "unused variable" warning
     _messageType: "closed" | "open" = "open"
   ) => {
     if (!text.trim() || isLoading) return;
 
-    // Check if sessionId is available
     if (!sessionId) {
       console.error("No session ID available");
       setMessages((prev) => [
@@ -336,13 +306,11 @@ function ChatInterface() {
       return;
     }
 
-    // Add user message
     setMessages((prev) => [...prev, { sender: "user", text }]);
     setInput("");
     setIsLoading(true);
 
     try {
-      // Fetch response from backend AI
       const apiResponse = await fetch(
         `${API_URL}/api/sendMessage/${sessionId}`,
         {
@@ -369,10 +337,10 @@ function ChatInterface() {
       }
 
       const response = await apiResponse.json();
-      console.log("API Response:", response); // Debug log
+      console.log("API Response:", response);
 
       if (!response.success) {
-        console.error("Error response:", response); // Debug log
+        console.error("Error response:", response);
         const errorMsg =
           response.botResponse?.Message ||
           response.error ||
@@ -386,7 +354,6 @@ function ChatInterface() {
         ]);
       } else {
         const botResponse = response.botResponse;
-
         const cleanMessage = botResponse.Message.replace(
           /^\[.*?\]\s*/g,
           ""
@@ -394,7 +361,6 @@ function ChatInterface() {
 
         setMessages((prev) => [...prev, { sender: "bot", text: cleanMessage }]);
 
-        // Check for form flags in the response
         if (botResponse.form_flag) {
           for (const [formId, value] of Object.entries(botResponse.form_flag)) {
             if (value === 1) {
@@ -411,12 +377,7 @@ function ChatInterface() {
               choices.push(botResponse.Choices[key]);
             }
           });
-
-          if (choices.length > 0) {
-            setQuickReplies(choices);
-          } else {
-            setQuickReplies([]);
-          }
+          setQuickReplies(choices.length > 0 ? choices : []);
         } else {
           setQuickReplies([]);
         }
@@ -448,8 +409,7 @@ function ChatInterface() {
       !searchParams.get("message") &&
       !searchParams.get("formCompleted")
     ) {
-      // Logic for desktop initial view - effectively handled by showLanding now
-      // leaving this here to respect original logic flow
+      // logic preserved
     }
   }, [isDesktop, searchParams]);
 
@@ -461,17 +421,12 @@ function ChatInterface() {
     );
   }
 
-  // --- RENDER LOGIC ---
-
-  // 1. If we are on the landing screen, show the new recreated Image
   if (showLanding) {
     return <LandingScreen />;
   }
 
-  // 2. Otherwise, render the Chat Interface (Backend logic preserved)
   const LoadingIndicator = () => (
     <div className="flex items-end gap-2">
-      {/* AlVin avatar */}
       <Image
         src="/ALVin3.png"
         alt="ALVin"
@@ -507,9 +462,8 @@ function ChatInterface() {
         maxHeight: viewportHeight > 0 ? `${viewportHeight}px` : "100vh",
       }}
     >
-      {/* Custom Header for Chat View */}
       <div className="bg-[#17293C] text-white px-6 py-4 shadow-lg flex items-center gap-4 sticky top-0 z-50">
-      <button
+        <button
           onClick={() => setShowLanding(true)}
           className="hover:opacity-80 transition-opacity flex items-center justify-center"
         >
@@ -531,10 +485,17 @@ function ChatInterface() {
         <h1 className="text-2xl font-bold">AIVin</h1>
       </div>
 
-      {/* Status Component - shown as sticky chat bubble */}
-      {showStatus && <Status />}
+      {/* FIXED: Passing props to Status correctly */}
+      {showStatus && applicantInfo && (
+        <Status
+          queueNumber={applicantInfo.queueNumber}
+          status={applicantInfo.status}
+          counter={applicantInfo.counter}
+          waitTime={applicantInfo.waitTime}
+          message={applicantInfo.message}
+        />
+      )}
 
-      {/* Message Area - hide on desktop when form is completed */}
       {!(isDesktop && showStatus) && (
         <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2">
           {messages.map((msg, idx) => (
@@ -544,7 +505,6 @@ function ChatInterface() {
                 msg.sender === "user" ? "flex-row-reverse" : "flex-row"
               }`}
             >
-              {/* Show AlVin profile picture only for the latest bot message */}
               {msg.sender === "bot" && idx === messages.length - 1 && (
                 <Image
                   src="/ALVin2.png"
@@ -554,7 +514,6 @@ function ChatInterface() {
                   className="rounded-full shrink-0"
                 />
               )}
-              {/* Add invisible spacer for older bot messages to maintain alignment */}
               {msg.sender === "bot" && idx !== messages.length - 1 && (
                 <div
                   className={isDesktop ? "w-12" : "w-8"}
@@ -577,10 +536,8 @@ function ChatInterface() {
             </div>
           ))}
 
-          {/* Loading indicator - shows while waiting for AI response */}
           {isLoading && <LoadingIndicator />}
 
-          {/* Quick Replies */}
           {(!isInputFocused || isDesktop) && (
             <div className="flex gap-2 flex-wrap mt-2 ml-10 md:ml-14 max-w-[70%] md:max-w-[60%]">
               {quickReplies.map((reply, idx) => (
@@ -605,17 +562,14 @@ function ChatInterface() {
             </div>
           )}
 
-          {/* Scroll anchor - minimal spacing */}
           <div ref={messagesEndRef} className="h-4" />
         </div>
       )}
 
-      {/* Input Section - positioned at bottom with consistent spacing */}
       {!(isDesktop && showStatus) && (
         <div className="sticky bottom-0 left-0 right-0 z-40 bg-white py-4 border-t border-gray-100">
           <div className="max-w-4xl mx-auto px-4">
             <div className="w-full bg-[#34495E] rounded-2xl border-t border-gray-200 flex items-center px-4 py-3">
-              {/* Mic Button */}
               <button className="p-2 text-gray-600 hover:text-gray-800 text-lg">
                 <Image
                   src="/Microphone.png"
@@ -625,7 +579,6 @@ function ChatInterface() {
                 />
               </button>
 
-              {/* Input */}
               <input
                 type="text"
                 placeholder="Message here..."
@@ -637,7 +590,6 @@ function ChatInterface() {
                 className="flex-1 px-4 py-2 text-sm border bg-white border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-400 mx-1 text-black"
               />
 
-              {/* Send Button */}
               <button
                 onClick={() => handleSend(input, "open")}
                 className="p-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 text-lg"
@@ -652,7 +604,6 @@ function ChatInterface() {
               </button>
             </div>
 
-            {/* Quick Replies and Form Button - Mobile only */}
             {!isDesktop && (
               <div className="flex gap-2 overflow-x-auto mt-2 pb-1 scrollbar-hide">
                 {quickReplies.map((reply, idx) => (

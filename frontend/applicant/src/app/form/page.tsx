@@ -83,6 +83,7 @@ function FormFillingPage() {
   const [pageIndex, setPageIndex] = useState(0);
   const [fieldsPerPage, setFieldsPerPage] = useState(4);
   const [confirmationChecked, setConfirmationChecked] = useState(false);
+  const [showErrors, setShowErrors] = useState(false);
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string>
   >({});
@@ -508,19 +509,6 @@ function FormFillingPage() {
       </div>
     );
   }
-
-  // Common Checkbox Logic handler
-  const handleCheckboxChange = (checked: boolean) => {
-    if (checked) {
-        // If user tries to check the box, validate first
-        if (!isCurrentPageValid()) {
-            setShowErrors(true);
-            // Do NOT set confirmationChecked to true
-            return;
-        }
-    }
-    setConfirmationChecked(checked);
-  };
 
   // Desktop
   if (isDesktop) {
