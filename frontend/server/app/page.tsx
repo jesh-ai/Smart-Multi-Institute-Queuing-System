@@ -46,8 +46,8 @@ export default function DashboardPage() {
           credentials: 'include'
         });
         const devicesText = await devicesRes.text();
-        const devicesData = devicesText ? JSON.parse(devicesText) : [];
-        setActiveUsers(Array.isArray(devicesData) ? devicesData.length : 0);
+        const devicesData = devicesText ? JSON.parse(devicesText) : 0;
+        setActiveUsers(devicesData);
 
         // Connected devices
         const connectedRes = await fetch(`${BASE_URL}/session/all`, {
