@@ -10,9 +10,11 @@ function ChatInterface() {
   const searchParams = useSearchParams();
 
   // Detect if desktop (1024px+)
-  const [isDesktop, setIsDesktop] = useState(false);
+  const [isDesktop, setIsDesktop] = useState<boolean | undefined>(undefined);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const checkDesktop = () => {
       setIsDesktop(window.innerWidth >= 1024);
     };
@@ -98,8 +100,20 @@ function ChatInterface() {
   const [isLoading, setIsLoading] = useState(false);
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [showStatus, setShowStatus] = useState(false);
+  const [applicantInfo, setApplicantInfo] = useState(null);
   const [viewportHeight, setViewportHeight] = useState<number>(0);
+  const [sessionId, setSessionId] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Initialize session ID on client side only
+  useEffect(() => {
+    let id = sessionStorage.getItem("chatSessionId");
+    if (!id) {
+      id = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      sessionStorage.setItem("chatSessionId", id);
+    }
+    setSessionId(id);
+  }, []);
 
   // Track viewport height changes (keyboard open/close)
   useEffect(() => {
@@ -135,9 +149,22 @@ function ChatInterface() {
   useEffect(() => {
     const message = searchParams.get("message");
     const formCompleted = searchParams.get("formCompleted");
+    const urlSessionId = searchParams.get("sessionId");
 
     if (formCompleted === "true") {
       setShowStatus(true);
+
+      // Fetch applicant info if sessionId is provided
+      if (urlSessionId) {
+        fetch(`http://localhost:4000/api/applicant/info/${urlSessionId}`)
+          .then((res) => res.json())
+          .then((data) => {
+            setApplicantInfo(data);
+          })
+          .catch((err) => {
+            console.error("Failed to fetch applicant info:", err);
+          });
+      }
     } else if (message) {
       // Hide menu and send the message
       setShowMenu(false);
@@ -158,14 +185,22 @@ function ChatInterface() {
     setIsLoading(true);
 
     try {
-      // Fetch response from API
+      // Fetch response from backend AI
       const apiResponse = await fetch(
-        `/api/get-response?message=${encodeURIComponent(text)}`
+        `http://localhost:4000/api/sendMessage/${sessionId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ message: text }),
+        }
       );
+
       if (!apiResponse.ok) throw new Error("Failed to fetch response");
       const response = await apiResponse.json();
 
-      if (response.error) {
+      if (!response.success) {
         // Handle error
         setMessages((prev) => [
           ...prev,
@@ -175,52 +210,31 @@ function ChatInterface() {
           },
         ]);
       } else {
+        const botResponse = response.botResponse;
+
         // Add bot response
         setMessages((prev) => [
           ...prev,
-          { sender: "bot", text: response.message },
+          { sender: "bot", text: botResponse.Message },
         ]);
 
         // Update quick replies dynamically based on bot response
-        if (response.choices && response.choices.length > 0) {
-          // Show quick replies if bot has choices available
-          setQuickReplies(response.choices);
-        } else {
-          // Clear quick replies if no choices in response
-          setQuickReplies([]);
-        }
-
-        // Save interaction to JSON file via POST request
-        try {
-          await fetch("/api/save-interaction", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              userMessage: text,
-              botResponse: {
-                Message: response.message,
-                Choices: response.choices.reduce(
-                  (
-                    acc: Record<string, string>,
-                    choice: string,
-                    idx: number
-                  ) => {
-                    acc[`Choice${idx + 1}`] = choice;
-                    return acc;
-                  },
-                  {}
-                ),
-                Errors: response.error,
-              },
-              messageType,
-              timestamp: new Date().toISOString(),
-            }),
+        if (botResponse.Choices) {
+          const choices: string[] = [];
+          // Extract choices from the Choices object
+          Object.keys(botResponse.Choices).forEach((key) => {
+            if (botResponse.Choices[key]) {
+              choices.push(botResponse.Choices[key]);
+            }
           });
-        } catch (saveError) {
-          console.error("Error saving interaction:", saveError);
-          // Don't disrupt user experience if save fails
+
+          if (choices.length > 0) {
+            setQuickReplies(choices);
+          } else {
+            setQuickReplies([]);
+          }
+        } else {
+          setQuickReplies([]);
         }
       }
     } catch (error) {
@@ -255,6 +269,15 @@ function ChatInterface() {
     }
   }, [isDesktop, searchParams]);
 
+  // Show loading state until mounted to prevent hydration mismatch
+  if (!mounted) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-white">
+        <div className="text-gray-600">Loading...</div>
+      </div>
+    );
+  }
+
   // If desktop menu mode requested and still showing menu, show the menu screen instead of chat
   if (isDesktop && showMenu) return <MenuScreen />;
 
@@ -285,7 +308,15 @@ function ChatInterface() {
       </div>
 
       {/* Status Component - shown as sticky chat bubble */}
-      {showStatus && <Status />}
+      {showStatus && (
+        <Status
+          queueNumber={applicantInfo?.queueNumber}
+          status={applicantInfo?.status}
+          counter={applicantInfo?.counter}
+          waitTime={applicantInfo?.waitTime}
+          message={applicantInfo?.message}
+        />
+      )}
 
       {/* Message Area - hide on desktop when form is completed */}
       {!(isDesktop && showStatus) && (
@@ -302,17 +333,24 @@ function ChatInterface() {
                 <Image
                   src="/ALVin.png"
                   alt="ALVin"
-                  width={32}
-                  height={32}
+                  width={isDesktop ? 48 : 32}
+                  height={isDesktop ? 48 : 32}
                   className="rounded-full flex-shrink-0"
                 />
               )}
               {/* Add invisible spacer for older bot messages to maintain alignment */}
               {msg.sender === "bot" && idx !== messages.length - 1 && (
-                <div className="w-8 flex-shrink-0" />
+                <div
+                  className={isDesktop ? "w-12" : "w-8"}
+                  style={{ flexShrink: 0 }}
+                />
               )}
               <div
-                className={`px-4 py-2 rounded-2xl max-w-[70%] text-sm leading-snug ${
+                className={`px-4 py-2 rounded-2xl ${
+                  isDesktop
+                    ? "max-w-[60%] text-xl leading-relaxed"
+                    : "max-w-[70%] text-sm leading-snug"
+                } ${
                   msg.sender === "user"
                     ? "bg-[#34495E] text-white"
                     : "bg-gray-200 text-black"
@@ -330,7 +368,9 @@ function ChatInterface() {
                 <button
                   key={idx}
                   onClick={() => handleSend(reply, "closed")}
-                  className="px-4 py-1.5 rounded-full text-sm bg-white text-black border-2 border-[#34495E] hover:bg-gray-100"
+                  className={`px-4 py-1.5 rounded-full ${
+                    isDesktop ? "text-lg" : "text-sm"
+                  } bg-white text-black border-2 border-[#34495E] hover:bg-gray-100`}
                 >
                   {reply}
                 </button>
