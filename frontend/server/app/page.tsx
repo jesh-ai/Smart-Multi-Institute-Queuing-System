@@ -24,15 +24,51 @@ export default function DashboardPage() {
   const [activeCounters, setActiveCounters] = useState(0);
   const [summary, setSummary] = useState<SummaryData>({ requestsToday: 0, avgWaitTime: 0, totalUptime: 0 });
   const [qrData, setQrData] = useState<{ [key: string]: string }>({});
-
-  const BASE_URL = "http://localhost:4000/api"; // const BASE_URL = `${window.location.protocol}//${window.location.hostname}:4000/api`;
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || `http://localhost:4000/api/`
 
   useEffect(() => {
     const fetchDashboardData = async () => {
-      try {
-        // ...existing code...
+      try {// Current Queue Status
+        const sessionRes = await fetch(`${BASE_URL}/server/dashboard/queue`, {
+          credentials: 'include'
+        });
+        const sessionText = await sessionRes.text();
+        const sessionData = sessionText ? JSON.parse(sessionText) : {};
+        setQueueData({
+          usersInQueue: sessionData.usersInQueue ?? 0,
+          lastSession: sessionData.lastSession ?? "None",
+        });
+
+        // Active users
+        const devicesRes = await fetch(`${BASE_URL}server/dashboard/users`, {
+          credentials: 'include'
+        });
+        const devicesText = await devicesRes.text();
+        const devicesData = devicesText ? JSON.parse(devicesText) : 0;
+        setActiveUsers(devicesData);
+
+        // Connected devices
+        const connectedRes = await fetch(`${BASE_URL}session/all`, {
+          credentials: 'include'
+        });
+        const connectedText = await connectedRes.text();
+        const connectedData = connectedText ? JSON.parse(connectedText) : {};
+        setConnectedDevices(Object.keys(connectedData).length);
+
+        // Active counters
+        const countersRes = await fetch(`${BASE_URL}server/counters`, {
+          credentials: 'include'
+        });
+        const countersText = await countersRes.text();
+        const countersData = countersText ? JSON.parse(countersText) : [];
+        setActiveCounters(
+          Array.isArray(countersData)
+            ? countersData.filter((c: { status: string }) => c.status?.toLowerCase() === "active").length
+            : 0
+        );
+
         // Summary Table
-        const summaryRes = await fetch(`${BASE_URL}/server/dashboard/summary`, {
+        const summaryRes = await fetch(`${BASE_URL}server/dashboard/summary`, {
           credentials: 'include'
         });
         const summaryText = await summaryRes.text();
@@ -44,7 +80,7 @@ export default function DashboardPage() {
         });
 
         // Fetch QR codes
-        const qrRes = await fetch(`${BASE_URL}/server/qr`, {
+        const qrRes = await fetch(`${BASE_URL}server/qr`, {
           credentials: 'include'
         });
         const qrText = await qrRes.text();
