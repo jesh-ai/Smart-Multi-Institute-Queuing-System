@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { fetchSessions } from "../db/sessions.js";
+import { fetchSessions, fetchSessionsAll } from "../db/sessions.js";
 import { getAvailableKeys } from "../utils/counterKeys.js";
 import { SessionData } from "express-session";
 
@@ -143,38 +143,32 @@ export async function getSummary(req: Request, res: Response): Promise<void> {
 }
 export async function getCounters(req: Request, res: Response): Promise<void> {
   try {
-    const sessions = fetchSessions();
-    
+    const sessions = fetchSessionsAll();
+
     // First, collect all counter sessions with their timestamps
     const counterSessions: Array<{
       sessionId: string;
       session: any;
       timestamp: number;
       isActive: boolean;
+      deleted_at?: number;
     }> = [];
 
-    sessions.forEach((session, sessionId) => {
+    (sessions as Map<string, any>).forEach((session: any, sessionId: string) => {
       if (!session.counter) return;
-      
-      console.log('Counter session found:', {
-        sessionId,
-        counter: session.counter,
-        hasKey: !!session.counter.key,
-        hasDateOpened: !!session.counter.dateOpened,
-        dateOpened: session.counter.dateOpened
-      });
-      
-      const timestamp = session.counter.dateOpened 
+
+      const timestamp = session.counter.dateOpened
         ? new Date(session.counter.dateOpened).getTime()
         : Date.now();
-      
-      const isActive = !session.counter.dateClosed;
-      
+
+      const isActive = !session.counter.dateClosed && !session.deleted_at;
+
       counterSessions.push({
         sessionId,
         session,
         timestamp,
-        isActive
+        isActive,
+        deleted_at: session.deleted_at,
       });
     });
 
@@ -200,9 +194,9 @@ export async function getCounters(req: Request, res: Response): Promise<void> {
       const counterNumber = index + 1;
       const counterName = `Counter ${counterNumber}`;
       const counterKey = item.session.counter.key || '-';
-      
+
       // Format dates
-      const startedAt = item.session.counter.dateOpened 
+      const startedAt = item.session.counter.dateOpened
         ? new Date(item.session.counter.dateOpened).toLocaleString('en-US', {
             month: 'short',
             day: 'numeric',
@@ -216,8 +210,19 @@ export async function getCounters(req: Request, res: Response): Promise<void> {
       // Determine status
       let status = 'Active';
       let endedAt = '-';
-      
-      if (item.session.counter.dateClosed) {
+
+      if (item.deleted_at) {
+        // Ended from backup
+        status = 'Ended';
+        endedAt = new Date(item.deleted_at).toLocaleString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+        });
+      } else if (item.session.counter.dateClosed) {
         // Counter session has ended
         endedAt = new Date(item.session.counter.dateClosed).toLocaleString('en-US', {
           month: 'short',
@@ -227,18 +232,18 @@ export async function getCounters(req: Request, res: Response): Promise<void> {
           minute: '2-digit',
           hour12: true
         });
-        
+
         // Check if there are still applicants waiting
         let hasWaitingApplicants = false;
-        const sessions = fetchSessions();
-        sessions.forEach((session) => {
-          if (session.applicant && 
-              session.applicant.dateSubmitted && 
+        const sessionsMap = fetchSessions();
+        sessionsMap.forEach((session) => {
+          if (session.applicant &&
+              session.applicant.dateSubmitted &&
               !session.applicant.dateClosed) {
             hasWaitingApplicants = true;
           }
         });
-        
+
         status = hasWaitingApplicants ? 'Ending' : 'Ended';
       }
 
@@ -255,7 +260,7 @@ export async function getCounters(req: Request, res: Response): Promise<void> {
     // Add available keys as Online counters (generated but unused)
     const availableKeys = getAvailableKeys();
     let nextCounterNumber = counterSessions.length + 1;
-    
+
     availableKeys.forEach((key) => {
       sessionsList.push({
         id: nextCounterNumber,

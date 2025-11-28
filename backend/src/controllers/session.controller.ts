@@ -1,9 +1,13 @@
 import { Request, Response } from "express";
-import { fetchSessions, deleteSession } from "../db/sessions.js";
+import { fetchSessions, deleteSession, fetchSessionsAll } from "../db/sessions.js";
 import { getAvailableKeys } from "../utils/counterKeys.js";
 
 export async function getSessions(req: Request, res: Response): Promise<void> {
     const obj = Object.fromEntries(fetchSessions());
+    res.json(obj);
+}
+export async function getAllSessions(req: Request, res: Response): Promise<void> {
+    const obj = Object.fromEntries(fetchSessionsAll());
     res.json(obj);
 }
 
