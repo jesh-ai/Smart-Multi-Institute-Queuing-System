@@ -11,6 +11,8 @@ export async function getCurrentSession(req: Request, res: Response): Promise<vo
   res.json(fetchSessions().get(req.sessionID));
 }
 
+
+// TBR
 export async function removeSession(req: Request, res: Response): Promise<void> {
   try {
     const { sessionId } = req.params;

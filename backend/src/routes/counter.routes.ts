@@ -18,9 +18,11 @@ import {
 
 const router = Router();
 
+router.get("/all", getAllCounters);
+
+// TBR
 router.get("/info", getCounterInfo);
 router.get("/info/:sessionId", getCounterBySessionId);
-router.get("/all", getAllCounters);
 router.get("/active", getActiveCounters);
 router.get("/keys", getAvailableKeysHandler);
 router.post("/keys/generate", generateKeysHandler);

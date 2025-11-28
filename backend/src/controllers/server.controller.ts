@@ -182,6 +182,8 @@ export async function getSummary(req: Request, res: Response): Promise<void> {
   }
 }
 
+
+// TBR
 export async function getDevices(req: Request, res: Response): Promise<void> {
   try {
     const sessions = fetchSessions();

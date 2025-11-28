@@ -11,7 +11,7 @@ routes.get("/dashboard/summary", getSummary);
 routes.get("/qr", getQR);
 routes.post("/shutdown", shutdownServer);
 
-
+// TBR
 routes.get("/devices", getDevices);
 
 const serverRoutes = routes;

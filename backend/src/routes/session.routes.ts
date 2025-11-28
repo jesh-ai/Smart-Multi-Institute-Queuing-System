@@ -5,6 +5,8 @@ const sessionRoutes = express.Router();
 
 sessionRoutes.get("/devices", getSessions);
 sessionRoutes.get("/self", getCurrentSession);
+
+// TBR
 sessionRoutes.get("/all", getSessionsList);
 sessionRoutes.delete("/:sessionId", removeSession);
 
