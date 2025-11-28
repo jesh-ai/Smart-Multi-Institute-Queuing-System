@@ -225,6 +225,24 @@ function FormFillingPage() {
       if (maxLength && strValue.length > maxLength) {
         return `Maximum ${maxLength} characters allowed`;
       }
+
+      // Number validation (min/max)
+      if (fieldType === "number" && strValue) {
+        const numValue = parseFloat(strValue);
+        if (!isNaN(numValue)) {
+          const min = validation.min as number | undefined;
+          const max = validation.max as number | undefined;
+
+          if (min !== undefined && numValue < min) {
+            return `Value must be at least ${min}`;
+          }
+          if (max !== undefined && numValue > max) {
+            return `Value must not exceed ${max}`;
+          }
+        } else if (strValue.trim()) {
+          return "Please enter a valid number";
+        }
+      }
     }
 
     // Check pattern attribute (for tel fields)
@@ -259,8 +277,15 @@ function FormFillingPage() {
       for (let i = 0; i < parts.length - 1; i++) {
         const p = parts[i];
         const curObj = cur as JsonObject;
-        if (curObj[p] === undefined || curObj[p] === null)
+        // If the property doesn't exist, is null, or is a primitive value, replace it with an object
+        if (
+          curObj[p] === undefined ||
+          curObj[p] === null ||
+          typeof curObj[p] !== "object" ||
+          Array.isArray(curObj[p])
+        ) {
           curObj[p] = {} as JsonObject;
+        }
         cur = curObj[p];
       }
       const lastKey = parts[parts.length - 1];
@@ -405,7 +430,21 @@ function FormFillingPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Basic validation: require at least one non-empty field
+    const pages = chunk(leafFields, fieldsPerPage);
+
+    // Only submit if on the last page AND confirmation is checked
+    if (pageIndex < pages.length - 1) {
+      // Not on last page, just move to next page
+      setPageIndex((p) => p + 1);
+      return;
+    }
+
+    // On last page but confirmation not checked - don't submit
+    if (!confirmationChecked) {
+      return;
+    }
+
+    // Basic validation
     const isEmpty = isObjectEmptyValues(formData);
     if (isEmpty) {
       alert("Please fill at least one field before submitting.");
@@ -501,8 +540,8 @@ function FormFillingPage() {
                             Step {pageIndex + 1} of {totalPages}
                           </span>
                           <span className="text-xs text-gray-600">
-                            {Math.round(((pageIndex + 1) / totalPages) * 100)}%
-                            Complete
+                            {/* {Math.round(((pageIndex + 1) / totalPages) * 100)}%
+                            Complete */}
                           </span>
                         </div>
                         <div className="w-full bg-gray-300 rounded-full h-2.5">
@@ -582,7 +621,10 @@ function FormFillingPage() {
                   {pageIndex < pages.length - 1 ? (
                     <button
                       type="button"
-                      onClick={() => setPageIndex((p) => p + 1)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPageIndex((p) => p + 1);
+                      }}
                       disabled={!confirmationChecked}
                       className={`px-8 py-2 rounded-full transition-all ${
                         confirmationChecked
@@ -720,7 +762,10 @@ function FormFillingPage() {
                     {pageIndex < pages.length - 1 ? (
                       <button
                         type="button"
-                        onClick={() => setPageIndex((p) => p + 1)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setPageIndex((p) => p + 1);
+                        }}
                         disabled={!confirmationChecked}
                         className={`w-full sm:w-auto font-semibold py-2 px-6 rounded-full transition-all ${
                           confirmationChecked
@@ -909,6 +954,28 @@ function FormFillingPage() {
     // Use label from schema if available, otherwise humanize the path
     const displayLabel = label || humanize(path.split(".").slice(-1)[0]);
 
+    // Handle checkbox field type
+    if (fieldType === "checkbox") {
+      const boolVal = typeof raw === "boolean" ? raw : false;
+      return (
+        <div key={key} className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            id={`checkbox-${path}`}
+            checked={boolVal}
+            onChange={(e) => handleChange(path, e.target.checked as JsonValue)}
+            className="w-5 h-5 cursor-pointer"
+          />
+          <label
+            htmlFor={`checkbox-${path}`}
+            className="font-semibold text-gray-800 cursor-pointer"
+          >
+            {displayLabel}
+          </label>
+        </div>
+      );
+    }
+
     // primitives and null -> text
     if (typeof schema === "string" || schema === null) {
       return (
@@ -1074,6 +1141,26 @@ function FormFillingPage() {
           </label>
           <input
             type="text"
+            value={val}
+            onChange={(e) => handleChange(path, e.target.value as JsonValue)}
+            className={`w-full p-2 border rounded-md mt-1 bg-white text-gray-900 placeholder-gray-400 ${
+              hasError ? "border-red-500" : "border-gray-300"
+            }`}
+          />
+          {hasError && <p className="text-red-500 text-sm mt-1">{error}</p>}
+        </div>
+      );
+    }
+
+    if (fieldType === "number") {
+      return (
+        <div key={key}>
+          <label className="block font-semibold text-gray-800">
+            {displayLabel}
+            {required && <span className="text-red-500 ml-1">*</span>}
+          </label>
+          <input
+            type="number"
             value={val}
             onChange={(e) => handleChange(path, e.target.value as JsonValue)}
             className={`w-full p-2 border rounded-md mt-1 bg-white text-gray-900 placeholder-gray-400 ${
