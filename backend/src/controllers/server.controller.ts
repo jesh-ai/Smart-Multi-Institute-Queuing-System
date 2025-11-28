@@ -273,6 +273,13 @@ export async function getCounters(req: Request, res: Response): Promise<void> {
       nextCounterNumber++;
     });
 
+    // Sort so that 'Online' status counters appear first
+    sessionsList.sort((a, b) => {
+      if (a.status === 'Online' && b.status !== 'Online') return -1;
+      if (a.status !== 'Online' && b.status === 'Online') return 1;
+      return 0;
+    });
+
     res.json(sessionsList);
   } catch (error) {
     res.status(500).json({
