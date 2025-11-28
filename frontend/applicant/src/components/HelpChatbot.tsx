@@ -62,6 +62,7 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
             headers: {
               "Content-Type": "application/json",
             },
+            credentials: "include",
             body: JSON.stringify({
               message: "I need help with filling the form",
             }),
@@ -117,6 +118,7 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
           headers: {
             "Content-Type": "application/json",
           },
+          credentials: "include",
           body: JSON.stringify({ message: text }),
         }
       );

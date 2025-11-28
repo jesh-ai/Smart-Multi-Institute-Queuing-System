@@ -490,14 +490,9 @@ function FormFillingPage() {
       if (!res.ok) throw new Error("Save failed");
       const result = await res.json();
 
-      // Get sessionId from response data object
-      const sessionId = result.data?.sessionId;
-      if (!sessionId) {
-        throw new Error("No session ID returned from server");
-      }
-
+      // Session ID is now stored in cookie, no need to pass in URL
       alert("Form submitted successfully!");
-      router.push(`/chat?formCompleted=true&sessionId=${sessionId}`);
+      router.push(`/chat?formCompleted=true`);
     } catch (err) {
       console.error(err);
       alert("Failed to save form input");
