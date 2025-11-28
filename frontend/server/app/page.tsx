@@ -4,10 +4,11 @@
 import React, { useState, useEffect } from "react";
 import DashboardCard from "@/components/DashboardCard";
 import "../styles/globals.css";
+import { QrCode } from "lucide-react";
 
 interface SessionData {
   usersInQueue: number;
-  nextInLine: number;
+  lastSession?: string;
 }
 
 interface SummaryData {
@@ -17,7 +18,7 @@ interface SummaryData {
 }
 
 export default function DashboardPage() {
-  const [queueData, setQueueData] = useState<SessionData>({ usersInQueue: 0, nextInLine: 0 });
+  const [queueData, setQueueData] = useState<SessionData>({ usersInQueue: 0, lastSession: "None" });
   const [activeUsers, setActiveUsers] = useState(0);
   const [connectedDevices, setConnectedDevices] = useState(0);
   const [activeCounters, setActiveCounters] = useState(0);
@@ -28,8 +29,6 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        
-
         // Current Queue Status
         const sessionRes = await fetch(`${BASE_URL}/server/dashboard/queue`, {
           credentials: 'include'
@@ -38,7 +37,7 @@ export default function DashboardPage() {
         const sessionData = sessionText ? JSON.parse(sessionText) : {};
         setQueueData({
           usersInQueue: sessionData.usersInQueue ?? 0,
-          nextInLine: sessionData.nextInLine ?? 0,
+          lastSession: sessionData.lastSession ?? "None",
         });
 
         // Active users
@@ -46,11 +45,11 @@ export default function DashboardPage() {
           credentials: 'include'
         });
         const devicesText = await devicesRes.text();
-        const devicesData = devicesText ? JSON.parse(devicesText) : [];
-        setActiveUsers(Array.isArray(devicesData) ? devicesData.length : 0);
+        const devicesData = devicesText ? JSON.parse(devicesText) : 0;
+        setActiveUsers(devicesData);
 
         // Connected devices
-        const connectedRes = await fetch(`${BASE_URL}/session/devices`, {
+        const connectedRes = await fetch(`${BASE_URL}/session/all`, {
           credentials: 'include'
         });
         const connectedText = await connectedRes.text();
@@ -58,14 +57,14 @@ export default function DashboardPage() {
         setConnectedDevices(Object.keys(connectedData).length);
 
         // Active counters
-        const countersRes = await fetch(`${BASE_URL}/counter/active`, {
+        const countersRes = await fetch(`${BASE_URL}/server/counters`, {
           credentials: 'include'
         });
         const countersText = await countersRes.text();
         const countersData = countersText ? JSON.parse(countersText) : [];
         setActiveCounters(
           Array.isArray(countersData)
-            ? countersData.filter((c: { status: string }) => c.status?.toLowerCase() === "open").length
+            ? countersData.filter((c: { status: string }) => c.status?.toLowerCase() === "active").length
             : 0
         );
 
@@ -82,7 +81,7 @@ export default function DashboardPage() {
         });
       } catch (err) {
         console.error("Error fetching dashboard data:", err);
-        setQueueData({ usersInQueue: 0, nextInLine: 0 });
+        setQueueData({ usersInQueue: 0, lastSession: undefined });
         setActiveUsers(0);
         setConnectedDevices(0);
         setActiveCounters(0);
@@ -100,8 +99,8 @@ export default function DashboardPage() {
           title="Current Queue Status"
           subtitle="Users in Queue"
           value={`${queueData.usersInQueue} Users`}
-          subtitle2="Next in Line"
-          value2={`Queue No. ${queueData.nextInLine}`}
+          subtitle2="Last applicant entered"
+          value2={`${queueData.lastSession ?? "None"}`}
           icon={<img src="/icons/currentQueueStatus.svg" alt="Users" className="dashboard-icon" />}
         />
         <DashboardCard
@@ -145,6 +144,33 @@ export default function DashboardPage() {
             Total Uptime
           </p>
           <p className="summary-value">{`${summary.totalUptime} hours`}</p>
+        </div>
+      </div>
+
+      {/*QR Code Placeholders */}
+      <div className="dashboard-card-row" style={{ 
+          marginTop: '60px', 
+          marginBottom: '60px', 
+          alignItems: 'flex-start',
+          gap: '150px' 
+        }}>
+        
+        {/* Placeholder 1 Container */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+           <h2 className="card-title" style={{ fontSize: '16px' }}></h2>
+          {/* The Placeholder Box */}
+          <div className="qr-placeholder">
+             <QrCode className="qr-placeholder-icon" />
+          </div>
+        </div>
+
+        {/* Placeholder 2 Container */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+           <h2 className="card-title" style={{ fontSize: '16px' }}></h2>
+          {/* The Placeholder Box */}
+          <div className="qr-placeholder">
+             <QrCode className="qr-placeholder-icon" />
+          </div>
         </div>
       </div>
     </div>

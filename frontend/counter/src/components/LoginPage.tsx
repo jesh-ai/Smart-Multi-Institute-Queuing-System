@@ -8,6 +8,8 @@ interface LoginPageProps {
   onLogin: (key: string) => void;
 }
 
+const BASE_URL = 'http://localhost:4000/api/';
+
 const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
   const [sessionKey, setSessionKey] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -25,7 +27,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:4000/api/counter/activate', {
+      const response = await fetch(`${BASE_URL}counter/activate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,7 +76,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
             value={sessionKey}
             onChange={(e) => setSessionKey(e.target.value)}
             disabled={isLoading}
-            className="w-full rounded-lg border border-gray-200 bg-gray-100 p-3 text-center text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+            className="w-full rounded-lg border border-gray-200 bg-gray-100 p-3 text-center text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 text-gray-900"
           />
           {error && (
             <p className="text-sm text-red-600">{error}</p>

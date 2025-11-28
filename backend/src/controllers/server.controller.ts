@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import { fetchSessions } from "../db/sessions.js";
+import { getAvailableKeys } from "../utils/counterKeys.js";
+import { SessionData } from "express-session";
 
 export async function getIsServer(req: Request, res: Response): Promise<void> {
   const serverIp = req.socket.localAddress?.replace("::ffff:", "") || "unknown";
@@ -10,7 +12,6 @@ export async function getIsServer(req: Request, res: Response): Promise<void> {
   console.warn("Server IP:", serverIp, "Client IP:", clientIp);
   res.json({ isServer: serverIp == clientIp });
 }
-
 export async function shutdownServer(req: Request, res: Response): Promise<void> {
   console.log("Server shutdown requested");
   res.json({ message: "Server shutting down..." });
@@ -21,44 +22,26 @@ export async function shutdownServer(req: Request, res: Response): Promise<void>
     process.exit(0);
   }, 1000);
 }
-
 export async function getDashboardQueue(req: Request, res: Response): Promise<void> {
   try {
     const sessions = fetchSessions();
-    let usersInQueue = 0;
-    let nextInLine = 0;
 
-    // Count applicants in queue (submitted but not served)
-    sessions.forEach((session) => {
-      if (
-        session.applicant &&
-        session.applicant.dateSubmitted &&
-        !session.applicant.dateServed
-      ) {
-        usersInQueue++;
-      }
-    });
+    const applicants = Array.from(sessions).filter(s => {
+      const isApplicant = s[1].applicant != undefined
+      const isClosed = s[1].applicant?.dateClosed == undefined
 
-    // Calculate next in line (earliest submitted applicant)
-    const applicants: Array<{ dateSubmitted: string }> = [];
-    sessions.forEach((session) => {
-      if (
-        session.applicant &&
-        session.applicant.dateSubmitted &&
-        !session.applicant.dateServed
-      ) {
-        applicants.push({ dateSubmitted: session.applicant.dateSubmitted });
-      }
-    });
+      return isApplicant && isClosed
+    })
+    const sortedApplicants = applicants.sort((a, b) => {
+      const x = a[1].applicant
+      const y = b[1].applicant
+      return new Date(x?.dateSubmitted || 0).getTime() - new Date(y?.dateSubmitted || 0).getTime()
+    })
+    
+    const lastSession = sortedApplicants.length > 0 ? sortedApplicants[sortedApplicants.length - 1][1].applicant?.name : undefined
 
-    if (applicants.length > 0) {
-      applicants.sort((a, b) => 
-        new Date(a.dateSubmitted).getTime() - new Date(b.dateSubmitted).getTime()
-      );
-      nextInLine = 1; // First in queue
-    }
-
-    res.json({ usersInQueue, nextInLine });
+    const usersInQueue = applicants.length
+    res.json({ usersInQueue, lastSession });
   } catch (error) {
     res.status(500).json({
       error: "Failed to retrieve queue data",
@@ -66,23 +49,22 @@ export async function getDashboardQueue(req: Request, res: Response): Promise<vo
     });
   }
 }
-
 export async function getActiveUsers(req: Request, res: Response): Promise<void> {
   try {
     const sessions = fetchSessions();
-    const activeUsers: Array<{ sessionId: string; deviceId?: string }> = [];
 
-    // Count active applicants (those with applicant data)
-    sessions.forEach((session, sessionId) => {
-      if (session.applicant) {
-        activeUsers.push({
-          sessionId,
-          deviceId: session.deviceId,
-        });
-      }
-    });
+    const serverStartTime = Date.now() - (process.uptime() * 1000);
+    const applicants = Array.from(sessions).filter(s => {
+      const isApplicant = s[1].applicant != undefined
+      const isClosed = s[1].applicant?.dateClosed == undefined
+      const dateSubmitted = s[1].applicant?.dateSubmitted
+      const isAfterServerStart = dateSubmitted ? new Date(dateSubmitted).getTime() >= serverStartTime : false
 
-    res.json(activeUsers);
+      return isApplicant && isClosed && isAfterServerStart
+    })
+
+    
+    res.json(applicants.length);
   } catch (error) {
     res.status(500).json({
       error: "Failed to retrieve active users",
@@ -90,7 +72,6 @@ export async function getActiveUsers(req: Request, res: Response): Promise<void>
     });
   }
 }
-
 export async function getSummary(req: Request, res: Response): Promise<void> {
   try {
     const sessions = fetchSessions();
@@ -100,7 +81,6 @@ export async function getSummary(req: Request, res: Response): Promise<void> {
     let waitingRequestsCount = 0;
     let totalCurrentWaitTime = 0;
 
-    // Get today's date at midnight for comparison
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const now = new Date();
@@ -109,56 +89,37 @@ export async function getSummary(req: Request, res: Response): Promise<void> {
       if (session.applicant && session.applicant.dateSubmitted) {
         const submittedDate = new Date(session.applicant.dateSubmitted);
         
-        // Count all requests submitted today (both completed and waiting)
         if (submittedDate >= today) {
           requestsToday++;
         }
 
-        // Calculate wait time for completed requests (served today or any day)
-        if (session.applicant.dateServed) {
-          const servedDate = new Date(session.applicant.dateServed);
-          const waitTime = (servedDate.getTime() - submittedDate.getTime()) / (1000 * 60); // minutes
+        if (session.applicant.dateClosed) {
+          const servedDate = new Date(session.applicant.dateClosed);
+          const waitTime = (servedDate.getTime() - submittedDate.getTime()) / (1000 * 60);
           
-          // Only count valid wait times (positive and reasonable)
-          if (waitTime > 0 && waitTime < 1440) { // Less than 24 hours
+          if (waitTime > 0 && waitTime < 1440) { 
             totalWaitTime += waitTime;
             completedRequestsCount++;
-          }
-        } else {
-          // For requests still waiting, calculate current wait time
-          const currentWaitTime = (now.getTime() - submittedDate.getTime()) / (1000 * 60); // minutes
-          if (currentWaitTime > 0 && currentWaitTime < 1440) {
-            totalCurrentWaitTime += currentWaitTime;
-            waitingRequestsCount++;
           }
         }
       }
     });
 
-    // Calculate average wait time
-    // If we have completed requests, use their average
-    // If no completed but have waiting, use current waiting average
-    // Otherwise, return 0
     let avgWaitTime = 0;
     if (completedRequestsCount > 0) {
       avgWaitTime = Math.round(totalWaitTime / completedRequestsCount);
     } else if (waitingRequestsCount > 0) {
-      // If no completed requests, show average of current wait times
       avgWaitTime = Math.round(totalCurrentWaitTime / waitingRequestsCount);
     }
     
-    // Calculate uptime
     const uptimeSeconds = process.uptime();
     let totalUptime = 0;
     
     if (uptimeSeconds >= 3600) {
-      // Show in hours if >= 1 hour
       totalUptime = Math.round(uptimeSeconds / 3600);
     } else if (uptimeSeconds >= 60) {
-      // Show in minutes if >= 1 minute (convert to decimal hours)
       totalUptime = Math.round((uptimeSeconds / 3600) * 10) / 10; // Round to 1 decimal
     } else {
-      // Less than a minute, show 0
       totalUptime = 0;
     }
 
@@ -166,7 +127,6 @@ export async function getSummary(req: Request, res: Response): Promise<void> {
       requestsToday,
       avgWaitTime,
       totalUptime,
-      // Extra data for debugging (can be removed in production)
       stats: {
         completedRequests: completedRequestsCount,
         waitingRequests: waitingRequestsCount,
@@ -181,7 +141,141 @@ export async function getSummary(req: Request, res: Response): Promise<void> {
     });
   }
 }
+export async function getCounters(req: Request, res: Response): Promise<void> {
+  try {
+    const sessions = fetchSessions();
+    
+    // First, collect all counter sessions with their timestamps
+    const counterSessions: Array<{
+      sessionId: string;
+      session: any;
+      timestamp: number;
+      isActive: boolean;
+    }> = [];
 
+    sessions.forEach((session, sessionId) => {
+      if (!session.counter) return;
+      
+      console.log('Counter session found:', {
+        sessionId,
+        counter: session.counter,
+        hasKey: !!session.counter.key,
+        hasDateOpened: !!session.counter.dateOpened,
+        dateOpened: session.counter.dateOpened
+      });
+      
+      const timestamp = session.counter.dateOpened 
+        ? new Date(session.counter.dateOpened).getTime()
+        : Date.now();
+      
+      const isActive = !session.counter.dateClosed;
+      
+      counterSessions.push({
+        sessionId,
+        session,
+        timestamp,
+        isActive
+      });
+    });
+
+    // Sort by active status first (active first), then by timestamp (oldest first)
+    counterSessions.sort((a, b) => {
+      if (a.isActive !== b.isActive) {
+        return a.isActive ? -1 : 1; // Active sessions first
+      }
+      return a.timestamp - b.timestamp; // Then by timestamp (oldest first)
+    });
+
+    // Assign incremental counter names
+    const sessionsList: Array<{
+      id: number;
+      counterName: string;
+      sessionKey: string;
+      startedAt: string;
+      status: string;
+      endedAt: string;
+    }> = [];
+
+    counterSessions.forEach((item, index) => {
+      const counterNumber = index + 1;
+      const counterName = `Counter ${counterNumber}`;
+      const counterKey = item.session.counter.key || '-';
+      
+      // Format dates
+      const startedAt = item.session.counter.dateOpened 
+        ? new Date(item.session.counter.dateOpened).toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+          })
+        : '-';
+
+      // Determine status
+      let status = 'Active';
+      let endedAt = '-';
+      
+      if (item.session.counter.dateClosed) {
+        // Counter session has ended
+        endedAt = new Date(item.session.counter.dateClosed).toLocaleString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+        });
+        
+        // Check if there are still applicants waiting
+        let hasWaitingApplicants = false;
+        const sessions = fetchSessions();
+        sessions.forEach((session) => {
+          if (session.applicant && 
+              session.applicant.dateSubmitted && 
+              !session.applicant.dateClosed) {
+            hasWaitingApplicants = true;
+          }
+        });
+        
+        status = hasWaitingApplicants ? 'Ending' : 'Ended';
+      }
+
+      sessionsList.push({
+        id: counterNumber,
+        counterName,
+        sessionKey: counterKey,
+        startedAt,
+        status,
+        endedAt,
+      });
+    });
+
+    // Add available keys as Online counters (generated but unused)
+    const availableKeys = getAvailableKeys();
+    let nextCounterNumber = counterSessions.length + 1;
+    
+    availableKeys.forEach((key) => {
+      sessionsList.push({
+        id: nextCounterNumber,
+        counterName: `Counter ${nextCounterNumber}`,
+        sessionKey: key,
+        startedAt: '-',
+        status: 'Online',
+        endedAt: '-',
+      });
+      nextCounterNumber++;
+    });
+
+    res.json(sessionsList);
+  } catch (error) {
+    res.status(500).json({
+      error: "Failed to retrieve sessions list",
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+}
 export async function getDevices(req: Request, res: Response): Promise<void> {
   try {
     const sessions = fetchSessions();
@@ -189,21 +283,20 @@ export async function getDevices(req: Request, res: Response): Promise<void> {
     // Separate counters and applicants
     const counterDevices: Array<{
       sessionId: string;
-      session: any;
+      session: SessionData;
       timestamp: number;
       isActive: boolean;
     }> = [];
     
     const applicantDevices: Array<{
       sessionId: string;
-      session: any;
+      session: SessionData;
     }> = [];
 
     sessions.forEach((session, sessionId) => {
       if (!session.deviceId) return;
 
       if (session.counter) {
-        // Counter device
         const timestamp = session.counter.dateOpened 
           ? new Date(session.counter.dateOpened).getTime()
           : Date.now();
@@ -240,21 +333,23 @@ export async function getDevices(req: Request, res: Response): Promise<void> {
       status: string;
     }> = [];
 
-    // Add counter devices with incremental names
+    
+    const serverStartTime = Date.now() - (process.uptime() * 1000);
     counterDevices.forEach((item, index) => {
       const counterNumber = index + 1;
       const deviceName = `Counter ${counterNumber}`;
       
       let status = "Online";
-      if (item.session.counter.dateClosed) {
-        status = "Ended";
+      
+      const lastSeen = item.session.lastSeen ? new Date(item.session.lastSeen).getTime() : 0;
+      if (lastSeen > 0 && lastSeen < serverStartTime) {
+        status = "Idle";
       } else if (item.session.cookie?.expires) {
         const expiryDate = new Date(item.session.cookie.expires);
         if (expiryDate < new Date()) {
-          status = "Idle";
+          status = "Expired";
         }
       }
-
       devices.push({
         id: item.sessionId,
         name: deviceName,
@@ -263,15 +358,19 @@ export async function getDevices(req: Request, res: Response): Promise<void> {
       });
     });
 
-    // Add applicant devices
+    
     applicantDevices.forEach((item) => {
       const deviceName = item.session.deviceId || "Unknown Device";
       
       let status = "Online";
-      if (item.session.cookie?.expires) {
+      
+      const lastSeen = item.session.lastSeen ? new Date(item.session.lastSeen).getTime() : 0;
+      if (lastSeen > 0 && lastSeen < serverStartTime) {
+        status = "Idle";
+      } else if (item.session.cookie?.expires) {
         const expiryDate = new Date(item.session.cookie.expires);
         if (expiryDate < new Date()) {
-          status = "Idle";
+          status = "Expired";
         }
       }
 

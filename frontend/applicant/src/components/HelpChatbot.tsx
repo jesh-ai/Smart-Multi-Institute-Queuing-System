@@ -22,8 +22,9 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
   const [quickReplies, setQuickReplies] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
+  
+  // Initialize Session ID
   const [sessionId] = useState(() => {
-    // Generate or retrieve session ID
     if (typeof window !== "undefined") {
       let id = sessionStorage.getItem("helpChatSessionId");
       if (!id) {
@@ -34,9 +35,10 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
     }
     return `help_${Date.now()}`;
   });
+  
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Detect if desktop
+  // Detect desktop view
   useEffect(() => {
     const checkDesktop = () => {
       setIsDesktop(window.innerWidth >= 1024);
@@ -46,12 +48,12 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
     return () => window.removeEventListener("resize", checkDesktop);
   }, []);
 
-  // Auto-scroll to bottom when messages change
+  // Auto-scroll
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Initialize quick replies from the initial bot response
+  // Initial bot fetch
   useEffect(() => {
     const fetchInitialResponse = async () => {
       try {
@@ -62,6 +64,7 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
             headers: {
               "Content-Type": "application/json",
             },
+            credentials: "include",
             body: JSON.stringify({
               message: "I need help with filling the form",
             }),
@@ -70,7 +73,6 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
         const response = await apiResponse.json();
 
         if (response.success) {
-          // Update the bot's response message
           setMessages((prev) => {
             const updated = [...prev];
             if (updated.length > 1 && updated[1].sender === "bot") {
@@ -79,7 +81,6 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
             return updated;
           });
 
-          // Set quick replies if available
           if (response.botResponse.Choices) {
             const choices: string[] = [];
             Object.keys(response.botResponse.Choices).forEach((key) => {
@@ -103,13 +104,11 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
   ) => {
     if (!text.trim() || isLoading) return;
 
-    // Add user message
     setMessages((prev) => [...prev, { sender: "user", text }]);
     setInput("");
     setIsLoading(true);
 
     try {
-      // Fetch response from backend AI
       const apiResponse = await fetch(
         `${API_URL}/api/sendMessage/${sessionId}`,
         {
@@ -117,43 +116,28 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
           headers: {
             "Content-Type": "application/json",
           },
+          credentials: "include",
           body: JSON.stringify({ message: text }),
         }
       );
 
-      if (!apiResponse.ok) {
-        console.error(
-          "API Response not OK:",
-          apiResponse.status,
-          apiResponse.statusText
-        );
-        throw new Error(
-          `Server returned ${apiResponse.status}: ${apiResponse.statusText}`
-        );
-      }
+      if (!apiResponse.ok) throw new Error(`Server error: ${apiResponse.status}`);
 
       const response = await apiResponse.json();
-      console.log("HelpChatbot API Response:", response); // Debug log
 
       if (!response.success) {
-        // Handle error
         setMessages((prev) => [
           ...prev,
-          {
-            sender: "bot",
-            text: "Sorry, something went wrong.",
-          },
+          { sender: "bot", text: "Sorry, something went wrong." },
         ]);
       } else {
         const botResponse = response.botResponse;
 
-        // Add bot response
         setMessages((prev) => [
           ...prev,
           { sender: "bot", text: botResponse.Message || "No response." },
         ]);
 
-        // Update quick replies if available
         if (botResponse.Choices) {
           const choices: string[] = [];
           Object.keys(botResponse.Choices).forEach((key) => {
@@ -161,26 +145,16 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
               choices.push(botResponse.Choices[key]);
             }
           });
-          if (choices.length > 0) {
-            setQuickReplies(choices);
-          } else {
-            setQuickReplies([]);
-          }
+          setQuickReplies(choices.length > 0 ? choices : []);
         } else {
           setQuickReplies([]);
         }
       }
     } catch (error) {
       console.error("Error sending message:", error);
-      console.error("API_URL being used:", API_URL); // Debug log
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
       setMessages((prev) => [
         ...prev,
-        {
-          sender: "bot",
-          text: `Sorry, I'm having trouble connecting. ${errorMessage}`,
-        },
+        { sender: "bot", text: "Sorry, I'm having trouble connecting." },
       ]);
     } finally {
       setIsLoading(false);
@@ -196,10 +170,8 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
 
   return (
     <>
-      {/* Backdrop */}
       <div className="fixed inset-0 bg-black/30 z-40" onClick={onClose} />
 
-      {/* Chat Popup Modal */}
       <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
         <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col overflow-hidden">
           {/* Header */}
@@ -214,36 +186,62 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
           </div>
 
           {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2 bg-white">
+          <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 bg-white">
             {messages.map((msg, index) => (
               <div
                 key={index}
-                className={`px-4 py-2 rounded-2xl ${
-                  isDesktop
-                    ? "max-w-[60%] text-xl leading-relaxed"
-                    : "max-w-[70%] text-sm leading-snug"
-                } ${
-                  msg.sender === "user"
-                    ? "bg-[#34495E] text-white ml-auto"
-                    : "bg-gray-200 text-black"
+                className={`flex items-start gap-3 ${
+                  msg.sender === "user" ? "flex-row-reverse" : "flex-row"
                 }`}
               >
-                {msg.text}
+                {/* --- CHAT HEAD (Only for Bot) --- */}
+                {msg.sender === "bot" && (
+                  <div className="shrink-0 w-10 h-10 mt-1">
+                    <Image
+                      src="/ALVin1.png"
+                      alt="Alvin"
+                      width={40}
+                      height={40}
+                      className="rounded-full border border-gray-300 bg-white object-contain"
+                    />
+                  </div>
+                )}
+
+                {/* Message Bubble */}
+                <div
+                  className={`px-4 py-3 rounded-2xl max-w-[80%] ${
+                    isDesktop ? "text-lg leading-relaxed" : "text-sm leading-snug"
+                  } ${
+                    msg.sender === "user"
+                      ? "bg-[#34495E] text-white rounded-br-none"
+                      : "bg-gray-200 text-black rounded-bl-none"
+                  }`}
+                >
+                  {msg.text}
+                </div>
               </div>
             ))}
+
+            {/* Loading Indicator */}
             {isLoading && (
-              <div
-                className={`px-4 py-2 rounded-2xl ${
-                  isDesktop
-                    ? "max-w-[60%] text-xl leading-relaxed"
-                    : "max-w-[70%] text-sm leading-snug"
-                } bg-gray-200 text-black`}
-              >
-                <div className="flex space-x-2">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100"></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200"></div>
-                </div>
+              <div className="flex items-start gap-3">
+                 {/* Loading Chat Head */}
+                 <div className="shrink-0 w-10 h-10 mt-1">
+                    <Image
+                      src="/ALVin1.png"
+                      alt="Alvin"
+                      width={40}
+                      height={40}
+                      className="rounded-full border border-gray-300 bg-white object-contain"
+                    />
+                  </div>
+                  <div className="bg-gray-200 text-black px-4 py-3 rounded-2xl rounded-bl-none">
+                    <div className="flex space-x-2">
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100"></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200"></div>
+                    </div>
+                  </div>
               </div>
             )}
             <div ref={messagesEndRef} />
@@ -271,17 +269,6 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
           {/* Input Section */}
           <div className="p-4 bg-white border-t border-gray-200">
             <div className="w-full bg-[#34495E] rounded-2xl flex items-center px-4 py-3">
-              {/* Mic Button */}
-              <button className="p-2 text-gray-600 hover:text-gray-800 text-lg">
-                <Image
-                  src="/Microphone.png"
-                  alt="Microphone"
-                  width={24}
-                  height={24}
-                />
-              </button>
-
-              {/* Input */}
               <input
                 type="text"
                 placeholder="Message here..."
@@ -291,8 +278,6 @@ export default function HelpChatbot({ onClose }: HelpChatbotProps) {
                 className="flex-1 px-4 py-2 text-sm border bg-white border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-400 mx-1 text-black"
                 disabled={isLoading}
               />
-
-              {/* Send Button */}
               <button
                 onClick={() => handleSend(input, "open")}
                 disabled={!input.trim() || isLoading}

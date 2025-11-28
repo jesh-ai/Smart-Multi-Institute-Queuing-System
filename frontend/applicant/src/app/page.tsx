@@ -175,7 +175,7 @@ export default function Home() {
       return (
         <div className="fixed inset-0 bg-[#243344] flex items-center justify-center p-8">
           <div
-            className="bg-[#ffffff] border-[16px] border-[#3d5063] w-[95%] max-w-[1600px] aspect-[16/9] flex flex-col items-center justify-center cursor-pointer shadow-xl"
+            className="bg-[#ffffff] border-16 border-[#3d5063] w-[95%] max-w-[1600px] aspect-video flex flex-col items-center justify-center cursor-pointer shadow-xl"
             onClick={() => setDesktopScreen("consent")}
           >
             <div className="mb-8">
@@ -252,7 +252,7 @@ export default function Home() {
         <div className="flex flex-col items-center justify-center flex-1 px-6">
           <div className="h-20 w-20 rounded-full bg-[#34495E] mb-4" />
           <h2 className="text-xl font-bold text-black">Welcome!</h2>
-          <p className="italic text-black mb-8">Let&apos;s get started</p>
+          <p className="italic text-black mb-8">Lets get started</p>
 
           <div className="w-full max-w-sm space-y-4">
             <div className="h-20 w-full rounded-lg bg-[#34495E]" />

@@ -11,9 +11,9 @@ declare module "express-session" {
     deviceId?: string;
     ip?: string;
     isNew?: boolean;
-    
+    originalRoute?: string;
     lastSeen?: string;
-    lastPath?: string,
+    lastRoute?: string,
 
     currentForm?: {
       formReference: string;
@@ -25,12 +25,9 @@ declare module "express-session" {
       document?: string,
       isPriority?: boolean;
       dateSubmitted?: string;
-      dateServed?: string;
-      /**
-       * @deprecated
-       */
-      closedServed?: string;
+      dateClosed?: string;
       dateProcessing?: string;
+      missingCount?: number;
       feedbackChoice?: string;
       feedbackComments?: string;
       formResponses?: {
@@ -42,7 +39,7 @@ declare module "express-session" {
       key?: string;
       dateClosed?: string;
       dateOpened?: string;
-    }
+    },
   }
 }
 
@@ -113,6 +110,11 @@ export function recordSession(req: Request, res: Response, next: NextFunction): 
   if (!s.dateCreated) s.dateCreated = new Date().toISOString();
   if (!s.deviceId || s.deviceId !== fingerprint) s.deviceId = deviceName;
   if (ip) s.ip = ip;
+  
+  const currentRoute = `${req.method} ${req.originalUrl || req.url}`;
+  if (!s.originalRoute) s.originalRoute = currentRoute;
+  s.lastRoute = currentRoute;
+  s.lastSeen = new Date().toISOString();
 
   s.save((err?: Error) => {
     if (err) console.error('Session save error:', err);

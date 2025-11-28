@@ -125,8 +125,7 @@ export async function submitForm(req: Request, res: Response): Promise<void> {
       document: documentType,
       isPriority,
       dateSubmitted: new Date().toISOString(),
-      dateServed: undefined,
-      closedServed: undefined,
+      dateClosed: undefined,
       feedbackChoice: undefined,
       feedbackComments: undefined,
       formResponses: formResponses // Store all form responses

@@ -16,11 +16,11 @@ interface Session {
   status: string;
   endedAt: string;
 }
-
+const BASE_URL = `http://localhost:4000/api/`
 export default function SystemPage() {
   const [activeTab, setActiveTab] = useState('devices');
   const [devices, setDevices] = useState<Device[]>([]);
-  const [sessions, setSessions] = useState<Session[]>([]);
+  const [counters, setCounters] = useState<Session[]>([]);
 
   const handleDisconnect = async (deviceId: string) => {
     if (!confirm('Are you sure you want to disconnect this device?')) {
@@ -28,14 +28,14 @@ export default function SystemPage() {
     }
 
     try {
-      const response = await fetch(`http://localhost:4000/api/session/${deviceId}`, {
+      const response = await fetch(`${BASE_URL}session/${deviceId}`, {
         method: 'DELETE',
         credentials: 'include'
       });
 
       if (response.ok) {
         // Refresh devices list
-        const devicesResponse = await fetch('http://localhost:4000/api/server/devices', {
+        const devicesResponse = await fetch(`${BASE_URL}server/devices`, {
           credentials: 'include'
         });
         if (devicesResponse.ok) {
@@ -53,14 +53,13 @@ export default function SystemPage() {
 
   const handleAddCounter = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/counter/keys/generate', {
+      const response = await fetch(`${BASE_URL}server/generate-counter`, {
         method: 'POST',
         credentials: 'include'
       });
 
       if (response.ok) {
         const result = await response.json();
-        alert(`Counter key generated successfully: ${result.data.key}`);
       } else {
         alert('Failed to generate counter key');
       }
@@ -76,7 +75,7 @@ export default function SystemPage() {
     }
 
     try {
-      const response = await fetch(`http://localhost:4000/api/counter/close`, {
+      const response = await fetch(`${BASE_URL}counter/close`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -89,12 +88,12 @@ export default function SystemPage() {
         alert(result.message);
         
         // Refresh sessions list
-        const sessionsResponse = await fetch('http://localhost:4000/api/session/all', {
+        const sessionsResponse = await fetch(`${BASE_URL}server/counters`, {
           credentials: 'include'
         });
         if (sessionsResponse.ok) {
           const data = await sessionsResponse.json();
-          setSessions(data);
+          setCounters(data);
         }
       } else {
         const error = await response.json();
@@ -110,7 +109,7 @@ export default function SystemPage() {
   useEffect(() => {
     const fetchDevices = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/server/devices', {
+        const response = await fetch(`${BASE_URL}server/devices`, {
           credentials: 'include'
         });
         if (response.ok) {
@@ -128,19 +127,19 @@ export default function SystemPage() {
 
     const fetchSessions = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/session/all', {
+        const response = await fetch(`${BASE_URL}server/counters`, {
           credentials: 'include'
         });
         if (response.ok) {
           const data = await response.json();
-          setSessions(data);
+          setCounters(data);
         } else {
-          console.log('Failed to fetch sessions from /api/session/all');
-          setSessions([]);
+          console.log('Failed to fetch sessions from /api/server/counters');
+          setCounters([]);
         }
       } catch (error) {
         console.log('Failed to fetch sessions:', error);
-        setSessions([]);
+        setCounters([]);
       }
     };
 
@@ -224,7 +223,7 @@ export default function SystemPage() {
                         onClick={() => handleDisconnect(device.id.toString())}
                         className="action-disconnect"
                       >
-                        Disconnect
+                        Reset
                       </button>
                     </td>
                   </tr>
@@ -260,7 +259,7 @@ export default function SystemPage() {
                 </tr>
               </thead>
               <tbody>
-                {sessions.map((session) => (
+                {counters.map((session) => (
                   <tr key={session.id}>
                     <td>{session.counterName}</td>
                     <td>

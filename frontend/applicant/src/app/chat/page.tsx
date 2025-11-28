@@ -2,7 +2,6 @@
 import { useState, useEffect, useRef, Suspense } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import Header from "../../components/Header";
 import Status from "../../components/Status";
 
 type QueueStatus = "IN LINE" | "PROCESSING" | "CLOSED";
@@ -19,9 +18,10 @@ function ChatInterface() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Detect if desktop (1024px+)
   const [isDesktop, setIsDesktop] = useState<boolean | undefined>(undefined);
   const [mounted, setMounted] = useState(false);
+
+  const [showLanding, setShowLanding] = useState(true);
 
   useEffect(() => {
     setMounted(true);
@@ -33,75 +33,131 @@ function ChatInterface() {
     return () => window.removeEventListener("resize", checkDesktop);
   }, []);
 
-  // local menu visibility (desktop only).
-  const [showMenu, setShowMenu] = useState<boolean>(false);
-  // MenuScreen moved here for desktop
-  const MenuScreen = () => (
-    <div className="h-full bg-white flex flex-col">
-      {/* Use Header component */}
-      <Header />
+  const themeColor = "#17293C";
 
-      <main className="flex-1 flex flex-col items-center justify-center p-8 overflow-auto">
-        <div className="mb-12 text-center">
-          <div className="w-20 h-20 bg-gray-700 rounded-full mx-auto mb-4"></div>
-          <h2 className="text-2xl font-bold text-gray-800">Welcome!</h2>
-          <p className="text-gray-600 italic">Get started</p>
-        </div>
+  const LandingScreen = () => (
+    <div className="min-h-screen flex flex-col bg-white font-sans">
+    <header
+      className="py-4 px-6 flex items-center shadow-md"
+      style={{ backgroundColor: themeColor}}
+    >
+      <div className="flex items-center">
+        <Image
+          src="/institute-1.png"
+          alt="Institute Logo"
+          width={50}
+          height={50}
+          className="w-10 h-10 mr-3 object-contain"
+        />
+        <span
+          className="text-2xl font-extrabold text-white"
+        >
+          DFA/PHILHEALTH
+        </span>
+      </div>
+</header>
 
-        <h3 className="text-2xl font-bold text-gray-800 mb-8">
+      <main className="grow flex flex-col items-center justify-start pt-12 p-6">
+
+{/* Welcome Section */}
+<div className="flex flex-row items-center justify-center mb-10 gap-4">
+  
+  <div
+    className="w-25 h-25 rounded-full flex items-center justify-center overflow-hidden drop-shadow-lg"
+    style={{ backgroundColor: themeColor }}
+  >
+  <Image
+    src="/ALVin1.png"
+    alt="Welcome"
+    width={70}
+    height={70}
+    className="object-contain"
+  />
+  </div>
+
+<div className="flex flex-col items-start">
+    <h2 
+      className="text-4xl font-bold leading-none" 
+      style={{ color: themeColor }}
+    >
+      Welcome!
+    </h2>
+    <p className="italic" style={{ color: themeColor }}>
+      Let&apos;s get started
+    </p>
+  </div>
+</div>
+
+        <h3
+          className="text-2xl font-extrabold mb-10 text-center"
+          style={{ color: themeColor }}
+        >
           What would you like to do?
         </h3>
 
-        <div className="space-y-4 w-full max-w-md">
+        {/* Action Buttons Column */}
+        <div className="flex flex-col space-y-5 w-full max-w-[340px]">
+          {/* Inquire Button */}
           <button
             onClick={() => {
-              // send the same inquiry message used by mobile/initial fetch and switch to chat view
+              // Switch to Chat Interface and send initial message
               handleSend("I would like to inquire", "closed");
-              setShowMenu(false);
+              setShowLanding(false);
             }}
-            className="w-full bg-gray-700 hover:bg-gray-800 text-white rounded-lg p-6 flex items-center gap-4 transition-colors"
+            className="rounded-xl p-5 flex items-center shadow-sm hover:opacity-95 transition-opacity"
+            style={{ backgroundColor: themeColor }}
           >
-            <div className="relative">
-              <div className="w-12 h-12 rounded-full bg-gray-600 flex items-center justify-center text-white text-2xl">
-                👤
-              </div>
-              <div className="absolute -top-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center text-gray-700 font-bold text-lg">
-                ?
-              </div>
+            <div className="mr-5 shrink-0">
+              <Image 
+                src="/inquire.png" 
+                alt="Inquire Icon" 
+                width={56} 
+                height={56}
+                className="w-14 h-14 object-contain"
+              />
             </div>
-            <div className="text-left">
-              <h4 className="text-xl font-bold">Inquire</h4>
-              <p className="text-sm text-gray-300">
-                {/* message */}
-                <br />
-              </p>
+            <div className="flex flex-col items-start text-white">
+              <span className="text-2xl font-bold italic leading-tight">
+                Inquire
+              </span>
+              <span className="text-sm font-medium opacity-90">
+                Click here to ask AIvin
+              </span>
             </div>
           </button>
 
+          {/* Request Button */}
           <button
             onClick={() => router.push("/request")}
-            className="w-full bg-gray-700 hover:bg-gray-800 text-white rounded-lg p-6 flex items-center gap-4 transition-colors"
+            className="rounded-xl p-5 flex items-center shadow-sm hover:opacity-95 transition-opacity"
+            style={{ backgroundColor: themeColor }}
           >
-            <div className="relative">
-              <div className="w-12 h-12 rounded-full bg-gray-600 flex items-center justify-center text-white text-2xl">
-                📄
-              </div>
-              <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white">
-                ✓
-              </div>
+            <div className="mr-5 shrink-0">
+               <Image 
+                src="/request.png" 
+                alt="Request Icon" 
+                width={56} 
+                height={56}
+                className="w-14 h-14 object-contain"
+              />
             </div>
-            <div className="text-left">
-              <h4 className="text-xl font-bold">Request</h4>
-              <p className="text-sm text-gray-300">{/* message */}</p>
+            <div className="flex flex-col items-start text-white">
+              <span className="text-2xl font-bold italic leading-tight">
+                Request
+              </span>
+              <span className="text-sm font-medium opacity-90">
+                Click here to request a document
+              </span>
             </div>
           </button>
         </div>
       </main>
     </div>
   );
+
   const [messages, setMessages] = useState<
     Array<{ sender: "user" | "bot"; text: string }>
-  >([{ sender: "bot", text: "I am AlVin how may I help you!" }]);
+  >([{ sender: "bot", text: "I am AIVin, how may I help you!" }]);
   const [input, setInput] = useState("");
   const [quickReplies, setQuickReplies] = useState<string[]>([
     "Inquire",
@@ -110,22 +166,99 @@ function ChatInterface() {
   const [isLoading, setIsLoading] = useState(false);
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [showStatus, setShowStatus] = useState(false);
-  const [applicantInfo, setApplicantInfo] = useState<ApplicantInfo | null>(
-    null
-  );
   const [viewportHeight, setViewportHeight] = useState<number>(0);
   const [sessionId, setSessionId] = useState<string>("");
+  const [activeFormId, setActiveFormId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
-  // Initialize session ID on client side only
-  useEffect(() => {
-    let id = sessionStorage.getItem("chatSessionId");
-    if (!id) {
-      id = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      sessionStorage.setItem("chatSessionId", id);
+  // Map form flag names to service indices (0-indexed array positions)
+  // Based on backend's institute_info.json service_list array:
+  // [0] = DFA_Passport_New, [1] = DFA_Passport_Renewal,
+  // [2] = PhilHealth_Registration, [3] = PhilHealth_MDR_Update
+  const formFlagToServiceId = (formFlag: string): string => {
+    const mapping: Record<string, string> = {
+      DFA_Passport_New: "0",
+      DFA_Passport_Renewal: "1",
+      PhilHealth_Registration: "2",
+      PhilHealth_MDR_Update: "3",
+    };
+    return mapping[formFlag] || formFlag;
+  };
+
+  // Helper function to check form flags from conversation messages
+  const checkFormFlags = async (sessionId: string): Promise<void> => {
+    try {
+      const response = await fetch(`${API_URL}/api/messages/${sessionId}`);
+
+      if (!response.ok) return;
+
+      const data = await response.json();
+      const messages = data.messages || [];
+
+      // Get the latest message with form_flag
+      for (let i = messages.length - 1; i >= 0; i--) {
+        const msg = messages[i];
+        if (msg.botResponse?.form_flag) {
+          // Find which form flag is set to 1
+          const formFlags = msg.botResponse.form_flag;
+          for (const [formId, value] of Object.entries(formFlags)) {
+            if (value === 1) {
+              setActiveFormId(formFlagToServiceId(formId));
+              return;
+            }
+          }
+        }
+      }
+
+      // No form flag set to 1
+      setActiveFormId(null);
+    } catch (error) {
+      console.error("Error checking form flags:", error);
+      setActiveFormId(null);
     }
-    setSessionId(id);
+  };
+
+  // Helper function to extract session ID from connect.sid cookie
+  const getSessionIdFromCookie = (): string | null => {
+    if (typeof document === "undefined") return null;
+
+    const cookies = document.cookie.split("; ");
+    const connectSidCookie = cookies.find((cookie) =>
+      cookie.startsWith("connect.sid=")
+    );
+
+    if (!connectSidCookie) return null;
+
+    // Extract the value after "connect.sid="
+    const cookieValue = connectSidCookie.split("=")[1];
+
+    // Decode the URL-encoded value
+    const decodedValue = decodeURIComponent(cookieValue);
+
+    // Extract session ID from pattern: s%3A{sessionId}.{signature} or s:{sessionId}.{signature}
+    const match = decodedValue.match(/^s(?:%3A|:)([^.]+)\./);
+
+    return match ? match[1] : null;
+  };
+
+  // Initialize session ID from cookie
+  useEffect(() => {
+    const cookieSessionId = getSessionIdFromCookie();
+    if (cookieSessionId) {
+      setSessionId(cookieSessionId);
+      // Check form flags on initial load
+      checkFormFlags(cookieSessionId);
+    } else {
+      // Fallback to generating a session ID if cookie doesn't exist yet
+      let id = sessionStorage.getItem("chatSessionId");
+      if (!id) {
+        id = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        sessionStorage.setItem("chatSessionId", id);
+      }
+      setSessionId(id);
+      checkFormFlags(id);
+    }
   }, []);
 
   // Track viewport height changes (keyboard open/close)
@@ -156,13 +289,10 @@ function ChatInterface() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Initial quick replies are set in state above
-
   // Handle incoming message from URL parameter (e.g., from "Other" request)
   useEffect(() => {
     const message = searchParams.get("message");
     const formCompleted = searchParams.get("formCompleted");
-    const urlSessionId = searchParams.get("sessionId");
 
     if (formCompleted === "true") {
       setShowStatus(true);
@@ -188,9 +318,23 @@ function ChatInterface() {
 
   const handleSend = async (
     text: string,
-    messageType: "closed" | "open" = "open"
+    // Renamed to _messageType to avoid "unused variable" warning
+    _messageType: "closed" | "open" = "open"
   ) => {
     if (!text.trim() || isLoading) return;
+
+    // Check if sessionId is available
+    if (!sessionId) {
+      console.error("No session ID available");
+      setMessages((prev) => [
+        ...prev,
+        {
+          sender: "bot",
+          text: "Please wait while we initialize your session...",
+        },
+      ]);
+      return;
+    }
 
     // Add user message
     setMessages((prev) => [...prev, { sender: "user", text }]);
@@ -206,15 +350,18 @@ function ChatInterface() {
           headers: {
             "Content-Type": "application/json",
           },
+          credentials: "include",
           body: JSON.stringify({ message: text }),
         }
       );
 
       if (!apiResponse.ok) {
+        const errorText = await apiResponse.text();
         console.error(
           "API Response not OK:",
           apiResponse.status,
-          apiResponse.statusText
+          apiResponse.statusText,
+          errorText
         );
         throw new Error(
           `Server returned ${apiResponse.status}: ${apiResponse.statusText}`
@@ -225,7 +372,6 @@ function ChatInterface() {
       console.log("API Response:", response); // Debug log
 
       if (!response.success) {
-        // Handle error
         console.error("Error response:", response); // Debug log
         const errorMsg =
           response.botResponse?.Message ||
@@ -247,6 +393,16 @@ function ChatInterface() {
         ).trim();
 
         setMessages((prev) => [...prev, { sender: "bot", text: cleanMessage }]);
+
+        // Check for form flags in the response
+        if (botResponse.form_flag) {
+          for (const [formId, value] of Object.entries(botResponse.form_flag)) {
+            if (value === 1) {
+              setActiveFormId(formFlagToServiceId(formId));
+              break;
+            }
+          }
+        }
 
         if (botResponse.Choices) {
           const choices: string[] = [];
@@ -292,7 +448,8 @@ function ChatInterface() {
       !searchParams.get("message") &&
       !searchParams.get("formCompleted")
     ) {
-      setShowMenu(true);
+      // Logic for desktop initial view - effectively handled by showLanding now
+      // leaving this here to respect original logic flow
     }
   }, [isDesktop, searchParams]);
 
@@ -304,9 +461,14 @@ function ChatInterface() {
     );
   }
 
-  if (isDesktop && showMenu) return <MenuScreen />;
+  // --- RENDER LOGIC ---
 
-  // Loading indicator component
+  // 1. If we are on the landing screen, show the new recreated Image
+  if (showLanding) {
+    return <LandingScreen />;
+  }
+
+  // 2. Otherwise, render the Chat Interface (Backend logic preserved)
   const LoadingIndicator = () => (
     <div className="flex items-end gap-2">
       {/* AlVin avatar */}
@@ -315,7 +477,7 @@ function ChatInterface() {
         alt="ALVin"
         width={isDesktop ? 48 : 32}
         height={isDesktop ? 48 : 32}
-        className="rounded-full flex-shrink-0"
+        className="rounded-full shrink-0"
       />
       <div
         className={`px-4 py-2 rounded-2xl bg-gray-200 ${
@@ -345,13 +507,19 @@ function ChatInterface() {
         maxHeight: viewportHeight > 0 ? `${viewportHeight}px` : "100vh",
       }}
     >
-      {/* Custom Header */}
-      <div className="bg-[#34495E] text-white px-6 py-4 shadow-lg flex items-center gap-4 sticky top-0 z-50">
-        <button
-          onClick={() => setShowMenu(true)}
-          className="text-2xl hover:opacity-80 transition-opacity"
+      {/* Custom Header for Chat View */}
+      <div className="bg-[#17293C] text-white px-6 py-4 shadow-lg flex items-center gap-4 sticky top-0 z-50">
+      <button
+          onClick={() => setShowLanding(true)}
+          className="hover:opacity-80 transition-opacity flex items-center justify-center"
         >
-          &lt;
+          <Image
+            src="/arrow.png"
+            alt="Back"
+            width={16}
+            height={16}
+            className="object-contain w-6 h-6"
+          />
         </button>
         <Image
           src="/ALVin1.png"
@@ -360,19 +528,11 @@ function ChatInterface() {
           height={50}
           className="rounded-full"
         />
-        <h1 className="text-2xl font-bold">ALVin</h1>
+        <h1 className="text-2xl font-bold">AIVin</h1>
       </div>
 
       {/* Status Component - shown as sticky chat bubble */}
-      {showStatus && applicantInfo && (
-        <Status
-          queueNumber={applicantInfo.queueNumber}
-          status={applicantInfo.status}
-          counter={applicantInfo.counter}
-          waitTime={applicantInfo.waitTime}
-          message={applicantInfo.message}
-        />
-      )}
+      {showStatus && <Status />}
 
       {/* Message Area - hide on desktop when form is completed */}
       {!(isDesktop && showStatus) && (
@@ -391,7 +551,7 @@ function ChatInterface() {
                   alt="ALVin"
                   width={isDesktop ? 48 : 32}
                   height={isDesktop ? 48 : 32}
-                  className="rounded-full flex-shrink-0"
+                  className="rounded-full shrink-0"
                 />
               )}
               {/* Add invisible spacer for older bot messages to maintain alignment */}
@@ -408,7 +568,7 @@ function ChatInterface() {
                     : "max-w-[70%] text-sm leading-snug"
                 } ${
                   msg.sender === "user"
-                    ? "bg-[#34495E] text-white"
+                    ? "bg-[#17293C] text-white"
                     : "bg-gray-200 text-black"
                 }`}
               >
@@ -422,18 +582,26 @@ function ChatInterface() {
 
           {/* Quick Replies */}
           {(!isInputFocused || isDesktop) && (
-            <div className="flex gap-2 flex-wrap mt-2">
+            <div className="flex gap-2 flex-wrap mt-2 ml-10 md:ml-14 max-w-[70%] md:max-w-[60%]">
               {quickReplies.map((reply, idx) => (
                 <button
                   key={idx}
                   onClick={() => handleSend(reply, "closed")}
-                  className={`px-4 py-1.5 rounded-full ${
+                  className={`px-3 py-1 rounded-full ${
                     isDesktop ? "text-lg" : "text-sm"
-                  } bg-white text-black border-2 border-[#34495E] hover:bg-gray-100`}
+                  } bg-white text-[#34495E] border border-[#34495E] hover:bg-gray-200`}
                 >
                   {reply}
                 </button>
               ))}
+              {isDesktop && activeFormId && (
+                <button
+                  onClick={() => router.push(`/form?serviceId=${activeFormId}`)}
+                  className="px-4 py-1.5 rounded-full text-lg bg-white text-[#34495E] font-semibold hover:bg-gray-100 border-2 border-[#34495E] whitespace-nowrap shrink-0"
+                >
+                  📋 Fill Form
+                </button>
+              )}
             </div>
           )}
 
@@ -491,7 +659,7 @@ function ChatInterface() {
                   <button
                     key={idx}
                     onClick={() => handleSend(reply, "closed")}
-                    className="px-4 py-1.5 rounded-full text-sm bg-gray-300 text-black hover:bg-gray-200 whitespace-nowrap flex-shrink-0"
+                    className="px-4 py-1.5 rounded-full text-sm bg-gray-300 text-black hover:bg-gray-200 whitespace-nowrap shrink-0"
                   >
                     {reply}
                   </button>

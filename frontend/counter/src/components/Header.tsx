@@ -11,6 +11,8 @@ interface HeaderProps {
   onLogout: () => void;
 }
 
+const BASE_URL = 'http://localhost:4000/api/';
+
 const Header: React.FC<HeaderProps> = ({ currentView, onViewChange, onLogout }) => {
   
   const activeClass = "flex items-center gap-2 bg-yellow-500 text-gray-900 font-semibold px-4 py-2 rounded-md hover:bg-yellow-400 transition-colors";
@@ -23,7 +25,7 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange, onLogout }) 
 
     try {
       // Logout and close the counter session
-      const response = await fetch('http://localhost:4000/api/counter/logout', {
+      const response = await fetch(`${BASE_URL}counter/logout`, {
         method: 'POST',
         credentials: 'include',
       });

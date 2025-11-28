@@ -13,9 +13,12 @@ export default function RequestPage() {
   const router = useRouter();
   const [requests, setRequests] = useState<RequestChoice[]>([]);
 
+  // Defined theme color for the header
+  const themeColor = "#17293C";
+
   useEffect(() => {
     // Fetch the services from the backend
-    fetch(`${API_URL}/api/institute/services`)
+    fetch(`${API_URL}/api/institute/services`, { credentials: "include" })
       .then((res) => res.json())
       .then((services) => {
         const requestList: RequestChoice[] = services.map(
@@ -54,7 +57,7 @@ export default function RequestPage() {
           { title: "Other", desc: "Request for Other" },
         ]);
       });
-  }, []);
+  }, [API_URL]);
 
   const handleRequestClick = async (request: RequestChoice) => {
     // If "Other" is selected, send message to chat and navigate to chat
@@ -64,6 +67,7 @@ export default function RequestPage() {
         await fetch("/api/save-interaction", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify({
             userMessage: "Other",
             botResponse:
@@ -84,21 +88,42 @@ export default function RequestPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
-      <div>
-        {/* Back button */}
-        <button
-          onClick={() => router.back()}
-          className="text-gray-600 hover:text-gray-800 font-medium"
-        >
-          ← Back
-        </button>
-      </div>
+    <div className="min-h-screen flex flex-col bg-white font-sans">
+      {/* New Header */}
+      <header
+        className="py-4 px-6 flex items-center gap-4 shadow-md sticky top-0 z-50"
+        style={{ backgroundColor: themeColor }}
+      >
+      <button
+    onClick={() => router.back()}
+    className="hover:opacity-80 transition-opacity flex items-center justify-center"
+    >
+    <Image
+      src="/arrow.png"
+      alt="Back"
+      width={24}
+      height={24}
+      className="object-contain w-6 h-6"
+    />
+      </button>
+        <div className="flex items-center">
+          <Image
+            src="/institute-1.png"
+            alt="Institute Logo"
+            width={50}
+            height={50}
+            className="w-10 h-10 mr-3 object-contain"
+          />
+          <span className="text-2xl font-extrabold text-white">
+            DFA/PHILHEALTH
+          </span>
+        </div>
+      </header>
 
       {/* Centered Content */}
-      <div className="flex flex-col items-center justify-center flex-1 text-center px-4 py-8">
+      <div className="flex flex-col items-center justify-center flex-1 text-center px-4 py-4">
         {/* Title */}
-        <h2 className="text-2xl font-bold mb-8 text-center text-gray-900">
+        <h2 className="text-3xl font-extrabold mb-8 text-center text-gray-900">
           What would you like to request?
         </h2>
 
@@ -108,7 +133,7 @@ export default function RequestPage() {
             <div
               key={index}
               onClick={() => handleRequestClick(req)}
-              className="bg-[#2C3E50] text-white rounded-lg p-4 flex items-center gap-4 shadow-md hover:bg-[#34495E] transition-all cursor-pointer"
+              className="bg-[#17293C] text-white rounded-lg p-4 flex items-center gap-4 shadow-md hover:bg-[#34495E] transition-all cursor-pointer"
             >
               {/* The uploaded icon beside the text */}
               <Image

@@ -1,36 +1,26 @@
 import { Router } from "express";
 import {
-  getCounterInfo,
-  getCounterBySessionId,
-  closeCounter,
   activateCounter,
-  updateCounterInfo,
-  getAllCounters,
-  getActiveCounters,
-  deleteCounterInfo,
+  closeCounter,
   getAvailableKeysHandler,
-  generateKeysHandler,
-  serveApplicant,
-  markApplicantMissing,
-  closeApplicantRequest,
-  logoutCounter,
 } from "../controllers/counter.controller.js";
 
 const router = Router();
 
-router.get("/info", getCounterInfo);
-router.get("/info/:sessionId", getCounterBySessionId);
-router.get("/all", getAllCounters);
-router.get("/active", getActiveCounters);
-router.get("/keys", getAvailableKeysHandler);
-router.post("/keys/generate", generateKeysHandler);
-router.post("/activate", activateCounter);
 router.post("/close", closeCounter);
-router.post("/serve", serveApplicant);
-router.post("/missing", markApplicantMissing);
-router.post("/close-request", closeApplicantRequest);
-router.post("/logout", logoutCounter);
-router.put("/update", updateCounterInfo);
-router.delete("/info", deleteCounterInfo);
+router.post("/activate", activateCounter);
+router.get("/keys", getAvailableKeysHandler);
+
+// TBR
+// router.get("/all", getAllCounters);
+// router.get("/info", getCounterInfo);
+// router.get("/info/:sessionId", getCounterBySessionId);
+// router.get("/active", getActiveCounters);
+// router.post("/serve", serveApplicant);
+// router.post("/missing", markApplicantMissing);
+// router.post("/close-request", closeApplicantRequest);
+// router.post("/logout", logoutCounter);
+// router.put("/update", updateCounterInfo);
+// router.delete("/info", deleteCounterInfo);
 
 export default router;

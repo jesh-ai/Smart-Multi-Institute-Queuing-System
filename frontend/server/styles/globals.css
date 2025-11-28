@@ -57,7 +57,8 @@ body {
 
 .summary-bar {
     display: flex;
-    justify-content: space-between;
+    align-items: center;
+    gap: 500px;
     background-color: #ffffff;
     border-radius: 12px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
@@ -77,7 +78,10 @@ body {
     color: #6b7280;
     font-size: 14px;
     font-weight: 400;
-    margin-bottom: 4px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px
 }
 
 .summary-value {
@@ -394,24 +398,31 @@ body {
 }
 
 .action-disconnect {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     background-color: white;
     color: #374151;
     border: 1px solid #d1d5db;
     padding: 0.25rem 0.75rem;
     border-radius: 0.375rem;
     text-decoration: none;
-    font-weight: 500;
-    font-size: 0.875rem;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
     transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    min-width: 80px;
 }
 
 .action-disconnect:hover {
-    background-color: #f9fafb;
-    border-color: #9ca3af;
-    color: #1f2937;
+    background-color: #00b347;
+    transform: translateY(-1px);
+    box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.2);
     text-decoration: none;
+    color: white;
+    text-decoration: none;
+    color: white;
 }
+
 
 .devices-table tbody tr:last-child td {
     border-bottom: none;
@@ -533,12 +544,12 @@ body {
     color: #ffffff; 
 }
 
-.queue-status-badge.status-waiting {
+.queue-status-badge.status-in-line {
     background-color: #facc15;
     color: #713f12;
 }
 
-.queue-status-badge.status-ended {
+.queue-status-badge.status-closed {
     background-color: #ffffff;
     color: #ef4444;
     border-color: #ef4444;
@@ -568,4 +579,21 @@ body {
 
 .settings-danger-button:hover {
   background-color: #dc2626;
+}
+
+.qr-placeholder {
+    width: 220px;
+    height: 220px;
+    background-color: #1f2937; /* Dark background to match the reference image's weight */
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.qr-placeholder-icon {
+    color: #4b5563; /* Lighter gray for the icon inside */
+    width: 64px;
+    height: 64px;
 }

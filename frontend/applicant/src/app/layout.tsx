@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import ConditionalHeader from "@/components/ConditionalHeader";
 import { Geist, Geist_Mono } from "next/font/google";
 import Header from "@/components/Header";
 import "./globals.css";
@@ -28,12 +27,10 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        suppressHydrationWarning
       >
-        <div className="min-h-screen flex flex-col bg-white">
-          <ConditionalHeader />
-          <main className="flex-1 flex flex-col">{children}</main>
-        </div>
+        {/* <Header /> */}
+        
+        {children}
       </body>
     </html>
   );
