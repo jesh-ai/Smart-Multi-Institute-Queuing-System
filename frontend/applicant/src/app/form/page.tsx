@@ -324,7 +324,10 @@ function FormFillingPage() {
 
         if (serviceId !== null) {
           // Fetch form from backend API based on serviceId
-          const res = await fetch(`${API_URL}/api/institute/form/${serviceId}`);
+          const res = await fetch(
+            `${API_URL}/api/institute/form/${serviceId}`,
+            { credentials: "include" }
+          );
           if (!res.ok) throw new Error("Failed to fetch form");
           const data = await res.json();
           // Extract the form structure and service name from the response
@@ -477,6 +480,7 @@ function FormFillingPage() {
       const res = await fetch(`${API_URL}/api/applicant/submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           name: name || "Applicant",
           document: serviceName || "Unknown Document",

@@ -16,7 +16,7 @@ function RequirementsPage() {
     setFormName(form);
 
     // Fetch services from the backend
-    fetch(`${API_URL}/api/institute/services`)
+    fetch(`${API_URL}/api/institute/services`, { credentials: "include" })
       .then((res) => res.json())
       .then((services) => {
         // Find the service that matches the form name and get its index

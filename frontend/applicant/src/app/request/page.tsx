@@ -15,7 +15,7 @@ export default function RequestPage() {
 
   useEffect(() => {
     // Fetch the services from the backend
-    fetch(`${API_URL}/api/institute/services`)
+    fetch(`${API_URL}/api/institute/services`, { credentials: "include" })
       .then((res) => res.json())
       .then((services) => {
         const requestList: RequestChoice[] = services.map(
@@ -64,6 +64,7 @@ export default function RequestPage() {
         await fetch("/api/save-interaction", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify({
             userMessage: "Other",
             botResponse:
