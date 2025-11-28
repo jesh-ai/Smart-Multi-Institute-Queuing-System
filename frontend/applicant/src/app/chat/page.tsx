@@ -241,19 +241,15 @@ function ChatInterface() {
       } else {
         const botResponse = response.botResponse;
 
-        // Clean up the message by removing status labels like [QUESTION], [IDLE], etc
         const cleanMessage = botResponse.Message.replace(
           /^\[.*?\]\s*/g,
           ""
         ).trim();
 
-        // Add bot response
         setMessages((prev) => [...prev, { sender: "bot", text: cleanMessage }]);
 
-        // Update quick replies dynamically based on bot response
         if (botResponse.Choices) {
           const choices: string[] = [];
-          // Extract choices from the Choices object
           Object.keys(botResponse.Choices).forEach((key) => {
             if (botResponse.Choices[key]) {
               choices.push(botResponse.Choices[key]);
@@ -286,11 +282,10 @@ function ChatInterface() {
   const handleKeyDown = (e: { key: string; preventDefault: () => void }) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      handleSend(input, "open"); // Typed message = open type
+      handleSend(input, "open");
     }
   };
 
-  // Show menu on initial load for desktop only (but not if formCompleted or message param present)
   useEffect(() => {
     if (
       isDesktop &&
@@ -301,7 +296,6 @@ function ChatInterface() {
     }
   }, [isDesktop, searchParams]);
 
-  // Show loading state until mounted to prevent hydration mismatch
   if (!mounted) {
     return (
       <div className="flex items-center justify-center h-screen bg-white">
@@ -310,15 +304,19 @@ function ChatInterface() {
     );
   }
 
-  // If desktop menu mode requested and still showing menu, show the menu screen instead of chat
   if (isDesktop && showMenu) return <MenuScreen />;
 
-  // Loading indicator component with animated dots
+  // Loading indicator component
   const LoadingIndicator = () => (
     <div className="flex items-end gap-2">
-      {/* AlVin avatar spacer */}
-      <div className={isDesktop ? "w-12" : "w-8"} style={{ flexShrink: 0 }} />
-      {/* Loading dots animation */}
+      {/* AlVin avatar */}
+      <Image
+        src="/ALVin3.png"
+        alt="ALVin"
+        width={isDesktop ? 48 : 32}
+        height={isDesktop ? 48 : 32}
+        className="rounded-full flex-shrink-0"
+      />
       <div
         className={`px-4 py-2 rounded-2xl bg-gray-200 ${
           isDesktop ? "max-w-[60%] text-xl" : "max-w-[70%] text-sm"
@@ -356,7 +354,7 @@ function ChatInterface() {
           &lt;
         </button>
         <Image
-          src="/ALVin.png"
+          src="/ALVin1.png"
           alt="ALVin Logo"
           width={50}
           height={50}
@@ -389,7 +387,7 @@ function ChatInterface() {
               {/* Show AlVin profile picture only for the latest bot message */}
               {msg.sender === "bot" && idx === messages.length - 1 && (
                 <Image
-                  src="/ALVin.png"
+                  src="/ALVin2.png"
                   alt="ALVin"
                   width={isDesktop ? 48 : 32}
                   height={isDesktop ? 48 : 32}
