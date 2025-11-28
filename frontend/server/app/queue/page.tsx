@@ -3,12 +3,49 @@
 import React, { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 
+interface Applicant {
+  position: number;
+  sessionId: string;
+  name: string;
+  document: string;
+  isPriority: boolean;
+  dateSubmitted: string;
+  dateClosed?: string;
+  dateProcessing?: string;
+}
+
+interface QueueCounter {
+  counterId: string;
+  counterName: string;
+  applicants: Applicant[];
+}
+
 interface QueueItem {
   id: number;
   name: string;
   request: string;
   counter: string;
   status: string;
+  isPriority: boolean;
+}
+
+interface QueueStatusResponse {
+  success: boolean;
+  data: {
+    applicants: Record<string, string>;
+    activeCounters: Record<string, {
+      counterName: string;
+      dateOpened: string;
+      queueLength: number;
+    }>;
+    queueDistribution: QueueCounter[];
+    statistics: {
+      totalActiveCounters: number;
+      totalWaitingApplicants: number;
+      priorityApplicants: number;
+      regularApplicants: number;
+    };
+  };
 }
 
 export default function QueuePage() {
@@ -16,18 +53,45 @@ export default function QueuePage() {
   const [activeTab, setActiveTab] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
 
-  const filters = ['All', 'Processing', 'Waiting', 'Ended'];
+  const filters = ['All',  'In Line', 'Processing','Closed'];
 
   // Fetch queue data from API
   useEffect(() => {
     const fetchQueueData = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/queue/all', {
+        const response = await fetch('http://localhost:4000/api/queue/status', {
           credentials: 'include'
         });
         if (response.ok) {
-          const data = await response.json();
-          setQueueData(Array.isArray(data) ? data : []);
+          const result: QueueStatusResponse = await response.json();
+          
+          if (result.success && result.data) {
+            // Parse queueDistribution to create QueueItem array
+            const parsedData: QueueItem[] = [];
+            
+            result.data.queueDistribution.forEach((counter, index) => {
+              counter.applicants.forEach((applicant) => {
+                const status = applicant.dateClosed
+                  ? "Closed"
+                  : applicant.dateProcessing
+                  ? "Processing"
+                  : "In Line";
+                
+                parsedData.push({
+                  id: applicant.position,
+                  name: applicant.name,
+                  request: applicant.document,
+                  counter: `Counter ${index + 1}`,
+                  status: status,
+                  isPriority: applicant.isPriority
+                });
+              });
+            });
+            
+            setQueueData(parsedData);
+          } else {
+            setQueueData([]);
+          }
         } else {
           setQueueData([]);
         }
@@ -54,7 +118,7 @@ export default function QueuePage() {
 
   const QueueStatusBadge = ({ status }: { status: string }) => {
     return (
-      <span className={`queue-status-badge status-${status.toLowerCase()}`}>
+      <span className={`queue-status-badge status-${status.toLowerCase().split(" ").join("-")}`}>
         {status}
       </span>
     );
@@ -123,8 +187,15 @@ export default function QueuePage() {
             </thead>
             <tbody>
               {filteredData.map((item) => (
-                <tr key={item.id}>
-                  <td>{item.id}</td>
+                <tr key={`${item.counter}-${item.id}`}>
+                  <td>
+                    {item.id}
+                    {item.isPriority && (
+                      <span className="priority-badge" style={{ marginLeft: '8px', fontSize: '0.75rem', padding: '2px 6px', backgroundColor: '#fef3c7', color: '#92400e', borderRadius: '4px' }}>
+                        Priority
+                      </span>
+                    )}
+                  </td>
                   <td>{item.name}</td>
                   <td>{item.request}</td>
                   <td>{item.counter}</td>

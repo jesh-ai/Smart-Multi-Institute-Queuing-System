@@ -8,6 +8,8 @@ interface QueueApplicant {
   document?: string;
   isPriority: boolean;
   dateSubmitted: string;
+  dateClosed?: string;
+  dateProcessing?: string;
   assignedCounter?: string;
 }
 
@@ -48,8 +50,7 @@ export class QueueManager {
     sessions.forEach((session, sessionId) => {
       if (
         session.applicant &&
-        session.applicant.dateSubmitted &&
-        !session.applicant.dateClosed 
+        session.applicant.dateSubmitted
       ) {
         applicants.push({
           sessionId,
@@ -57,6 +58,8 @@ export class QueueManager {
           document: session.applicant.document,
           isPriority: session.applicant.isPriority || false,
           dateSubmitted: session.applicant.dateSubmitted,
+          dateClosed: session.applicant.dateClosed,
+          dateProcessing: session.applicant.dateProcessing,
         });
       }
     });
@@ -145,6 +148,8 @@ export class QueueManager {
           document: a.document,
           isPriority: a.isPriority,
           dateSubmitted: a.dateSubmitted,
+          dateClosed: a.dateClosed,
+          dateProcessing: a.dateProcessing,
         })),
       })),
       statistics: {
