@@ -24,7 +24,7 @@ export async function getApplicantInfo(req: Request, res: Response): Promise<voi
     const counter = queue.applicants[req.sessionID] 
     const counters = Object.keys(queue.activeCounters)
     const counterIndex = counters.findIndex(i => i == counter)
-    const counterName = counterIndex !== -1 ? "Counter " + (counterIndex + 1) : "Counter not found"
+    const counterName = counterIndex !== -1 ? "Counter " + (counterIndex + 1) : "No Counter"
     
     let nthInLine = 0;
     if (counter) {
