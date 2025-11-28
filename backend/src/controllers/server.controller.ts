@@ -80,7 +80,6 @@ export async function getSummary(req: Request, res: Response): Promise<void> {
     let waitingRequestsCount = 0;
     let totalCurrentWaitTime = 0;
 
-    // Get today's date at midnight for comparison
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const now = new Date();
@@ -89,27 +88,17 @@ export async function getSummary(req: Request, res: Response): Promise<void> {
       if (session.applicant && session.applicant.dateSubmitted) {
         const submittedDate = new Date(session.applicant.dateSubmitted);
         
-        // Count all requests submitted today (both completed and waiting)
         if (submittedDate >= today) {
           requestsToday++;
         }
 
-        // Calculate wait time for completed requests (served today or any day)
         if (session.applicant.dateClosed) {
           const servedDate = new Date(session.applicant.dateClosed);
-          const waitTime = (servedDate.getTime() - submittedDate.getTime()) / (1000 * 60); // minutes
+          const waitTime = (servedDate.getTime() - submittedDate.getTime()) / (1000 * 60);
           
-          // Only count valid wait times (positive and reasonable)
-          if (waitTime > 0 && waitTime < 1440) { // Less than 24 hours
+          if (waitTime > 0 && waitTime < 1440) { 
             totalWaitTime += waitTime;
             completedRequestsCount++;
-          }
-        } else {
-          // For requests still waiting, calculate current wait time
-          const currentWaitTime = (now.getTime() - submittedDate.getTime()) / (1000 * 60); // minutes
-          if (currentWaitTime > 0 && currentWaitTime < 1440) {
-            totalCurrentWaitTime += currentWaitTime;
-            waitingRequestsCount++;
           }
         }
       }
