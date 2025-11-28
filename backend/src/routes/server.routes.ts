@@ -12,7 +12,6 @@ routes.get("/dashboard/summary", getSummary);
 routes.get("/qr", getQR);
 
 routes.get("/devices", getDevices);
-routes.get("/counters", getCounters);
 
 routes.post("/generate-counter", generateKeysHandler);
 
