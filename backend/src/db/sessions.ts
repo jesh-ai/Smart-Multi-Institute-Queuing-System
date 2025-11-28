@@ -33,6 +33,33 @@ export function fetchSessions(): Map<string, SessionData> {
     })
   );
 }
+export function fetchSessionsAll(): Map<string, SessionData | (SessionData & { deleted_at: number })> {
+  const mainRows = db.prepare("SELECT sid AS id, sess AS data FROM sessions").all() as SessionRow[];
+  const backupRows = backupDb.prepare("SELECT sid AS id, sess AS data, deleted_at FROM sessions").all() as Array<{ id: string; data: string; deleted_at: number }>;
+
+  const allSessions = new Map<string, SessionData | (SessionData & { deleted_at: number })>();
+
+  for (const r of mainRows) {
+    try {
+      allSessions.set(r.id, JSON.parse(r.data) as SessionData);
+    } catch (e) {
+      allSessions.set(r.id, r.data as any);
+    }
+  }
+
+  for (const r of backupRows) {
+    if (!allSessions.has(r.id)) {
+      try {
+        const sessionData = JSON.parse(r.data) as SessionData;
+        allSessions.set(r.id, { ...sessionData, deleted_at: r.deleted_at });
+      } catch (e) {
+        allSessions.set(r.id, { deleted_at: r.deleted_at } as any);
+      }
+    }
+  }
+
+  return allSessions;
+}
 
 export function storeSession(sessionID: string, session: SessionData): void {
   const ttlMs = DEFAULT_TTL_SECONDS * 1000;

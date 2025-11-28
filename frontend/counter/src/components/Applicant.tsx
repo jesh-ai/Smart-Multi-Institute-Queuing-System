@@ -53,17 +53,13 @@ const Applicant = () => {
         const counterQueue = result.data.queueDistribution.find(
           (q: any) => q.counterId === result.data.currentCounterId
         );
-        
+
         if (counterQueue && counterQueue.applicants.length > 0) {
           // Find the applicant currently being processed
-          const processing = counterQueue.applicants.find(
-            (a: QueueApplicant) => a.dateProcessing && !a.dateClosed
-          );
+          const processing = counterQueue.applicants[0];
           
           // Find waiting applicants (not processing, not closed)
-          const waiting = counterQueue.applicants.filter(
-            (a: QueueApplicant) => !a.dateProcessing && !a.dateClosed
-          );
+          const waiting = counterQueue.applicants[1];
           
           setInProgressApplicant(processing || null);
           setNextInLine(waiting[0] || null);

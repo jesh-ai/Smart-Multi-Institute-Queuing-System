@@ -263,6 +263,13 @@ const cardConfigs = [
     customClass: 'debugger'
   },
   {
+    id: 'devices-d',
+    title: 'Devices Info with Deleted',
+    description: 'Check registered and deleted devices',
+    buttons: [{ endpoint: '/api/session/all-d', method: 'GET' }],
+    customClass: 'debugger'
+  },
+  {
     id: 'counter-keys',
     title: 'Available Keys',
     description: 'Get available and used counter keys',
