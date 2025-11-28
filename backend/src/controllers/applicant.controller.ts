@@ -138,118 +138,6 @@ export async function submitFeedback(req: Request, res: Response): Promise<void>
     });
   }
 } 
-
-
-
-
-
-
-/**
- * @deprecated
- * @param req 
- * @param res 
- * @returns 
- */
-export async function getApplicantBySessionId(req: Request, res: Response): Promise<void> {
-  try {
-    const { sessionId } = req.params;
-
-    if (!sessionId) {
-      res.status(400).json({
-        success: false,
-        error: "Session ID is required",
-      });
-      return;
-    }
-
-    const sessions = fetchSessions();
-    const session = sessions.get(sessionId);
-
-    if (!session || !session.applicant) {
-      res.status(404).json({
-        success: false,
-        error: "Applicant not found",
-        message: `No applicant found with session ID: ${sessionId}`,
-      });
-      return;
-    }
-
-    res.json({
-      success: true,
-      data: {
-        sessionId,
-        name: session.applicant.name,
-        document: session.applicant.document,
-        isPriority: session.applicant.isPriority || false,
-        dateSubmitted: session.applicant.dateSubmitted,
-        dateServed: session.applicant.dateServed,
-        closedServed: session.applicant.closedServed,
-        feedbackChoice: session.applicant.feedbackChoice,
-        feedbackComments: session.applicant.feedbackComments,
-        status: session.applicant.dateServed ? "served" : "waiting",
-      },
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: "Failed to retrieve applicant information",
-      message: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-}
-
-export async function updateApplicantInfo(req: Request, res: Response): Promise<void> {
-  try {
-    const updates = req.body;
-
-    if (!req.session.applicant) {
-      req.session.applicant = {};
-    }
-
-    // Only update allowed fields
-    const allowedFields = [
-      "name",
-      "document",
-      "isPriority",
-      "dateSubmitted",
-      "dateServed",
-      "closedServed",
-      "feedbackChoice",
-      "feedbackComments",
-    ];
-
-    Object.keys(updates).forEach((key) => {
-      if (allowedFields.includes(key)) {
-        (req.session.applicant as any)[key] = updates[key];
-      }
-    });
-
-    // Save session
-    req.session.save((err) => {
-      if (err) {
-        res.status(500).json({
-          success: false,
-          error: "Failed to save session",
-          message: err.message,
-        });
-        return;
-      }
-
-      res.json({
-        success: true,
-        message: "Applicant information updated successfully",
-        data: req.session.applicant,
-      });
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: "Failed to update applicant information",
-      message: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-}
-
 export async function markApplicantServed(req: Request, res: Response): Promise<void> {
   try {
     const { sessionId } = req.params;
@@ -307,91 +195,194 @@ export async function markApplicantServed(req: Request, res: Response): Promise<
 }
 
 
-export async function getAllApplicants(req: Request, res: Response): Promise<void> {
-  try {
-    const sessions = fetchSessions();
-    const applicants: Array<{
-      sessionId: string;
-      name?: string;
-      document?: string;
-      isPriority: boolean;
-      dateSubmitted?: string;
-      dateServed?: string;
-      status: string;
-    }> = [];
 
-    sessions.forEach((session, sessionId) => {
-      if (session.applicant && session.applicant.dateSubmitted) {
-        applicants.push({
-          sessionId,
-          name: session.applicant.name,
-          document: session.applicant.document,
-          isPriority: session.applicant.isPriority || false,
-          dateSubmitted: session.applicant.dateSubmitted,
-          dateServed: session.applicant.dateServed,
-          status: session.applicant.dateServed ? "served" : "waiting",
-        });
-      }
-    });
 
-    applicants.sort((a, b) => {
-      const dateA = new Date(a.dateSubmitted || 0).getTime();
-      const dateB = new Date(b.dateSubmitted || 0).getTime();
-      return dateB - dateA;
-    });
 
-    res.json({
-      success: true,
-      data: {
-        total: applicants.length,
-        waiting: applicants.filter((a) => a.status === "waiting").length,
-        served: applicants.filter((a) => a.status === "served").length,
-        applicants,
-      },
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: "Failed to retrieve applicants",
-      message: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-}
+// TBR
+// export async function getApplicantBySessionId(req: Request, res: Response): Promise<void> {
+//   try {
+//     const { sessionId } = req.params;
 
-export async function deleteApplicantInfo(req: Request, res: Response): Promise<void> {
-  try {
-    if (!req.session.applicant) {
-      res.status(404).json({
-        success: false,
-        error: "No applicant information found",
-      });
-      return;
-    }
+//     if (!sessionId) {
+//       res.status(400).json({
+//         success: false,
+//         error: "Session ID is required",
+//       });
+//       return;
+//     }
 
-    const deletedData = { ...req.session.applicant };
-    delete req.session.applicant;
+//     const sessions = fetchSessions();
+//     const session = sessions.get(sessionId);
 
-    req.session.save((err) => {
-      if (err) {
-        res.status(500).json({
-          success: false,
-          error: "Failed to delete applicant information",
-          message: err.message,
-        });
-        return;
-      }
+//     if (!session || !session.applicant) {
+//       res.status(404).json({
+//         success: false,
+//         error: "Applicant not found",
+//         message: `No applicant found with session ID: ${sessionId}`,
+//       });
+//       return;
+//     }
 
-      res.json({
-        success: true,
-        message: "Applicant information deleted successfully",
-        deletedData,
-      });
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: "Failed to delete applicant information",
-      message: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-}
+//     res.json({
+//       success: true,
+//       data: {
+//         sessionId,
+//         name: session.applicant.name,
+//         document: session.applicant.document,
+//         isPriority: session.applicant.isPriority || false,
+//         dateSubmitted: session.applicant.dateSubmitted,
+//         dateServed: session.applicant.dateServed,
+//         closedServed: session.applicant.closedServed,
+//         feedbackChoice: session.applicant.feedbackChoice,
+//         feedbackComments: session.applicant.feedbackComments,
+//         status: session.applicant.dateServed ? "served" : "waiting",
+//       },
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       error: "Failed to retrieve applicant information",
+//       message: error instanceof Error ? error.message : "Unknown error",
+//     });
+//   }
+// }
+
+// export async function updateApplicantInfo(req: Request, res: Response): Promise<void> {
+//   try {
+//     const updates = req.body;
+
+//     if (!req.session.applicant) {
+//       req.session.applicant = {};
+//     }
+
+//     // Only update allowed fields
+//     const allowedFields = [
+//       "name",
+//       "document",
+//       "isPriority",
+//       "dateSubmitted",
+//       "dateServed",
+//       "closedServed",
+//       "feedbackChoice",
+//       "feedbackComments",
+//     ];
+
+//     Object.keys(updates).forEach((key) => {
+//       if (allowedFields.includes(key)) {
+//         (req.session.applicant as any)[key] = updates[key];
+//       }
+//     });
+
+//     // Save session
+//     req.session.save((err) => {
+//       if (err) {
+//         res.status(500).json({
+//           success: false,
+//           error: "Failed to save session",
+//           message: err.message,
+//         });
+//         return;
+//       }
+
+//       res.json({
+//         success: true,
+//         message: "Applicant information updated successfully",
+//         data: req.session.applicant,
+//       });
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       error: "Failed to update applicant information",
+//       message: error instanceof Error ? error.message : "Unknown error",
+//     });
+//   }
+// }
+// export async function getAllApplicants(req: Request, res: Response): Promise<void> {
+//   try {
+//     const sessions = fetchSessions();
+//     const applicants: Array<{
+//       sessionId: string;
+//       name?: string;
+//       document?: string;
+//       isPriority: boolean;
+//       dateSubmitted?: string;
+//       dateServed?: string;
+//       status: string;
+//     }> = [];
+
+//     sessions.forEach((session, sessionId) => {
+//       if (session.applicant && session.applicant.dateSubmitted) {
+//         applicants.push({
+//           sessionId,
+//           name: session.applicant.name,
+//           document: session.applicant.document,
+//           isPriority: session.applicant.isPriority || false,
+//           dateSubmitted: session.applicant.dateSubmitted,
+//           dateServed: session.applicant.dateServed,
+//           status: session.applicant.dateServed ? "served" : "waiting",
+//         });
+//       }
+//     });
+
+//     applicants.sort((a, b) => {
+//       const dateA = new Date(a.dateSubmitted || 0).getTime();
+//       const dateB = new Date(b.dateSubmitted || 0).getTime();
+//       return dateB - dateA;
+//     });
+
+//     res.json({
+//       success: true,
+//       data: {
+//         total: applicants.length,
+//         waiting: applicants.filter((a) => a.status === "waiting").length,
+//         served: applicants.filter((a) => a.status === "served").length,
+//         applicants,
+//       },
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       error: "Failed to retrieve applicants",
+//       message: error instanceof Error ? error.message : "Unknown error",
+//     });
+//   }
+// }
+
+// export async function deleteApplicantInfo(req: Request, res: Response): Promise<void> {
+//   try {
+//     if (!req.session.applicant) {
+//       res.status(404).json({
+//         success: false,
+//         error: "No applicant information found",
+//       });
+//       return;
+//     }
+
+//     const deletedData = { ...req.session.applicant };
+//     delete req.session.applicant;
+
+//     req.session.save((err) => {
+//       if (err) {
+//         res.status(500).json({
+//           success: false,
+//           error: "Failed to delete applicant information",
+//           message: err.message,
+//         });
+//         return;
+//       }
+
+//       res.json({
+//         success: true,
+//         message: "Applicant information deleted successfully",
+//         deletedData,
+//       });
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       error: "Failed to delete applicant information",
+//       message: error instanceof Error ? error.message : "Unknown error",
+//     });
+//   }
+// }

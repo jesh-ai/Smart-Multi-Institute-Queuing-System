@@ -220,15 +220,7 @@ const cardConfigs = [
     buttons: [{ label: 'Activate Counter', endpoint: '/api/counter/activate', method: 'POST', useBody: 'activate-counter-data' }],
     customClass: 'counter-1'
   },
-  {
-    id: 'counter-activate',
-    title: 'Activate Counter',
-    description: 'Activate a counter with a key (one-time)',
-    textareas: [{ id: 'activate-counter-data', rows: 2, placeholder: '{"key": "CS-2025-001-A4F9"}', defaultValue: '{\n  "key": "CS-2025-001-XXXX"\n}' }],
-    buttons: [{ label: 'Activate Counter', endpoint: '/api/counter/activate', method: 'POST', useBody: 'activate-counter-data' }],
-    customClass: 'counter-1'
-  },
-
+  
   // Purple
   {
     id: 'applicant-served',
