@@ -66,28 +66,58 @@ const cardConfigs = [
     id: 'institute-info',
     title: 'Institute Info',
     description: 'Get complete institute information',
-    buttons: [{ endpoint: '/api/institute/info', method: 'GET' }]
+    buttons: [{ endpoint: '/api/institute/info', method: 'GET' }],
+    customClass: 'institute'
   },
   {
     id: 'institute-services',
     title: 'Institute Services',
     description: 'Get list of institute services',
-    buttons: [{ endpoint: '/api/institute/services', method: 'GET' }]
+    buttons: [{ endpoint: '/api/institute/services', method: 'GET' }],
+    customClass: 'institute'
   },
   {
     id: 'service-form',
     title: 'Service Form',
     description: 'Get form by service ID',
     inputs: [{ id: 'service-form-service-id', type: 'number', placeholder: 'Service ID (0, 1, 2...)', defaultValue: '0' }],
-    buttons: [{ endpoint: '/api/institute/form/:id', method: 'GET', useInputs: ['service-form-service-id'] }]
+    buttons: [{ endpoint: '/api/institute/form/:id', method: 'GET', useInputs: ['service-form-service-id'] }],
+    customClass: 'institute'
   },
   {
     id: 'privacy',
     title: 'Privacy Notice',
     description: 'Get institute privacy notice',
-    buttons: [{ endpoint: '/api/institute/notice', method: 'GET' }]
+    buttons: [{ endpoint: '/api/institute/notice', method: 'GET' }],
+    customClass: 'institute'
   },
   
+  
+  {
+    id: 'applicant-submit',
+    title: 'Submit Applicant Form',
+    description: 'Submit applicant form data',
+    textareas: [{ id: 'submit-data', rows: 4, placeholder: '{"name": "John Doe", "document": "BIR Form 1901", "isPriority": false}', defaultValue: '{\n  "name": "John Doe",\n  "document": "BIR Form 1901",\n  "isPriority": false\n}' }],
+    buttons: [{ label: 'Submit Form', endpoint: '/api/applicant/submit', method: 'POST', useBody: 'submit-data' }],
+    customClass: "applicant-actions"
+  },
+  {
+    id: 'applicant-info',
+    title: 'Applicant Info',
+    description: 'Get current applicant information from session',
+    buttons: [{ label: 'Get My Info', endpoint: '/api/applicant/info', method: 'GET' }],
+    customClass: "applicant-actions"
+  },
+  {
+    id: 'applicant-feedback',
+    title: 'Submit Feedback',
+    description: 'Submit applicant feedback',
+    textareas: [{ id: 'feedback-data', rows: 3, placeholder: '{"feedbackChoice": "satisfied", "feedbackComments": "Great service!"}', defaultValue: '{\n  "feedbackChoice": "satisfied",\n  "feedbackComments": "Great service!"\n}' }],
+    buttons: [{ label: 'Submit Feedback', endpoint: '/api/applicant/feedback', method: 'POST', useBody: 'feedback-data' }],
+    customClass: "applicant-actions"
+  },
+
+
   {
     id: 'session',
     title: 'Session Info',
@@ -101,19 +131,6 @@ const cardConfigs = [
     buttons: [{ endpoint: '/api/session/devices', method: 'GET' }]
   },
   
-  {
-    id: 'applicant-info',
-    title: 'Applicant Info',
-    description: 'Get current applicant information from session',
-    buttons: [{ label: 'Get My Info', endpoint: '/api/applicant/info', method: 'GET' }]
-  },
-  {
-    id: 'applicant-submit',
-    title: 'Submit Applicant Form',
-    description: 'Submit applicant form data',
-    textareas: [{ id: 'submit-data', rows: 4, placeholder: '{"name": "John Doe", "document": "BIR Form 1901", "isPriority": false}', defaultValue: '{\n  "name": "John Doe",\n  "document": "BIR Form 1901",\n  "isPriority": false\n}' }],
-    buttons: [{ label: 'Submit Form', endpoint: '/api/applicant/submit', method: 'POST', useBody: 'submit-data' }]
-  },
   {
     id: 'applicant-update',
     title: 'Update Applicant Info',
@@ -140,13 +157,6 @@ const cardConfigs = [
     description: 'Mark applicant as served',
     textareas: [{ id: 'served-data', rows: 2, placeholder: '{"closedServed": "notes"}', defaultValue: '{\n  "closedServed": "Completed"\n}' }],
     buttons: [{ label: 'Mark Served', endpoint: '/api/applicant/served', method: 'PUT', useBody: 'served-data' }]
-  },
-  {
-    id: 'applicant-feedback',
-    title: 'Submit Feedback',
-    description: 'Submit applicant feedback',
-    textareas: [{ id: 'feedback-data', rows: 3, placeholder: '{"feedbackChoice": "satisfied", "feedbackComments": "Great service!"}', defaultValue: '{\n  "feedbackChoice": "satisfied",\n  "feedbackComments": "Great service!"\n}' }],
-    buttons: [{ label: 'Submit Feedback', endpoint: '/api/applicant/feedback', method: 'POST', useBody: 'feedback-data' }]
   },
   {
     id: 'applicant-delete',

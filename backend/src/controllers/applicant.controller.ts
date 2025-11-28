@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { fetchSessions } from "../db/sessions.js";
-import { SessionData } from "express-session";
 
 export async function getApplicantInfo(req: Request, res: Response): Promise<void> {
   try {
@@ -15,20 +14,19 @@ export async function getApplicantInfo(req: Request, res: Response): Promise<voi
       return;
     }
 
+   const status = applicant.dateServed
+      ? "Closed"
+      : applicant.dateProcessing
+      ? "Processing"
+      : "In Line";
+
     res.json({
       success: true,
       data: {
         sessionId: req.sessionID,
-        name: applicant.name,
-        document: applicant.document,
-        isPriority: applicant.isPriority || false,
-        dateSubmitted: applicant.dateSubmitted,
-        dateServed: applicant.dateServed,
-        closedServed: applicant.closedServed,
-        feedbackChoice: applicant.feedbackChoice,
-        feedbackComments: applicant.feedbackComments,
-        status: applicant.dateServed ? "served" : "waiting",
-      },
+        status,
+        applicant
+      }
     });
   } catch (error) {
     res.status(500).json({
@@ -38,7 +36,120 @@ export async function getApplicantInfo(req: Request, res: Response): Promise<voi
     });
   }
 }
+export async function submitApplicantForm(req: Request, res: Response): Promise<void> {
+  try {
+    const { name, document, isPriority } = req.body;
 
+    if (!name || !document) {
+      res.status(400).json({
+        success: false,
+        error: "Name and document are required",
+      });
+      return;
+    }
+
+    // Initialize or update applicant data
+    req.session.applicant = {
+      name,
+      document,
+      isPriority: isPriority || false,
+      dateSubmitted: new Date().toISOString(),
+      dateServed: undefined,
+      closedServed: undefined,
+      feedbackChoice: undefined,
+      feedbackComments: undefined,
+    };
+
+    // Save session
+    req.session.save((err) => {
+      if (err) {
+        res.status(500).json({
+          success: false,
+          error: "Failed to save form submission",
+          message: err.message,
+        });
+        return;
+      }
+
+      res.json({
+        success: true,
+        message: "Form submitted successfully",
+        data: {
+          sessionId: req.sessionID,
+          ...req.session.applicant,
+        },
+      });
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: "Failed to submit form",
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+}
+export async function submitFeedback(req: Request, res: Response): Promise<void> {
+  try {
+    const { feedbackChoice, feedbackComments } = req.body;
+
+    if (!req.session.applicant) {
+      res.status(404).json({
+        success: false,
+        error: "No applicant information found",
+      });
+      return;
+    }
+
+    if (!feedbackChoice) {
+      res.status(400).json({
+        success: false,
+        error: "Feedback choice is required",
+      });
+      return;
+    }
+
+    req.session.applicant.feedbackChoice = feedbackChoice;
+    req.session.applicant.feedbackComments = feedbackComments || "";
+
+    req.session.save((err) => {
+      if (err) {
+        res.status(500).json({
+          success: false,
+          error: "Failed to save feedback",
+          message: err.message,
+        });
+        return;
+      }
+
+      res.json({
+        success: true,
+        message: "Feedback submitted successfully",
+        data: {
+          feedbackChoice: req.session.applicant?.feedbackChoice,
+          feedbackComments: req.session.applicant?.feedbackComments,
+        },
+      });
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: "Failed to submit feedback",
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+} 
+
+
+
+
+
+
+/**
+ * @deprecated
+ * @param req 
+ * @param res 
+ * @returns 
+ */
 export async function getApplicantBySessionId(req: Request, res: Response): Promise<void> {
   try {
     const { sessionId } = req.params;
@@ -139,59 +250,6 @@ export async function updateApplicantInfo(req: Request, res: Response): Promise<
   }
 }
 
-export async function submitApplicantForm(req: Request, res: Response): Promise<void> {
-  try {
-    const { name, document, isPriority } = req.body;
-
-    if (!name || !document) {
-      res.status(400).json({
-        success: false,
-        error: "Name and document are required",
-      });
-      return;
-    }
-
-    // Initialize or update applicant data
-    req.session.applicant = {
-      name,
-      document,
-      isPriority: isPriority || false,
-      dateSubmitted: new Date().toISOString(),
-      dateServed: undefined,
-      closedServed: undefined,
-      feedbackChoice: undefined,
-      feedbackComments: undefined,
-    };
-
-    // Save session
-    req.session.save((err) => {
-      if (err) {
-        res.status(500).json({
-          success: false,
-          error: "Failed to save form submission",
-          message: err.message,
-        });
-        return;
-      }
-
-      res.json({
-        success: true,
-        message: "Form submitted successfully",
-        data: {
-          sessionId: req.sessionID,
-          ...req.session.applicant,
-        },
-      });
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: "Failed to submit form",
-      message: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-}
-
 export async function markApplicantServed(req: Request, res: Response): Promise<void> {
   try {
     const { sessionId } = req.params;
@@ -248,56 +306,6 @@ export async function markApplicantServed(req: Request, res: Response): Promise<
   }
 }
 
-export async function submitFeedback(req: Request, res: Response): Promise<void> {
-  try {
-    const { feedbackChoice, feedbackComments } = req.body;
-
-    if (!req.session.applicant) {
-      res.status(404).json({
-        success: false,
-        error: "No applicant information found",
-      });
-      return;
-    }
-
-    if (!feedbackChoice) {
-      res.status(400).json({
-        success: false,
-        error: "Feedback choice is required",
-      });
-      return;
-    }
-
-    req.session.applicant.feedbackChoice = feedbackChoice;
-    req.session.applicant.feedbackComments = feedbackComments || "";
-
-    req.session.save((err) => {
-      if (err) {
-        res.status(500).json({
-          success: false,
-          error: "Failed to save feedback",
-          message: err.message,
-        });
-        return;
-      }
-
-      res.json({
-        success: true,
-        message: "Feedback submitted successfully",
-        data: {
-          feedbackChoice: req.session.applicant?.feedbackChoice,
-          feedbackComments: req.session.applicant?.feedbackComments,
-        },
-      });
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: "Failed to submit feedback",
-      message: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-}
 
 export async function getAllApplicants(req: Request, res: Response): Promise<void> {
   try {
